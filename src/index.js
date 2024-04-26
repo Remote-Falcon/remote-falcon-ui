@@ -15,6 +15,7 @@ import * as serviceWorker from 'serviceWorker';
 import { store } from 'store';
 
 import 'assets/scss/style.scss';
+import { Environments } from './utils/enum';
 
 const defaultOptions = {
   watchQuery: {
@@ -28,14 +29,11 @@ const defaultOptions = {
   }
 };
 
-const controlPanelURI = `${process?.env?.REACT_APP_BASE_API_PATH}/remote-falcon-control-panel`;
-const viewerURI = `${process?.env?.REACT_APP_BASE_API_PATH_2}/remote-falcon-viewer`;
-
 const link = ApolloLink.from([
   new MultiAPILink({
     endpoints: {
-      controlPanel: controlPanelURI,
-      viewer: viewerURI
+      controlPanel: window?.ENV?.CONTROL_PANEL_API,
+      viewer: window?.ENV?.VIEWER_API
     },
     createHttpLink: () => createHttpLink()
   })
@@ -48,7 +46,7 @@ const client = new ApolloClient({
   }),
   defaultOptions,
   link,
-  connectToDevTools: process?.env?.REACT_APP_HOST_ENV === 'local'
+  connectToDevTools: window?.ENV?.HOST_ENV === Environments.LOCAL
 });
 
 // eslint-disable-next-line import/prefer-default-export
@@ -72,9 +70,9 @@ export function setGraphqlHeaders(serviceToken) {
 ReactDOM.render(
   <DataDog
     applicationId="bd3037df-6473-4ced-ae36-e7ab72461eab"
-    clientToken={process?.env?.REACT_APP_DATADOG_CLIENT_TOKEN}
+    clientToken={window?.ENV?.DATADOG_CLIENT_TOKEN}
     service="remote-falcon-ui"
-    env={process?.env?.REACT_APP_HOST_ENV}
+    env={window?.ENV?.HOST_ENV}
     sessionReplayRecording
     trackUserInteractions
     enableExperimentalFeatures={['clickmap']}

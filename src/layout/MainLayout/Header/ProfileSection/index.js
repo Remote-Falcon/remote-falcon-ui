@@ -26,6 +26,8 @@ import { useSelector } from 'store';
 import MainCard from 'ui-component/cards/MainCard';
 import Transitions from 'ui-component/extended/Transitions';
 
+import { Environments } from '../../../../utils/enum';
+
 const ProfileSection = () => {
   const theme = useTheme();
   const { borderRadius } = useConfig();
@@ -68,9 +70,9 @@ const ProfileSection = () => {
   const prevOpen = useRef(open);
   useEffect(() => {
     let showUrl = `https://${show?.showSubdomain}.remotefalcon.com`;
-    if (process?.env?.REACT_APP_HOST_ENV === 'local') {
+    if (window?.ENV?.HOST_ENV === Environments.LOCAL) {
       showUrl = `http://${show?.showSubdomain}.localhost:3000`;
-    } else if (process?.env?.REACT_APP_HOST_ENV === 'development') {
+    } else if (window?.ENV?.HOST_ENV === Environments.TEST) {
       showUrl = `https://${show?.showSubdomain}.remotefalcon.dev`;
     }
     setShowNameUrl(showUrl);
