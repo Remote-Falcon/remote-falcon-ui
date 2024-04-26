@@ -14,7 +14,6 @@ import { ViewerControlMode } from '../../../utils/enum';
 import { RESET_ALL_VOTES } from '../../../utils/graphql/controlPanel/mutations';
 import { showAlert } from '../../../views/pages/globalPageHelpers';
 import LogoSection from '../LogoSection';
-import { resetVotes } from './helpers';
 import LocalizationSection from './LocalizationSection';
 import ProfileSection from './ProfileSection';
 import ViewJukeboxRequests from './ViewJukeboxRequests.modal';

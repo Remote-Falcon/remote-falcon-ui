@@ -52,7 +52,7 @@ const DashboardCharts = () => {
       variables: {
         startDate: dateFilterStart,
         endDate: dateFilterEnd,
-        timezone: show?.preferences?.timezone
+        timezone: show?.timezone
       },
       onCompleted: (data) => {
         setDashboardStats(data?.dashboardStats);
@@ -61,7 +61,7 @@ const DashboardCharts = () => {
         showAlertOld({ dispatch, alert: 'error' });
       }
     });
-  }, [dispatch, dateFilterStart, dateFilterEnd, show?.preferences?.timezone]);
+  }, [dispatch, dateFilterStart, dateFilterEnd, show?.timezone]);
 
   useEffect(() => {
     const init = async () => {
@@ -106,7 +106,7 @@ const DashboardCharts = () => {
           <Stack direction="row" spacing={2} justifyContent="right" pt={2}>
             <RFLoadingButton
               loading={isDownloadingStats}
-              onClick={() => downloadStatsToExcel(dispatch, show?.preferences?.timezone, setIsDownloadingStats)}
+              onClick={() => downloadStatsToExcel(dispatch, show?.timezone, setIsDownloadingStats)}
               color="primary"
             >
               Download Stats

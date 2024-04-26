@@ -128,7 +128,7 @@ export const sequenceVoteWins = (dashboardStats) => {
 
 const downloadStatsToExcelService = async (timezone) => {
   const response = await axios.post(
-    '/remote-falcon-control-panel/controlPanel/downloadStatsToExcel',
+    '/controlPanel/downloadStatsToExcel',
     {
       timezone
     },
