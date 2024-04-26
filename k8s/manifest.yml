@@ -123,7 +123,7 @@ spec:
             name: #{Application}#
             port:
               number: 3000
-  - host: #{SubdomainHost}#
+  - host: '#{SubdomainHost}#'
     http:
       paths:
       - pathType: Prefix
