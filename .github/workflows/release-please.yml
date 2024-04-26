@@ -84,7 +84,7 @@ jobs:
           Application: remote-falcon-ui
           Env: test
           Replicas: 1
-          Image: ${{ needs.build.outputs.meta-tag }}
+          Image: ${{ needs.build-and-push.outputs.meta-tag }}
           Requests.Memory: 500Mi
           Requests.CPU: 250m
           Limits.Memory: 750Mi
@@ -126,7 +126,7 @@ jobs:
           Application: remote-falcon-ui
           Env: production
           Replicas: 2
-          Image: ${{ needs.build.outputs.meta-tag }}
+          Image: ${{ needs.build-and-push.outputs.meta-tag }}
           Requests.Memory: 1000Mi
           Requests.CPU: 500m
           Limits.Memory: 1250Mi
