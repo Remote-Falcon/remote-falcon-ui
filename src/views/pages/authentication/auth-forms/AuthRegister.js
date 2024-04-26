@@ -25,6 +25,8 @@ import useAuth from 'hooks/useAuth';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import { strengthColor, strengthIndicatorNumFunc } from 'utils/password-strength';
 
+import { Environments } from '../../../../utils/enum';
+
 const AuthRegister = () => {
   const theme = useTheme();
 
@@ -203,7 +205,7 @@ const AuthRegister = () => {
                   <Button
                     id="signup-submit"
                     disableElevation
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || window?.ENV?.HOST_ENV === Environments.TEST}
                     fullWidth
                     size="large"
                     type="submit"
