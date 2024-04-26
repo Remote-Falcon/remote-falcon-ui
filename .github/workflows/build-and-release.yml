@@ -2,8 +2,6 @@ name: Build and Release
 on:
   workflow_dispatch:
   push:
-    branches:
-      - 'main'
     tags:
       - '*'
       
@@ -17,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       meta-tag: ${{ steps.meta.outputs.tags }}
-      meta-label: ${{ steps.meta.outputs.labels }}
     permissions:
       contents: read
       packages: write
@@ -77,7 +74,7 @@ jobs:
           Host: remotefalcon.dev
           SubdomainHost: '*.remotefalcon.dev'
           HOST_ENV: test
-          VERSION: ${{ needs.build.outputs.meta-label }}
+          VERSION: ${{ github.ref_name }}
           CONTROL_PANEL_API: https://remotefalcon.dev/remote-falcon-control-panel
           VIEWER_API: https://remotefalcon.dev/remote-falcon-viewer
           DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
