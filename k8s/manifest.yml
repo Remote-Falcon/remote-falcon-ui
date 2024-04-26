@@ -81,6 +81,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: #{Application}#-config
+  namespace: #{Namespace}#
 data:
   config.js: |
     window.ENV = {
