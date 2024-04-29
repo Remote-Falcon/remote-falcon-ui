@@ -6,6 +6,7 @@ export const GET_SHOW = gql`
       showSubdomain
       playingNow
       playingNext
+      playingNextFromSchedule
       preferences {
         viewerControlEnabled
         viewerControlMode

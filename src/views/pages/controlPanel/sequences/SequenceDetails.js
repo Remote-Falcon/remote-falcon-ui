@@ -48,7 +48,7 @@ const SequenceDetails = ({ setShowLinearProgress, sequence, open, handleDrawerOp
     setShowLinearProgress(true);
     const updatedSequences = _.cloneDeep([...show?.sequences]);
     _.forEach(updatedSequences, (updatedSequence) => {
-      if (updatedSequence?.key === sequence?.key) {
+      if (updatedSequence?.name === sequence?.name && updatedSequence?.index === sequence?.index) {
         updatedSequence.displayName = displayName;
         updatedSequence.artist = artist;
         updatedSequence.imageUrl = imageUrl;
@@ -73,7 +73,7 @@ const SequenceDetails = ({ setShowLinearProgress, sequence, open, handleDrawerOp
     setShowLinearProgress(true);
     const updatedSequences = _.cloneDeep([...show?.sequences]);
     _.forEach(updatedSequences, (updatedSequence) => {
-      if (updatedSequence?.key === sequence?.key) {
+      if (updatedSequence?.name === sequence?.name && updatedSequence?.index === sequence?.index) {
         updatedSequence.group = value?.id;
       }
     });

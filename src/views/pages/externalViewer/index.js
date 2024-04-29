@@ -417,6 +417,9 @@ const ExternalViewerPage = () => {
     getShowQuery({
       onCompleted: (data) => {
         const showData = { ...data?.getShow };
+        if (showData?.playingNext === '') {
+          showData.playingNext = showData?.playingNextFromSchedule;
+        }
         orderSequencesForVoting(showData);
         setShow(showData);
         getActiveViewerPage(showData);

@@ -42,7 +42,7 @@ function SequenceRow({ provided, sequence, setShowLinearProgress }) {
     setShowLinearProgress(true);
     const updatedSequences = _.cloneDeep([...show?.sequences]);
     _.forEach(updatedSequences, (updatedSequence) => {
-      if (updatedSequence?.key === sequence?.key) {
+      if (updatedSequence?.name === sequence?.name && updatedSequence?.index === sequence?.index) {
         updatedSequence.visible = !updatedSequence.visible;
       }
     });
@@ -65,7 +65,7 @@ function SequenceRow({ provided, sequence, setShowLinearProgress }) {
   const deleteSequence = () => {
     setShowLinearProgress(true);
     const updatedSequences = _.cloneDeep([...show?.sequences]);
-    _.remove(updatedSequences, (updatedSequence) => updatedSequence?.key === sequence?.key);
+    _.remove(updatedSequences, (updatedSequence) => updatedSequence?.name === sequence?.name && updatedSequence?.index === sequence?.index);
     saveSequencesService(updatedSequences, updateSequencesMutation, (response) => {
       if (response?.success) {
         dispatch(
@@ -110,7 +110,7 @@ function SequenceRow({ provided, sequence, setShowLinearProgress }) {
           sx={{ maxWidth: 'calc(100vw - 850px)', minWidth: 140, cursor: 'pointer' }}
           align="center"
         >
-          {sequence.key}
+          {sequence.index}
         </TableCell>
         <TableCell
           onClick={() => setSequenceDetailsDrawerOpen(!sequenceDetailsDrawerOpen)}

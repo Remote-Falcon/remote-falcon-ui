@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import * as React from 'react';
 
 import { useMutation } from '@apollo/client';
@@ -136,7 +136,7 @@ const Sequences = () => {
                       <TableCell sx={{ pl: 3 }}>Status</TableCell>
                       <TableCell sx={{ pl: 3 }}>Type</TableCell>
                       <TableCell sx={{ pl: 3 }} align="center">
-                        Sequence Key
+                        Sequence Index
                       </TableCell>
                       <TableCell>Name</TableCell>
                       <TableCell>Display Name</TableCell>
@@ -152,7 +152,12 @@ const Sequences = () => {
                         <TableBody {...provided.droppableProps} ref={provided.innerRef}>
                           <>
                             {_.map(show?.sequences, (sequence, index) => (
-                              <Draggable index={parseInt(index, 10)} draggableId={sequence.name} key={sequence.name}>
+                              <Draggable
+                                index={parseInt(index, 10)}
+                                draggableId={sequence.name}
+                                key={sequence.name}
+                                isDragDisabled={!sequence.active}
+                              >
                                 {(provided) => (
                                   <SequenceRow provided={provided} sequence={sequence} setShowLinearProgress={setShowLinearProgress} />
                                 )}
