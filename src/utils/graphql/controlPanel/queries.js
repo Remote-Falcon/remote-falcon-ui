@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const SIGN_IN = gql`
-  query @api(name: controlPanel) {
+  query {
     signIn {
       serviceToken
     }
@@ -9,7 +9,7 @@ export const SIGN_IN = gql`
 `;
 
 export const VERIFY_PASSWORD_RESET_LINK = gql`
-  query ($passwordResetLink: String!) @api(name: controlPanel) {
+  query ($passwordResetLink: String!) {
     verifyPasswordResetLink(passwordResetLink: $passwordResetLink) {
       serviceToken
     }
@@ -17,7 +17,7 @@ export const VERIFY_PASSWORD_RESET_LINK = gql`
 `;
 
 export const GET_SHOW = gql`
-  query @api(name: controlPanel) {
+  query {
     getShow {
       showToken
       email
@@ -118,7 +118,7 @@ export const GET_SHOW = gql`
 `;
 
 export const DASHBOARD_LIVE_STATS = gql`
-  query ($startDate: Long!, $endDate: Long!, $timezone: String) @api(name: controlPanel) {
+  query ($startDate: Long!, $endDate: Long!, $timezone: String) {
     dashboardLiveStats(startDate: $startDate, endDate: $endDate, timezone: $timezone) {
       activeViewers
       totalViewers
@@ -130,7 +130,7 @@ export const DASHBOARD_LIVE_STATS = gql`
   }
 `;
 export const DASHBOARD_STATS = gql`
-  query ($startDate: Long!, $endDate: Long!, $timezone: String) @api(name: controlPanel) {
+  query ($startDate: Long!, $endDate: Long!, $timezone: String) {
     dashboardStats(startDate: $startDate, endDate: $endDate, timezone: $timezone) {
       page {
         date

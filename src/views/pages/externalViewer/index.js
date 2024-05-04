@@ -41,6 +41,8 @@ const ExternalViewerPage = () => {
   const [enteredLocationCode, setEnteredLocationCode] = useState(null);
   const [messageDisplayTime] = useState(6000);
   const [makeItSnowScript, setMakeItSnowScript] = useState(null);
+  const [nowPlaying, setNowPlaying] = useState(null);
+  const [nowPlayingTimer, setNowPlayingTimer] = useState(0);
 
   const [getShowQuery] = useLazyQuery(GET_SHOW);
   const [insertViewerPageStatsMutation] = useMutation(INSERT_VIEWER_PAGE_STATS);
@@ -184,6 +186,21 @@ const ExternalViewerPage = () => {
     const processNodeDefinitions = new htmlToReact.ProcessNodeDefinitions(React);
     let instructions = defaultProcessingInstructions(processNodeDefinitions);
 
+    let formattedNowPlayingTimer = '0:00';
+    if (show?.playingNow !== '') {
+      const playingNowMinutes = Math.floor(nowPlayingTimer / 60);
+      const playingNowSeconds = nowPlayingTimer - playingNowMinutes * 60;
+      if (nowPlayingTimer) {
+        formattedNowPlayingTimer = `${playingNowMinutes}:${playingNowSeconds}`;
+        if (playingNowMinutes < 10) {
+          formattedNowPlayingTimer = `0${playingNowMinutes}:${playingNowSeconds}`;
+        }
+        if (playingNowSeconds < 10) {
+          formattedNowPlayingTimer = `${playingNowMinutes}:0${playingNowSeconds}`;
+        }
+      }
+    }
+
     parsedViewerPage = parsedViewerPage?.replace(/{QUEUE_DEPTH}/g, show?.preferences?.jukeboxDepth);
     parsedViewerPage = displayCurrentViewerMessages(parsedViewerPage);
 
@@ -204,8 +221,6 @@ const ExternalViewerPage = () => {
               sequenceVotes = vote?.votes;
             }
           });
-          // const sequenceVotes = _.find(show?.votes, (vote) => vote?.sequence?.name === sequence?.name);
-          // console.log(sequenceVotes);
           if (sequenceVotes !== -1) {
             if (sequence.category == null || sequence.category === '') {
               const votingListClassname = `cell-vote-playlist cell-vote-playlist-${sequence.key}`;
@@ -370,7 +385,8 @@ const ExternalViewerPage = () => {
       show?.playingNow,
       show?.playingNext,
       show?.requests?.length,
-      locationCodeElement
+      locationCodeElement,
+      formattedNowPlayingTimer
     );
 
     const reactHtml = htmlToReactParser.parseWithInstructions(parsedViewerPage, isValidNode, instructions);
@@ -388,7 +404,8 @@ const ExternalViewerPage = () => {
     show?.preferences?.viewerControlMode,
     show?.requests?.length,
     show?.sequences,
-    voteForSequence
+    voteForSequence,
+    nowPlayingTimer
   ]);
 
   const getActiveViewerPage = (showData) => {
@@ -415,6 +432,12 @@ const ExternalViewerPage = () => {
 
   const getShow = useCallback(() => {
     getShowQuery({
+      context: {
+        headers: {
+          Route: 'Viewer'
+        }
+      },
+      fetchPolicy: 'network-only',
       onCompleted: (data) => {
         const showData = { ...data?.getShow };
         if (showData?.playingNext === '') {
@@ -434,32 +457,90 @@ const ExternalViewerPage = () => {
     }).then();
   }, [dispatch, getShowQuery, setViewerLocation]);
 
+  const getShowForInit = useCallback(() => {
+    getShowQuery({
+      context: {
+        headers: {
+          Route: 'Viewer'
+        }
+      },
+      onCompleted: (data) => {
+        const showData = { ...data?.getShow };
+        if (showData?.playingNext === '') {
+          showData.playingNext = showData?.playingNextFromSchedule;
+        }
+        setNowPlaying(showData?.playingNow);
+        orderSequencesForVoting(showData);
+        setShow(showData);
+        getActiveViewerPage(showData);
+        if (showData?.preferences?.locationCheckMethod === LocationCheckMethod.GEO) {
+          setViewerLocation();
+        }
+        setLoading(false);
+      },
+      onError: () => {
+        showAlert(dispatch, { alert: 'error' });
+      }
+    }).then();
+  }, [dispatch, getShowQuery, setViewerLocation]);
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
       await signViewerJwt();
-      // await fetchExternalViewerPage();
 
-      getShow();
+      getShowForInit();
       insertViewerPageStatsMutation({
+        context: {
+          headers: {
+            Route: 'Viewer'
+          }
+        },
         variables: {
           date: moment().format('YYYY-MM-DDTHH:mm:ss')
         }
       }).then();
-      updateActiveViewersMutation().then();
+      updateActiveViewersMutation({
+        context: {
+          headers: {
+            Route: 'Viewer'
+          }
+        }
+      }).then();
     };
 
     init().then();
-  }, [signViewerJwt, getShow, insertViewerPageStatsMutation, updateActiveViewersMutation]);
+  }, [signViewerJwt, getShowForInit, insertViewerPageStatsMutation, updateActiveViewersMutation]);
 
   useInterval(() => {
     getShow();
-    updateActiveViewersMutation().then();
-  }, 5000);
+    updateActiveViewersMutation({
+      context: {
+        headers: {
+          Route: 'Viewer'
+        }
+      }
+    }).then();
+  }, 2000);
 
   useInterval(async () => {
     await convertViewerPageToReact();
   }, 500);
+
+  useInterval(async () => {
+    if (nowPlaying !== show?.playingNow) {
+      const playingNowSequence = _.find(show?.sequences, (sequence) => sequence?.name === show?.playingNow);
+      console.log(playingNowSequence?.duration);
+      setNowPlaying(show?.playingNow);
+      setNowPlayingTimer(playingNowSequence?.duration - 2);
+    }
+    if (show?.playingNow === '' || show?.playingNow === ' ') {
+      setNowPlaying('');
+      setNowPlayingTimer(0);
+    } else if (nowPlayingTimer && nowPlayingTimer > 0) {
+      setNowPlayingTimer(nowPlayingTimer - 1);
+    }
+  }, 1000);
 
   return (
     <>

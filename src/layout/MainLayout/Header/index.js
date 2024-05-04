@@ -33,6 +33,11 @@ const Header = () => {
   const resetAllVotes = () => {
     setIsResettingVotes(true);
     resetAllVotesMutation({
+      context: {
+        headers: {
+          Route: 'Control-Panel'
+        }
+      },
       onCompleted: () => {
         setIsResettingVotes(false);
         showAlert(dispatch, { message: 'All Votes Reset' });

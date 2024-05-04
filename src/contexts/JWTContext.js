@@ -29,10 +29,12 @@ export const setSession = (serviceToken) => {
     localStorage.setItem('serviceToken', serviceToken);
     setGraphqlHeaders(serviceToken);
     axios.defaults.headers.common.Authorization = `Bearer ${serviceToken}`;
+    axios.defaults.headers.common.Route = 'Control-Panel';
   } else {
     localStorage.removeItem('serviceToken');
     setGraphqlHeaders(null);
     delete axios.defaults.headers.common.Authorization;
+    axios.defaults.headers.common.Route = 'Control-Panel';
   }
 };
 
@@ -70,6 +72,11 @@ export const JWTProvider = ({ children }) => {
         if (serviceToken && verifyToken(serviceToken)) {
           setSession(serviceToken);
           getShowQuery({
+            context: {
+              headers: {
+                Route: 'Control-Panel'
+              }
+            },
             onCompleted: (data) => {
               const showData = { ...data?.getShow };
               showData.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -103,12 +110,18 @@ export const JWTProvider = ({ children }) => {
     await signInQuery({
       context: {
         headers: {
-          authorization: `Basic ${Buffer.from(`${email}:${password}`).toString('base64')}`
+          authorization: `Basic ${Buffer.from(`${email}:${password}`).toString('base64')}`,
+          Route: 'Control-Panel'
         }
       },
       onCompleted: (data) => {
         setSession(data?.signIn?.serviceToken);
         getShowQuery({
+          context: {
+            headers: {
+              Route: 'Control-Panel'
+            }
+          },
           onCompleted: (data) => {
             const showData = { ...data?.getShow };
             showData.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -143,7 +156,8 @@ export const JWTProvider = ({ children }) => {
       },
       context: {
         headers: {
-          authorization: `Basic ${Buffer.from(`${email}:${password}`).toString('base64')}`
+          authorization: `Basic ${Buffer.from(`${email}:${password}`).toString('base64')}`,
+          Route: 'Control-Panel'
         }
       },
       onCompleted: () => {
@@ -166,6 +180,11 @@ export const JWTProvider = ({ children }) => {
 
   const verifyEmail = async (showToken) => {
     await verifyEmailMutation({
+      context: {
+        headers: {
+          Route: 'Control-Panel'
+        }
+      },
       variables: {
         showToken
       },
@@ -183,6 +202,11 @@ export const JWTProvider = ({ children }) => {
 
   const sendResetPassword = async (email) => {
     await forgotPasswordMutation({
+      context: {
+        headers: {
+          Route: 'Control-Panel'
+        }
+      },
       variables: {
         email
       },
@@ -209,7 +233,8 @@ export const JWTProvider = ({ children }) => {
       context: {
         headers: {
           authorization: `Bearer ${serviceToken}`,
-          Password: password
+          Password: password,
+          Route: 'Control-Panel'
         }
       },
       onCompleted: () => {

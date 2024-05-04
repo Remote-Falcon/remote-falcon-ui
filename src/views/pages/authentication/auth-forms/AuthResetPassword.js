@@ -62,6 +62,11 @@ const AuthResetPassword = ({ ...others }) => {
 
   const validateLink = useCallback(async () => {
     await verifyPasswordResetLinkQuery({
+      context: {
+        headers: {
+          Route: 'Control-Panel'
+        }
+      },
       variables: {
         passwordResetLink
       },

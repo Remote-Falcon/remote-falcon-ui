@@ -49,6 +49,11 @@ const DashboardCharts = () => {
 
   const fetchDashboardStats = useCallback(async () => {
     await dashboardStatsQuery({
+      context: {
+        headers: {
+          Route: 'Control-Panel'
+        }
+      },
       variables: {
         startDate: dateFilterStart,
         endDate: dateFilterEnd,

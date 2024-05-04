@@ -1,5 +1,10 @@
 export const addSequenceToQueueService = (addSequenceToQueueMutation, name, viewerLatitude, viewerLongitude, callback) => {
   addSequenceToQueueMutation({
+    context: {
+      headers: {
+        Route: 'Viewer'
+      }
+    },
     variables: {
       name,
       latitude: parseFloat(viewerLatitude),
@@ -22,6 +27,11 @@ export const addSequenceToQueueService = (addSequenceToQueueMutation, name, view
 
 export const voteForSequenceService = (voteForSequenceMutation, name, viewerLatitude, viewerLongitude, callback) => {
   voteForSequenceMutation({
+    context: {
+      headers: {
+        Route: 'Viewer'
+      }
+    },
     variables: {
       name,
       latitude: parseFloat(viewerLatitude),

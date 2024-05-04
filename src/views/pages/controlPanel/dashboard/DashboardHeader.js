@@ -30,6 +30,11 @@ const DashboardHeader = () => {
 
   const fetchDashboardLiveStats = useCallback(async () => {
     await dashboardLiveStatsQuery({
+      context: {
+        headers: {
+          Route: 'Control-Panel'
+        }
+      },
       variables: {
         startDate: new Date().setHours(0, 0, 0),
         endDate: new Date().setHours(23, 59, 59),

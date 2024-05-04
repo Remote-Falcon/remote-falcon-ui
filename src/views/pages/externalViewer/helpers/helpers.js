@@ -41,6 +41,16 @@ const nowPlayingNode = (value) => ({
   }
 });
 
+const nowPlayingTimerNode = (value) => ({
+  replaceChildren: true,
+  shouldProcessNode(node) {
+    return node && node.children && node.children[0] && node.children[0].data && node.children[0].data.trim() === '{NOW_PLAYING_TIMER}';
+  },
+  processNode() {
+    return value;
+  }
+});
+
 const nextSequenceNode = (value) => ({
   replaceChildren: true,
   shouldProcessNode(node) {
@@ -160,7 +170,8 @@ export const processingInstructions = (
   nowPlaying,
   nextSequence,
   queueDepth,
-  locationCode
+  locationCode,
+  nowPlayingTimer
 ) => {
   let processedNodes = [];
   if (!viewerControlEnabled) {
@@ -169,6 +180,7 @@ export const processingInstructions = (
       sequencesNode(<></>),
       votesNode(<></>),
       nowPlayingNode(<></>),
+      nowPlayingTimerNode(<></>),
       nextSequenceNode(<></>),
       queueSizeNode(<></>),
       jukeboxQueueNode(<></>),
@@ -184,6 +196,7 @@ export const processingInstructions = (
       locationCodeNode(<>{locationCode}</>),
       sequencesNode(<>{sequences}</>),
       nowPlayingNode(<>{nowPlaying}</>),
+      nowPlayingTimerNode(<>{nowPlayingTimer}</>),
       nextSequenceNode(<>{nextSequence}</>),
       queueSizeNode(<>{queueDepth}</>),
       jukeboxQueueNode(<>{jukeboxRequests}</>),
@@ -199,6 +212,7 @@ export const processingInstructions = (
       sequencesNode(<>{sequences}</>),
       votesNode(<></>),
       nowPlayingNode(<>{nowPlaying}</>),
+      nowPlayingTimerNode(<>{nowPlayingTimer}</>),
       nextSequenceNode(<>{nextSequence}</>),
       queueSizeNode(<></>),
       jukeboxQueueNode(<></>),

@@ -29,23 +29,16 @@ const defaultOptions = {
   }
 };
 
-const link = ApolloLink.from([
-  new MultiAPILink({
-    endpoints: {
-      controlPanel: window?.ENV?.CONTROL_PANEL_API,
-      viewer: window?.ENV?.VIEWER_API
-    },
-    createHttpLink: () => createHttpLink()
-  })
-]);
+const httpLink = createHttpLink({
+  uri: `${window?.ENV?.REMOTE_FALCON_GATEWAY}/graphql`
+});
 
 const client = new ApolloClient({
   cache: new InMemoryCache({
-    dataIdFromObject: () => null,
     addTypename: false
   }),
-  defaultOptions,
-  link,
+  // defaultOptions,
+  link: httpLink,
   connectToDevTools: window?.ENV?.HOST_ENV === Environments.LOCAL
 });
 
@@ -64,7 +57,7 @@ export function setGraphqlHeaders(serviceToken) {
       }
     }));
   }
-  client.setLink(authLink.concat(link));
+  client.setLink(authLink.concat(httpLink));
 }
 
 ReactDOM.render(

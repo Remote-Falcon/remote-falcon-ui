@@ -31,6 +31,12 @@ const ViewJukeboxRequests = ({ handleClose }) => {
 
   const getJukeboxRequests = useCallback(async () => {
     await getShowQuery({
+      context: {
+        headers: {
+          Route: 'Control-Panel'
+        }
+      },
+      fetchPolicy: 'network-only',
       onCompleted: (data) => {
         setRequests(data?.getShow?.requests);
       },
@@ -43,6 +49,11 @@ const ViewJukeboxRequests = ({ handleClose }) => {
   const deleteSingleRequest = (sequence, position) => {
     setIsDeletingSingleRequest(true);
     deleteSingleRequestMutation({
+      context: {
+        headers: {
+          Route: 'Control-Panel'
+        }
+      },
       variables: {
         sequence,
         position
@@ -62,6 +73,11 @@ const ViewJukeboxRequests = ({ handleClose }) => {
   const deleteAllRequests = () => {
     setIsDeletingAllRequests(true);
     deleteAllRequestsMutation({
+      context: {
+        headers: {
+          Route: 'Control-Panel'
+        }
+      },
       onCompleted: () => {
         setIsDeletingAllRequests(false);
         getJukeboxRequests();

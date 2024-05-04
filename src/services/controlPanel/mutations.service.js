@@ -3,6 +3,11 @@ import { GET_SHOW } from '../../utils/graphql/controlPanel/queries';
 
 export const deleteAccountService = (deleteAccountMutation, callback) => {
   deleteAccountMutation({
+    context: {
+      headers: {
+        Route: 'Control-Panel'
+      }
+    },
     onCompleted: () => {
       callback({
         success: true
@@ -19,6 +24,11 @@ export const deleteAccountService = (deleteAccountMutation, callback) => {
 
 export const playSequenceFromControlPanelService = (sequence, playSequenceFromControlPanelMutation, callback) => {
   playSequenceFromControlPanelMutation({
+    context: {
+      headers: {
+        Route: 'Control-Panel'
+      }
+    },
     variables: {
       sequence
     },
@@ -33,13 +43,18 @@ export const playSequenceFromControlPanelService = (sequence, playSequenceFromCo
         success: false,
         toast: { alert: 'error' }
       });
-    },
-    refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
+    }
+    // refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
   });
 };
 
 export const requestApiAccessService = (requestApiAccessMutation, callback) => {
   requestApiAccessMutation({
+    context: {
+      headers: {
+        Route: 'Control-Panel'
+      }
+    },
     onCompleted: () => {
       callback({
         success: true,
@@ -58,8 +73,8 @@ export const requestApiAccessService = (requestApiAccessMutation, callback) => {
           toast: { alert: 'warning', message: 'API Access Already Requested' }
         });
       }
-    },
-    refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
+    }
+    // refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
   });
 };
 
@@ -68,6 +83,11 @@ export const savePagesService = (updatedPages, updatePagesMutation, callback) =>
     pages: updatedPages
   };
   updatePagesMutation({
+    context: {
+      headers: {
+        Route: 'Control-Panel'
+      }
+    },
     variables,
     onCompleted: () => {
       callback({
@@ -80,13 +100,18 @@ export const savePagesService = (updatedPages, updatePagesMutation, callback) =>
         success: false,
         toast: { alert: 'error' }
       });
-    },
-    refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
+    }
+    // refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
   });
 };
 
 export const savePreferencesService = (updatedPreferences, updatePreferencesMutation, callback) => {
   updatePreferencesMutation({
+    context: {
+      headers: {
+        Route: 'Control-Panel'
+      }
+    },
     variables: {
       preferences: {
         ...updatedPreferences
@@ -103,13 +128,18 @@ export const savePreferencesService = (updatedPreferences, updatePreferencesMuta
         success: false,
         toast: { alert: 'error' }
       });
-    },
-    refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
+    }
+    // refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
   });
 };
 
 export const savePsaSequencesService = (updatedPsaSequences, updatePsaSequencesMutation, callback) => {
   updatePsaSequencesMutation({
+    context: {
+      headers: {
+        Route: 'Control-Panel'
+      }
+    },
     variables: {
       psaSequences: updatedPsaSequences
     },
@@ -124,13 +154,18 @@ export const savePsaSequencesService = (updatedPsaSequences, updatePsaSequencesM
         success: false,
         toast: { alert: 'error' }
       });
-    },
-    refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
+    }
+    // refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
   });
 };
 
 export const saveSequencesService = (updatedSequences, updateSequencesMutation, callback) => {
   updateSequencesMutation({
+    context: {
+      headers: {
+        Route: 'Control-Panel'
+      }
+    },
     variables: {
       sequences: updatedSequences
     },
@@ -145,13 +180,18 @@ export const saveSequencesService = (updatedSequences, updateSequencesMutation, 
         success: false,
         toast: { alert: 'error' }
       });
-    },
-    refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
+    }
+    // refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
   });
 };
 
 export const saveSequenceGroupsService = (updatedSequenceGroups, updateSequenceGroupsMutation, callback) => {
   updateSequenceGroupsMutation({
+    context: {
+      headers: {
+        Route: 'Control-Panel'
+      }
+    },
     variables: {
       sequenceGroups: updatedSequenceGroups
     },
@@ -166,13 +206,18 @@ export const saveSequenceGroupsService = (updatedSequenceGroups, updateSequenceG
         success: false,
         toast: { alert: 'error' }
       });
-    },
-    refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
+    }
+    // refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
   });
 };
 
 export const saveShowService = (updatedShow, updateShowMutation, callback) => {
   updateShowMutation({
+    context: {
+      headers: {
+        Route: 'Control-Panel'
+      }
+    },
     variables: {
       email: updatedShow?.email,
       showName: updatedShow?.showName
@@ -188,13 +233,18 @@ export const saveShowService = (updatedShow, updateShowMutation, callback) => {
         success: false,
         toast: { alert: 'error' }
       });
-    },
-    refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
+    }
+    // refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
   });
 };
 
 export const saveUserProfileService = (updatedUserProfile, updateUserProfileMutation, callback) => {
   updateUserProfileMutation({
+    context: {
+      headers: {
+        Route: 'Control-Panel'
+      }
+    },
     variables: {
       userProfile: {
         firstName: updatedUserProfile?.firstName,
@@ -214,8 +264,8 @@ export const saveUserProfileService = (updatedUserProfile, updateUserProfileMuta
         success: false,
         toast: { alert: 'error' }
       });
-    },
-    refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
+    }
+    // refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
   });
 };
 
@@ -226,7 +276,8 @@ export const updatePasswordService = (currentPassword, newPassword, updatePasswo
     context: {
       headers: {
         NewPassword: newPasswordBase64,
-        Password: currentPasswordBase64
+        Password: currentPasswordBase64,
+        Route: 'Control-Panel'
       }
     },
     onCompleted: () => {
