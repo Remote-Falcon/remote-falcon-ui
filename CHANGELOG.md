@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.5](https://github.com/Remote-Falcon/remote-falcon-ui/compare/v1.0.4...v1.0.5) (2024-05-04)
+
+
+### Bug Fixes
+
+* Add Gateway config ([74f3964](https://github.com/Remote-Falcon/remote-falcon-ui/commit/74f396443bdc28cb5617404bdf7441480511d5ff))
+
 ## [1.0.4](https://github.com/Remote-Falcon/remote-falcon-ui/compare/v1.0.3...v1.0.4) (2024-05-04)
 
 
