@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/Remote-Falcon/remote-falcon-ui/compare/v1.0.3...v1.0.4) (2024-05-04)
+
+
+### Bug Fixes
+
+* Trigger release ([29a7e81](https://github.com/Remote-Falcon/remote-falcon-ui/commit/29a7e81c2d1cb1d7a6e9f34b6bd7fcae4f2f960a))
+
 ## [1.0.3](https://github.com/Remote-Falcon/remote-falcon-ui/compare/v1.0.2...v1.0.3) (2024-05-03)
 
 
