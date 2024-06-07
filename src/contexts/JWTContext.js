@@ -62,7 +62,6 @@ export const JWTProvider = ({ children }) => {
     client.clearStore();
     setSession(null);
     dispatch(startLogoutAction());
-    navigate('/', { replace: true });
   };
 
   useEffect(() => {

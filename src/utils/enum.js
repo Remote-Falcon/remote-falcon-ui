@@ -1,7 +1,7 @@
 export const Environments = {
   LOCAL: 'local',
   TEST: 'test',
-  PRODUCTION: 'production'
+  PROD: 'prod'
 };
 
 export const ViewerControlMode = {
