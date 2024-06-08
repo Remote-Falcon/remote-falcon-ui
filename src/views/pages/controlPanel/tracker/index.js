@@ -66,7 +66,11 @@ const Tracker = () => {
                             }}
                             size="small"
                             onClick={() =>
-                              window.open('https://github.com/whitesoup12/remote-falcon/issues/new/choose', '_blank', 'noreferrer')
+                              window.open(
+                                'https://github.com/Remote-Falcon/remote-falcon-issue-tracker/issues/new/choose',
+                                '_blank',
+                                'noreferrer'
+                              )
                             }
                           >
                             <AddTwoToneIcon sx={{ fontSize: '1.5rem' }} />
