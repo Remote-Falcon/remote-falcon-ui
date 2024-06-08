@@ -358,8 +358,10 @@ const ExternalViewerPage = () => {
     });
 
     const jukeboxRequestsElement = [];
-    _.map(show?.requests, (request, index) => {
-      // Don't add Playing Now to list
+    let updatedRequests = show?.requests;
+    updatedRequests = _.orderBy(updatedRequests, ['position'], ['asc']);
+    _.map(updatedRequests, (request, index) => {
+      // Don't add Playing Now or Next Playing to list
       if (index !== 0) {
         jukeboxRequestsElement.push(
           <>
@@ -446,7 +448,9 @@ const ExternalViewerPage = () => {
         if (showData?.playingNext === '') {
           showData.playingNext = showData?.playingNextFromSchedule;
         }
-        orderSequencesForVoting(showData);
+        if (showData?.preferences?.viewerControlMode === ViewerControlMode.VOTING) {
+          orderSequencesForVoting(showData);
+        }
         setShow(showData);
         getActiveViewerPage(showData);
         if (showData?.preferences?.locationCheckMethod === LocationCheckMethod.GEO) {
@@ -473,7 +477,9 @@ const ExternalViewerPage = () => {
           showData.playingNext = showData?.playingNextFromSchedule;
         }
         setNowPlaying(showData?.playingNow);
-        orderSequencesForVoting(showData);
+        if (showData?.preferences?.viewerControlMode === ViewerControlMode.VOTING) {
+          orderSequencesForVoting(showData);
+        }
         setShow(showData);
         getActiveViewerPage(showData);
         if (showData?.preferences?.locationCheckMethod === LocationCheckMethod.GEO) {

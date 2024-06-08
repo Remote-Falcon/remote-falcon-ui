@@ -38,11 +38,18 @@ export const playSequenceFromControlPanelService = (sequence, playSequenceFromCo
         toast: { message: `${sequence?.name} Playing Next` }
       });
     },
-    onError: () => {
-      callback({
-        success: false,
-        toast: { alert: 'error' }
-      });
+    onError: (error) => {
+      if (error?.message === StatusResponse.OWNER_REQUESTED) {
+        callback({
+          success: false,
+          toast: { alert: 'warning', message: 'You have already requested a sequence' }
+        });
+      } else {
+        callback({
+          success: false,
+          toast: { alert: 'error' }
+        });
+      }
     }
     // refetchQueries: [{ query: GET_SHOW, awaitRefetchQueries: true }]
   });
@@ -65,12 +72,12 @@ export const requestApiAccessService = (requestApiAccessMutation, callback) => {
       if (error?.message === StatusResponse.API_ACCESS_REQUESTED) {
         callback({
           success: false,
-          toast: { alert: 'error' }
+          toast: { alert: 'warning', message: 'API Access Already Requested' }
         });
       } else {
         callback({
           success: false,
-          toast: { alert: 'warning', message: 'API Access Already Requested' }
+          toast: { alert: 'error' }
         });
       }
     }
