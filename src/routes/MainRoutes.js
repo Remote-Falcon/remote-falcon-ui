@@ -14,6 +14,7 @@ const Sequences = Loadable(lazy(() => import('views/pages/controlPanel/sequences
 const AccountSettings = Loadable(lazy(() => import('views/pages/controlPanel/accountSettings')));
 const ViewerPageTemplates = Loadable(lazy(() => import('views/pages/controlPanel/viewerPageTemplates')));
 const Tracker = Loadable(lazy(() => import('views/pages/controlPanel/tracker')));
+const PatronWall = Loadable(lazy(() => import('views/pages/patronWall')));
 
 const MainRoutes = {
   path: '/',
@@ -58,6 +59,10 @@ const MainRoutes = {
     {
       path: '/control-panel/remote-falcon-tracker',
       element: <Tracker />
+    },
+    {
+      path: '/control-panel/patron-wall',
+      element: <PatronWall />
     }
   ]
 };

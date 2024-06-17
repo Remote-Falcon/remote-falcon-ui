@@ -19,7 +19,7 @@ import {
   useScrollTrigger
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { IconBook, IconLogin, IconChevronRight } from '@tabler/icons';
+import { IconBook, IconLogin, IconChevronRight, IconMan } from '@tabler/icons';
 import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -50,8 +50,6 @@ ElevationScroll.propTypes = {
   window: PropTypes.object
 };
 
-// ==============================|| MINIMAL LAYOUT APP BAR ||============================== //
-
 const AppBar = ({ ...others }) => {
   const [drawerToggle, setDrawerToggle] = React.useState(false);
   /** Method called on multiple components with different event types */
@@ -71,6 +69,9 @@ const AppBar = ({ ...others }) => {
               <Logo />
             </Typography>
             <Stack direction="row" sx={{ display: { xs: 'none', sm: 'block' } }} spacing={2}>
+              <Button id="appbar-patron-wall" color="inherit" component={Link} href="/patron-wall" target="_blank">
+                Patron Wall
+              </Button>
               <Button id="appbar-documentation" color="inherit" component={Link} href="https://docs.remotefalcon.com" target="_blank">
                 Documentation
               </Button>
@@ -89,6 +90,14 @@ const AppBar = ({ ...others }) => {
                 {drawerToggle && (
                   <Box sx={{ width: 'auto' }} role="presentation" onClick={drawerToggler(false)} onKeyDown={drawerToggler(false)}>
                     <List>
+                      <Link style={{ textDecoration: 'none' }} href="/patron-wall" target="_blank">
+                        <ListItemButton component="a">
+                          <ListItemIcon>
+                            <IconMan />
+                          </ListItemIcon>
+                          <ListItemText primary="Patron Wall" />
+                        </ListItemButton>
+                      </Link>
                       <Link
                         style={{ textDecoration: 'none' }}
                         href="https://github.com/whitesoup12/remote-falcon-tracker/wiki/Remote-Falcon-Wiki"

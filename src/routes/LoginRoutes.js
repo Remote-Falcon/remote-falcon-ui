@@ -11,6 +11,7 @@ const AuthRegister = Loadable(lazy(() => import('views/pages/authentication/Regi
 const AuthForgotPassword = Loadable(lazy(() => import('views/pages/authentication/ForgotPassword')));
 const VerifyEmail = Loadable(lazy(() => import('views/pages/authentication/VerifyEmail')));
 const ResetPassword = Loadable(lazy(() => import('views/pages/authentication/ResetPassword')));
+const PatronWall = Loadable(lazy(() => import('views/pages/patronWall')));
 
 const LoginRoutes = {
   path: '/',
@@ -25,6 +26,10 @@ const LoginRoutes = {
     {
       path: '/',
       element: <Landing />
+    },
+    {
+      path: '/patron-wall',
+      element: <PatronWall />
     },
     {
       path: '/signin',

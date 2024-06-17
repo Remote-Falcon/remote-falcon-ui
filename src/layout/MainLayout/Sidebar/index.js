@@ -1,6 +1,7 @@
 import { memo, useMemo } from 'react';
+import * as React from 'react';
 
-import { Box, Drawer, Stack, useMediaQuery } from '@mui/material';
+import { Box, Drawer, Stack, Typography, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -48,14 +49,25 @@ const Sidebar = ({ window }) => {
         }}
       >
         <MenuList />
+        <Typography variant="h3" align="center" sx={{ mt: 4 }}>
+          Support Remote Falcon
+        </Typography>
+
+        <Stack direction="row" justifyContent="center">
+          <Typography variant="h4" align="center">
+            <a href="https://www.patreon.com/RemoteFalcon" target="_blank" rel="noreferrer">
+              <img src="https://remotefalcon.com/patreon-icon-png-29.jpg" alt="become-a-patron" width="270" />
+            </a>
+          </Typography>
+        </Stack>
+
         <Stack direction="row" justifyContent="center" sx={{ mb: 2 }}>
           <a
-            className="support-button"
             href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=FFKWA2CFP6JC6&currency_code=USD&source=url"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Support Remote Falcon
+            <img src="https://remotefalcon.com/Paypal.png" alt="donate-with-paypal" width="275" />
           </a>
         </Stack>
 

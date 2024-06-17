@@ -1,4 +1,4 @@
-import { IconDashboard, IconAdjustmentsHorizontal, IconBlockquote, IconPlaylist, IconPalette } from '@tabler/icons';
+import { IconDashboard, IconAdjustmentsHorizontal, IconBlockquote, IconPlaylist, IconPalette, IconMan } from '@tabler/icons';
 import { FormattedMessage } from 'react-intl';
 
 const controlPanel = {
@@ -43,6 +43,14 @@ const controlPanel = {
       type: 'item',
       url: '/control-panel/viewer-page-templates',
       icon: IconPalette,
+      breadcrumbs: false
+    },
+    {
+      id: 'patron-wall',
+      title: 'Patron Wall',
+      type: 'item',
+      url: '/control-panel/patron-wall',
+      icon: IconMan,
       breadcrumbs: false
     }
   ]
