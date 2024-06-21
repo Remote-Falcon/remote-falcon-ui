@@ -63,6 +63,7 @@ export const GET_SHOW = gql`
         sequencesPlayed
         pageTitle
         pageIconUrl
+        showOnMap
       }
       sequences {
         name
@@ -179,6 +180,16 @@ export const DASHBOARD_STATS = gql`
           total
         }
       }
+    }
+  }
+`;
+
+export const SHOWS_ON_MAP = gql`
+  query {
+    showsOnAMap {
+      showName
+      showLatitude
+      showLongitude
     }
   }
 `;

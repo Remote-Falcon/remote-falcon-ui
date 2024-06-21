@@ -5,6 +5,7 @@ import jwtDecode from 'jwt-decode';
 import PropTypes from 'prop-types';
 import { useDatadogRum } from 'react-datadog';
 import { useNavigate } from 'react-router-dom';
+import Rox from 'rox-browser';
 
 import { setGraphqlHeaders } from 'index';
 import { useDispatch, useSelector } from 'store';
@@ -84,6 +85,7 @@ export const JWTProvider = ({ children }) => {
                 name: `${showData?.userProfile?.firstName} ${showData?.userProfile?.lastName}`,
                 email: showData?.email
               });
+              Rox.setCustomStringProperty('showSubdomain', showData?.showSubdomain);
               dispatch(
                 startLoginAction({
                   ...showData
@@ -124,6 +126,12 @@ export const JWTProvider = ({ children }) => {
           onCompleted: (data) => {
             const showData = { ...data?.getShow };
             showData.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            datadogRum.setUser({
+              id: showData?.showName,
+              name: `${showData?.userProfile?.firstName} ${showData?.userProfile?.lastName}`,
+              email: showData?.email
+            });
+            Rox.setCustomStringProperty('showSubdomain', showData?.showSubdomain);
             dispatch(
               startLoginAction({
                 ...showData

@@ -1,11 +1,11 @@
-import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink, ApolloLink } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-import { MultiAPILink } from '@habx/apollo-multi-endpoint-link';
 import DataDog from 'react-datadog';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import '_mockApis';
+import Rox from 'rox-browser';
 
 import App from 'App';
 import { BASE_PATH } from 'config';
@@ -17,17 +17,17 @@ import { store } from 'store';
 import 'assets/scss/style.scss';
 import { Environments } from './utils/enum';
 
-const defaultOptions = {
-  watchQuery: {
-    fetchPolicy: 'network-only'
-  },
-  query: {
-    fetchPolicy: 'network-only'
-  },
-  mutate: {
-    fetchPolicy: 'network-only'
-  }
+export const flags = {
+  ShowMap: new Rox.Flag()
 };
+
+async function initRollout() {
+  const options = {};
+  Rox.register('', flags);
+  await Rox.setup(process?.env?.REACT_APP_ROLLOUT_KEY, options);
+}
+
+initRollout();
 
 const httpLink = createHttpLink({
   uri: `${window?.ENV?.REMOTE_FALCON_GATEWAY}/graphql`

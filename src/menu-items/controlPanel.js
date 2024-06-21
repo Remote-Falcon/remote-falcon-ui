@@ -1,4 +1,4 @@
-import { IconDashboard, IconAdjustmentsHorizontal, IconBlockquote, IconPlaylist, IconPalette, IconMan } from '@tabler/icons';
+import { IconDashboard, IconAdjustmentsHorizontal, IconBlockquote, IconPlaylist, IconPalette, IconMan, IconMap } from '@tabler/icons';
 import { FormattedMessage } from 'react-intl';
 
 const controlPanel = {
@@ -43,6 +43,14 @@ const controlPanel = {
       type: 'item',
       url: '/control-panel/viewer-page-templates',
       icon: IconPalette,
+      breadcrumbs: false
+    },
+    {
+      id: 'shows-map',
+      title: 'Remote Falcon Shows Map',
+      type: 'item',
+      url: '/control-panel/shows-map',
+      icon: IconMap,
       breadcrumbs: false
     },
     {

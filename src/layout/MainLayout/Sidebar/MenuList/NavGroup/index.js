@@ -2,6 +2,7 @@ import { Divider, List, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 
+import { flags } from '../../../../../index';
 import NavCollapse from '../NavCollapse';
 import NavItem from '../NavItem';
 
@@ -10,6 +11,11 @@ const NavGroup = ({ item }) => {
 
   // menu list collapse & items
   const items = item.children?.map((menu) => {
+    if (!flags.ShowMap.isEnabled()) {
+      if (menu.id === 'shows-map') {
+        return <></>;
+      }
+    }
     switch (menu.type) {
       case 'collapse':
         return <NavCollapse key={menu.id} menu={menu} level={1} />;

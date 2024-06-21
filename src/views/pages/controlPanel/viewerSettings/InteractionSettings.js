@@ -164,7 +164,7 @@ const InteractionSettings = ({ setShowLinearProgress }) => {
         setCurrentLongitude(position.coords.longitude.toFixed(5));
       });
     } else {
-      showAlert(dispatch, { alert: 'wanting', message: 'Location is not enabled' });
+      showAlert(dispatch, { alert: 'warning', message: 'Location is not enabled' });
     }
   }, [dispatch]);
 
