@@ -2,10 +2,10 @@ import { createContext, useEffect } from 'react';
 
 import { useLazyQuery, useMutation, useApolloClient } from '@apollo/client';
 import jwtDecode from 'jwt-decode';
+import { PostHogProvider } from 'posthog-js/react';
 import PropTypes from 'prop-types';
 import { useDatadogRum } from 'react-datadog';
 import { useNavigate } from 'react-router-dom';
-import Rox from 'rox-browser';
 
 import { setGraphqlHeaders } from 'index';
 import { useDispatch, useSelector } from 'store';
@@ -85,7 +85,7 @@ export const JWTProvider = ({ children }) => {
                 name: `${showData?.userProfile?.firstName} ${showData?.userProfile?.lastName}`,
                 email: showData?.email
               });
-              Rox.setCustomStringProperty('showSubdomain', showData?.showSubdomain);
+              PostHogProvider.distinctID = showData?.showSubdomain;
               dispatch(
                 startLoginAction({
                   ...showData
@@ -131,7 +131,7 @@ export const JWTProvider = ({ children }) => {
               name: `${showData?.userProfile?.firstName} ${showData?.userProfile?.lastName}`,
               email: showData?.email
             });
-            Rox.setCustomStringProperty('showSubdomain', showData?.showSubdomain);
+            PostHogProvider.distinctID = showData?.showSubdomain;
             dispatch(
               startLoginAction({
                 ...showData

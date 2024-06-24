@@ -3,29 +3,32 @@ import * as React from 'react';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { Box, Grid, Stack, Typography, Switch, CardActions } from '@mui/material';
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { APIProvider, Map } from '@vis.gl/react-google-maps';
 import _ from 'lodash';
+import { useFeatureFlagEnabled } from 'posthog-js/react';
 
 import { useDispatch, useSelector } from 'store';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 
-import { flags } from '../../../../index';
 import { savePreferencesService } from '../../../../services/controlPanel/mutations.service';
 import { setShow } from '../../../../store/slices/show';
 import { UPDATE_PREFERENCES } from '../../../../utils/graphql/controlPanel/mutations';
 import { SHOWS_ON_MAP } from '../../../../utils/graphql/controlPanel/queries';
 import { showAlert } from '../../globalPageHelpers';
-import TrackerRow from '../tracker/TrackerRow';
+import MarkerWithInfo from './MarkerWithInfo';
 
 const ShowsMap = () => {
   const dispatch = useDispatch();
   const { show } = useSelector((state) => state.show);
 
+  const [mapLoaded, setMapLoaded] = useState(false);
   const [showsOnMap, setShowsOnMap] = useState([]);
 
   const [updatePreferencesMutation] = useMutation(UPDATE_PREFERENCES);
   const [showsOnMapQuery] = useLazyQuery(SHOWS_ON_MAP);
+
+  const rfShowMapEnabled = useFeatureFlagEnabled('rf-show-map');
 
   const getShowsOnMap = useCallback(async () => {
     await showsOnMapQuery({
@@ -106,20 +109,10 @@ const ShowsMap = () => {
     }
   };
 
-  const containerStyle = {
-    width: '100%',
-    height: '100%'
-  };
-
   const center = {
     lat: 41.69194824042432,
     lng: -97.64580975379515
   };
-
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: process?.env?.REACT_APP_GOOGLE_MAPS_KEY
-  });
 
   useEffect(() => {
     getShowsOnMap();
@@ -127,7 +120,7 @@ const ShowsMap = () => {
 
   return (
     <Box sx={{ mt: 2 }}>
-      {flags.ShowMap.isEnabled() ? (
+      {rfShowMapEnabled ? (
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12}>
             <MainCard title="Remote Falcon Shows Map" content={false}>
@@ -151,20 +144,17 @@ const ShowsMap = () => {
                   </Grid>
                 </Grid>
               </CardActions>
-              {isLoaded ? (
-                <CardActions sx={{ height: '39em' }}>
-                  <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={3}>
-                    <>
+              <CardActions sx={{ height: '39em' }}>
+                <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_KEY} onLoad={() => setMapLoaded(true)}>
+                  {mapLoaded && (
+                    <Map mapId="972618e58193992a" defaultZoom={1} defaultCenter={center}>
                       {_.map(showsOnMap, (show) => (
-                        <Marker position={{ lat: show?.location?.lat, lng: show?.location?.lng }} title={show?.showName} />
+                        <MarkerWithInfo position={show?.location} showName={show?.showName} />
                       ))}
-                    </>
-                    <></>
-                  </GoogleMap>
-                </CardActions>
-              ) : (
-                <></>
-              )}
+                    </Map>
+                  )}
+                </APIProvider>
+              </CardActions>
             </MainCard>
           </Grid>
         </Grid>

@@ -1,11 +1,11 @@
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import { PostHogProvider } from 'posthog-js/react';
 import DataDog from 'react-datadog';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import '_mockApis';
-import Rox from 'rox-browser';
 
 import App from 'App';
 import { BASE_PATH } from 'config';
@@ -17,17 +17,9 @@ import { store } from 'store';
 import 'assets/scss/style.scss';
 import { Environments } from './utils/enum';
 
-export const flags = {
-  ShowMap: new Rox.Flag()
+const posthogOptions = {
+  api_host: 'https://us.i.posthog.com'
 };
-
-async function initRollout() {
-  const options = {};
-  Rox.register('', flags);
-  await Rox.setup(process?.env?.REACT_APP_ROLLOUT_KEY, options);
-}
-
-initRollout();
 
 const httpLink = createHttpLink({
   uri: `${window?.ENV?.REMOTE_FALCON_GATEWAY}/graphql`
@@ -60,7 +52,10 @@ export function setGraphqlHeaders(serviceToken) {
   client.setLink(authLink.concat(httpLink));
 }
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container);
+
+root.render(
   <DataDog
     applicationId="bd3037df-6473-4ced-ae36-e7ab72461eab"
     clientToken={window?.ENV?.DATADOG_CLIENT_TOKEN}
@@ -74,7 +69,9 @@ ReactDOM.render(
       <ConfigProvider>
         <BrowserRouter basename={BASE_PATH}>
           <ApolloProvider client={client}>
-            <App />
+            <PostHogProvider apiKey={process.env.REACT_APP_PUBLIC_POSTHOG_KEY} options={posthogOptions}>
+              <App />
+            </PostHogProvider>
           </ApolloProvider>
         </BrowserRouter>
       </ConfigProvider>

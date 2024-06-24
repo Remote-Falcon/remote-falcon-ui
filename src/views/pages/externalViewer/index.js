@@ -57,7 +57,7 @@ const ExternalViewerPage = () => {
       expiresIn: 86400,
       iss: 'remotefalcon'
     };
-    const viewerJwt = sign(viewerJwtData, process?.env?.REACT_APP_VIEWER_JWT_KEY);
+    const viewerJwt = sign(viewerJwtData, process.env.REACT_APP_VIEWER_JWT_KEY);
     setSession(viewerJwt);
   }, []);
 
