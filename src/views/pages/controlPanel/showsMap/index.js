@@ -13,6 +13,7 @@ import MainCard from 'ui-component/cards/MainCard';
 
 import { savePreferencesService } from '../../../../services/controlPanel/mutations.service';
 import { setShow } from '../../../../store/slices/show';
+import RFLoadingButton from '../../../../ui-component/RFLoadingButton';
 import { UPDATE_PREFERENCES } from '../../../../utils/graphql/controlPanel/mutations';
 import { SHOWS_ON_MAP } from '../../../../utils/graphql/controlPanel/queries';
 import { showAlert } from '../../globalPageHelpers';
@@ -24,11 +25,28 @@ const ShowsMap = () => {
 
   const [mapLoaded, setMapLoaded] = useState(false);
   const [showsOnMap, setShowsOnMap] = useState([]);
+  const [detectedLocation, setDetectedLocation] = useState({ lat: 0, long: 0 });
 
   const [updatePreferencesMutation] = useMutation(UPDATE_PREFERENCES);
   const [showsOnMapQuery] = useLazyQuery(SHOWS_ON_MAP);
 
   const rfShowMapEnabled = useFeatureFlagEnabled('rf-show-map');
+
+  const detectLocation = useCallback(async () => {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const showLatitude = parseFloat(position.coords.latitude.toFixed(5));
+        const showLongitude = parseFloat(position.coords.longitude.toFixed(5));
+        if (showLatitude === 0 || showLongitude === 0) {
+          showAlert(dispatch, { alert: 'warning', message: 'Location cannot be accurately detected' });
+          return;
+        }
+        setDetectedLocation({ lat: showLatitude, long: showLongitude });
+      });
+    } else {
+      showAlert(dispatch, { alert: 'warning', message: 'Location is not enabled' });
+    }
+  }, [dispatch]);
 
   const getShowsOnMap = useCallback(async () => {
     await showsOnMapQuery({
@@ -59,36 +77,30 @@ const ShowsMap = () => {
 
   const handleShowMyShowSwitch = (event, value) => {
     if (value) {
-      if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          let showLatitude = show?.preferences?.showLatitude;
-          let showLongitude = show?.preferences?.showLongitude;
-          if (showLatitude === null || showLongitude === null) {
-            showLatitude = parseFloat(position.coords.latitude.toFixed(5));
-            showLongitude = parseFloat(position.coords.longitude.toFixed(5));
-          }
-          const updatedPreferences = _.cloneDeep({
-            ...show?.preferences,
-            showOnMap: value,
-            showLatitude,
-            showLongitude
-          });
-          savePreferencesService(updatedPreferences, updatePreferencesMutation, (response) => {
-            dispatch(
-              setShow({
-                ...show,
-                preferences: {
-                  ...updatedPreferences
-                }
-              })
-            );
-            showAlert(dispatch, response?.toast);
-            getShowsOnMap();
-          });
-        });
-      } else {
-        showAlert(dispatch, { alert: 'warning', message: 'Location is not enabled' });
+      let showLatitude = show?.preferences?.showLatitude;
+      let showLongitude = show?.preferences?.showLongitude;
+      if (showLatitude === null || showLongitude === null) {
+        showLatitude = detectedLocation.lat;
+        showLongitude = detectedLocation.long;
       }
+      const updatedPreferences = _.cloneDeep({
+        ...show?.preferences,
+        showOnMap: value,
+        showLatitude,
+        showLongitude
+      });
+      savePreferencesService(updatedPreferences, updatePreferencesMutation, (response) => {
+        dispatch(
+          setShow({
+            ...show,
+            preferences: {
+              ...updatedPreferences
+            }
+          })
+        );
+        showAlert(dispatch, response?.toast);
+        getShowsOnMap();
+      });
     } else {
       const updatedPreferences = _.cloneDeep({
         ...show?.preferences,
@@ -109,14 +121,39 @@ const ShowsMap = () => {
     }
   };
 
+  const updateToDetectedLocation = () => {
+    if (detectedLocation.lat === 0 || detectedLocation.long === 0) {
+      showAlert(dispatch, { alert: 'warning', message: 'Location cannot be accurately detected' });
+      return;
+    }
+    const updatedPreferences = _.cloneDeep({
+      ...show?.preferences,
+      showLatitude: detectedLocation.lat,
+      showLongitude: detectedLocation.long
+    });
+    savePreferencesService(updatedPreferences, updatePreferencesMutation, (response) => {
+      dispatch(
+        setShow({
+          ...show,
+          preferences: {
+            ...updatedPreferences
+          }
+        })
+      );
+      showAlert(dispatch, response?.toast);
+      getShowsOnMap();
+    });
+  };
+
   const center = {
     lat: 41.69194824042432,
     lng: -97.64580975379515
   };
 
   useEffect(() => {
+    detectLocation();
     getShowsOnMap();
-  }, [getShowsOnMap]);
+  }, [detectLocation, getShowsOnMap]);
 
   return (
     <Box sx={{ mt: 2 }}>
@@ -144,6 +181,40 @@ const ShowsMap = () => {
                   </Grid>
                 </Grid>
               </CardActions>
+              {show?.preferences?.showOnMap && (
+                <CardActions>
+                  <Grid container alignItems="center" justifyContent="space-between" spacing={1}>
+                    <Grid item xs={12} md={6} lg={4}>
+                      <Typography variant="h4" display="inline">
+                        Current Show Location:
+                        <Typography variant="h4" display="inline" color="primary" ml={1}>
+                          {show?.preferences?.showLatitude}, {show?.preferences?.showLongitude}
+                        </Typography>
+                      </Typography>
+                      <Typography variant="h4">
+                        Detected Location:
+                        <Typography variant="h4" display="inline" color="primary" ml={5.2}>
+                          {detectedLocation.lat}, {detectedLocation.long}
+                        </Typography>
+                      </Typography>
+                      <Typography component="div" variant="caption">
+                        If your show location on the map is not accurate, click Update to Detected Location to set your shows location to
+                        the current detected location.
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={6} lg={4}>
+                      <RFLoadingButton onClick={updateToDetectedLocation} color="primary" disabled={!show?.preferences?.showOnMap}>
+                        Update to Detected Location
+                      </RFLoadingButton>
+                    </Grid>
+                  </Grid>
+                </CardActions>
+              )}
+              <Box sx={{ mt: 4 }}>
+                <Typography variant="h3" align="center" color="secondary">
+                  Total Shows on Map: {showsOnMap?.length}
+                </Typography>
+              </Box>
               <CardActions sx={{ height: '39em' }}>
                 <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_KEY} onLoad={() => setMapLoaded(true)}>
                   {mapLoaded && (
