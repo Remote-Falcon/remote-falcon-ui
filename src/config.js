@@ -7,7 +7,7 @@ export const BASE_PATH = '';
 
 export const CONTROL_PANEL_PATH = '/control-panel';
 
-export const VERSION = window?.ENV?.VERSION;
+export const VERSION = process.env.REACT_APP_VERSION;
 
 const config = {
   fontFamily: `'Roboto', sans-serif`,

@@ -22,7 +22,7 @@ const posthogOptions = {
 };
 
 const httpLink = createHttpLink({
-  uri: `${window?.ENV?.REMOTE_FALCON_GATEWAY}/graphql`
+  uri: `${process.env.REACT_APP_REMOTE_FALCON_GATEWAY}/graphql`
 });
 
 const client = new ApolloClient({
@@ -31,7 +31,7 @@ const client = new ApolloClient({
   }),
   // defaultOptions,
   link: httpLink,
-  connectToDevTools: window?.ENV?.HOST_ENV === Environments.LOCAL
+  connectToDevTools: process.env.REACT_APP_HOST_ENV === Environments.LOCAL
 });
 
 // eslint-disable-next-line import/prefer-default-export
@@ -58,9 +58,9 @@ const root = createRoot(container);
 root.render(
   <DataDog
     applicationId="bd3037df-6473-4ced-ae36-e7ab72461eab"
-    clientToken={window?.ENV?.DATADOG_CLIENT_TOKEN}
+    clientToken={process.env.REACT_APP_DATADOG_CLIENT_TOKEN}
     service="remote-falcon-ui"
-    env={window?.ENV?.HOST_ENV}
+    env={process.env.REACT_APP_HOST_ENV}
     sessionReplayRecording
     trackUserInteractions
     enableExperimentalFeatures={['clickmap']}

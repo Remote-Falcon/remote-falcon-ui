@@ -205,7 +205,7 @@ const AuthRegister = () => {
                   <Button
                     id="signup-submit"
                     disableElevation
-                    disabled={isSubmitting || window?.ENV?.HOST_ENV === Environments.TEST}
+                    disabled={isSubmitting || process.env.REACT_APP_HOST_ENV === Environments.TEST}
                     fullWidth
                     size="large"
                     type="submit"

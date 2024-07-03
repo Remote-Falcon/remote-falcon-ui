@@ -10,14 +10,14 @@ import rootReducer from './reducer';
 const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false, immutableCheck: false }),
-  enhancers: window?.ENV?.HOST_ENV === Environments.LOCAL ? Reactotron.createEnhancer() : null
+  enhancers: process.env.REACT_APP_HOST_ENV === Environments.LOCAL ? Reactotron.createEnhancer() : null
 });
 
 const persister = persistStore(store);
 
 const { dispatch } = store;
 
-if (window?.ENV?.HOST_ENV === Environments.LOCAL) {
+if (process.env.REACT_APP_HOST_ENV === Environments.LOCAL) {
   Reactotron.setReduxStore(store);
 }
 

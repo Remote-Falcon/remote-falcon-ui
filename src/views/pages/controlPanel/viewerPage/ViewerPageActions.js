@@ -79,7 +79,7 @@ const ViewerPageActions = ({
       icon: <AddTwoToneIcon sx={{ color: theme.palette.grey[700] }} fontSize="medium" />,
       name: 'New Viewer Page',
       action: () => setCreateViewerPageOpen(true),
-      enabled: show?.pages?.length < 5 || window?.ENV?.HOST_ENV === Environments.LOCAL
+      enabled: show?.pages?.length < 5 || process.env.REACT_APP_HOST_ENV === Environments.LOCAL
     },
     {
       icon: <SaveTwoToneIcon sx={{ color: theme.palette.grey[700] }} fontSize="medium" />,

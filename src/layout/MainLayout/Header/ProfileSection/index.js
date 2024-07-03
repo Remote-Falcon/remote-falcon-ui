@@ -70,9 +70,9 @@ const ProfileSection = () => {
   const prevOpen = useRef(open);
   useEffect(() => {
     let showUrl = `https://${show?.showSubdomain}.remotefalcon.com`;
-    if (window?.ENV?.HOST_ENV === Environments.LOCAL) {
+    if (process.env.REACT_APP_HOST_ENV === Environments.LOCAL) {
       showUrl = `http://${show?.showSubdomain}.localhost:3000`;
-    } else if (window?.ENV?.HOST_ENV === Environments.TEST) {
+    } else if (process.env.REACT_APP_HOST_ENV === Environments.TEST) {
       showUrl = `https://${show?.showSubdomain}.remotefalcon.dev`;
     }
     setShowNameUrl(showUrl);
