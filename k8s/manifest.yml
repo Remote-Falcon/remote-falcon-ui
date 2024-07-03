@@ -25,9 +25,6 @@ spec:
         - name: apmsocketpath
           hostPath:
             path: /var/run/datadog/
-        - name: #{Application}#-config-volume
-          configMap:
-            name: #{Application}#-config
       containers:
       - name: #{Application}#
         image: #{Image}#
@@ -41,10 +38,6 @@ spec:
         volumeMounts:
           - name: apmsocketpath
             mountPath: /var/run/datadog
-          - name: #{Application}#-config-volume
-            mountPath: /app/build/config.js
-            subPath: config.js
-            readOnly: true
         ports:
         - containerPort: 3000
         env:
@@ -76,22 +69,6 @@ spec:
           initialDelaySeconds: 0
       imagePullSecrets:
         - name: remote-falcon-ghcr
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: #{Application}#-config
-  namespace: #{Namespace}#
-data:
-  config.js: |
-    window.ENV = {
-      HOST_ENV: '#{HOST_ENV}#',
-      VERSION: '#{VERSION}#',
-      CONTROL_PANEL_API: '#{CONTROL_PANEL_API}#',
-      VIEWER_API: '#{VIEWER_API}#',
-      REMOTE_FALCON_GATEWAY: '#{REMOTE_FALCON_GATEWAY}#',
-      DATADOG_CLIENT_TOKEN: '#{DATADOG_CLIENT_TOKEN}#'
-    };
 ---
 apiVersion: v1
 kind: Service
