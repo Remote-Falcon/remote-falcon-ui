@@ -11,7 +11,7 @@ import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 
 import { ADMIN_UPDATE_SHOW } from '../../../../utils/graphql/controlPanel/mutations';
-import { GET_SHOW_BY_SHOW_NAME, SHOWS_AUTO_SUGGEST } from '../../../../utils/graphql/controlPanel/queries';
+import { GET_SHOW_BY_SHOW_SUBDOMAIN } from '../../../../utils/graphql/controlPanel/queries';
 import { showAlert } from '../../globalPageHelpers';
 
 const Admin = () => {
@@ -21,23 +21,24 @@ const Admin = () => {
   const [showSearchValue, setShowSearchValue] = useState();
   const [selectedShow, setSelectedShow] = useState({});
 
-  const [showByShowNameQuery] = useLazyQuery(GET_SHOW_BY_SHOW_NAME);
+  const [showByShowSubdomainQuery] = useLazyQuery(GET_SHOW_BY_SHOW_SUBDOMAIN);
   const [adminUpdateShowMutation] = useMutation(ADMIN_UPDATE_SHOW);
 
   const selectAShow = async () => {
-    await showByShowNameQuery({
+    setSelectedShow({});
+    await showByShowSubdomainQuery({
       context: {
         headers: {
           Route: 'Control-Panel'
         }
       },
       variables: {
-        showName: showSearchValue
+        showSubdomain: showSearchValue
       },
       fetchPolicy: 'network-only',
       onCompleted: (data) => {
-        if (data?.getShowByShowName != null) {
-          setSelectedShow(data?.getShowByShowName);
+        if (data?.getShowByShowSubdomain != null) {
+          setSelectedShow(data?.getShowByShowSubdomain);
         }
       },
       onError: () => {
@@ -75,17 +76,17 @@ const Admin = () => {
               <Grid container alignItems="center" justifyContent="space-between" spacing={2}>
                 <Grid item xs={12} md={6} lg={4}>
                   <Stack direction="row" spacing={2} pb={1}>
-                    <Typography variant="h4">Show Name</Typography>
+                    <Typography variant="h4">Show Subdomain</Typography>
                   </Stack>
                   <Typography component="div" variant="caption">
-                    Enter the Show Name you want to view (shows will filter as you type).
+                    Enter the Show Subdomain you want to view.
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6} lg={4}>
                   <TextField
                     type="text"
                     fullWidth
-                    label="Show Name"
+                    label="Show Subdomain"
                     value={showSearchValue}
                     onChange={(e) => setShowSearchValue(e?.target?.value)}
                     onBlur={selectAShow}

@@ -194,17 +194,9 @@ export const SHOWS_ON_MAP = gql`
   }
 `;
 
-export const SHOWS_AUTO_SUGGEST = gql`
-  query ($showName: String!) {
-    getShowsAutoSuggest(showName: $showName) {
-      showName
-    }
-  }
-`;
-
-export const GET_SHOW_BY_SHOW_NAME = gql`
-  query ($showName: String!) {
-    getShowByShowName(showName: $showName) {
+export const GET_SHOW_BY_SHOW_SUBDOMAIN = gql`
+  query ($showSubdomain: String!) {
+    getShowByShowSubdomain(showSubdomain: $showSubdomain) {
       showToken
       email
       showName
