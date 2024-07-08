@@ -18,43 +18,13 @@ const Admin = () => {
   const dispatch = useDispatch();
   const { show } = useSelector((state) => state.show);
 
-  const [showsAutoSuggest, setShowsAutoSuggest] = useState([]);
+  const [showSearchValue, setShowSearchValue] = useState();
   const [selectedShow, setSelectedShow] = useState({});
 
-  const [showsAutoSuggestQuery] = useLazyQuery(SHOWS_AUTO_SUGGEST);
   const [showByShowNameQuery] = useLazyQuery(GET_SHOW_BY_SHOW_NAME);
   const [adminUpdateShowMutation] = useMutation(ADMIN_UPDATE_SHOW);
 
-  const getShowsAutoSuggest = async (event, value) => {
-    if (value.length > 2) {
-      await showsAutoSuggestQuery({
-        context: {
-          headers: {
-            Route: 'Control-Panel'
-          }
-        },
-        variables: {
-          showName: value
-        },
-        fetchPolicy: 'network-only',
-        onCompleted: (data) => {
-          const shows = [];
-          _.forEach(data?.getShowsAutoSuggest, (show) => {
-            shows.push({
-              label: show?.showName,
-              id: show?.showName
-            });
-          });
-          setShowsAutoSuggest(shows);
-        },
-        onError: () => {
-          showAlert(dispatch, { alert: 'error' });
-        }
-      });
-    }
-  };
-
-  const selectAShow = async (event, value) => {
+  const selectAShow = async () => {
     await showByShowNameQuery({
       context: {
         headers: {
@@ -62,11 +32,13 @@ const Admin = () => {
         }
       },
       variables: {
-        showName: value.id
+        showName: showSearchValue
       },
       fetchPolicy: 'network-only',
       onCompleted: (data) => {
-        setSelectedShow(data?.getShowByShowName);
+        if (data?.getShowByShowName != null) {
+          setSelectedShow(data?.getShowByShowName);
+        }
       },
       onError: () => {
         showAlert(dispatch, { alert: 'error' });
@@ -110,12 +82,13 @@ const Admin = () => {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6} lg={4}>
-                  <Autocomplete
-                    disableClearable
-                    options={showsAutoSuggest}
-                    renderInput={(params) => <TextField {...params} label="" />}
-                    onInputChange={getShowsAutoSuggest}
-                    onChange={selectAShow}
+                  <TextField
+                    type="text"
+                    fullWidth
+                    label="Show Name"
+                    value={showSearchValue}
+                    onChange={(e) => setShowSearchValue(e?.target?.value)}
+                    onBlur={selectAShow}
                   />
                 </Grid>
               </Grid>
