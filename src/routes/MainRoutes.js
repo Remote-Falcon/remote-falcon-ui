@@ -15,6 +15,7 @@ const AccountSettings = Loadable(lazy(() => import('views/pages/controlPanel/acc
 const ViewerPageTemplates = Loadable(lazy(() => import('views/pages/controlPanel/viewerPageTemplates')));
 const Tracker = Loadable(lazy(() => import('views/pages/controlPanel/tracker')));
 const ShowsMap = Loadable(lazy(() => import('views/pages/controlPanel/showsMap')));
+const Admin = Loadable(lazy(() => import('views/pages/controlPanel/admin')));
 
 const MainRoutes = {
   path: '/',
@@ -63,6 +64,10 @@ const MainRoutes = {
     {
       path: '/control-panel/shows-map',
       element: <ShowsMap />
+    },
+    {
+      path: '/control-panel/admin',
+      element: <Admin />
     }
   ]
 };

@@ -1,4 +1,12 @@
-import { IconDashboard, IconAdjustmentsHorizontal, IconBlockquote, IconPlaylist, IconPalette, IconMan, IconMap } from '@tabler/icons';
+import {
+  IconDashboard,
+  IconAdjustmentsHorizontal,
+  IconBlockquote,
+  IconPlaylist,
+  IconPalette,
+  IconManualGearbox,
+  IconMap
+} from '@tabler/icons';
 import { FormattedMessage } from 'react-intl';
 
 const controlPanel = {
@@ -51,6 +59,14 @@ const controlPanel = {
       type: 'item',
       url: '/control-panel/shows-map',
       icon: IconMap,
+      breadcrumbs: false
+    },
+    {
+      id: 'admin',
+      title: 'Admin',
+      type: 'item',
+      url: '/control-panel/admin',
+      icon: IconManualGearbox,
       breadcrumbs: false
     }
   ]

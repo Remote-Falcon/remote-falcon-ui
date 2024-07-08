@@ -193,3 +193,112 @@ export const SHOWS_ON_MAP = gql`
     }
   }
 `;
+
+export const SHOWS_AUTO_SUGGEST = gql`
+  query ($showName: String!) {
+    getShowsAutoSuggest(showName: $showName) {
+      showName
+    }
+  }
+`;
+
+export const GET_SHOW_BY_SHOW_NAME = gql`
+  query ($showName: String!) {
+    getShowByShowName(showName: $showName) {
+      showToken
+      email
+      showName
+      showSubdomain
+      emailVerified
+      createdDate
+      lastLoginDate
+      expireDate
+      pluginVersion
+      fppVersion
+      lastLoginIp
+      showRole
+      playingNow
+      playingNext
+      apiAccess {
+        apiAccessActive
+      }
+      userProfile {
+        firstName
+        lastName
+        facebookUrl
+        youtubeUrl
+      }
+      preferences {
+        viewerControlEnabled
+        viewerControlMode
+        resetVotes
+        jukeboxDepth
+        locationCheckMethod
+        showLatitude
+        showLongitude
+        allowedRadius
+        checkIfVoted
+        psaEnabled
+        psaFrequency
+        jukeboxRequestLimit
+        locationCode
+        hideSequenceCount
+        makeItSnow
+        managePsa
+        sequencesPlayed
+        pageTitle
+        pageIconUrl
+        showOnMap
+      }
+      sequences {
+        name
+        key
+        displayName
+        duration
+        visible
+        index
+        order
+        imageUrl
+        active
+        visibilityCount
+        type
+        group
+        category
+        artist
+      }
+      sequenceGroups {
+        name
+        visibilityCount
+      }
+      psaSequences {
+        name
+        order
+        lastPlayed
+      }
+      pages {
+        name
+        active
+        html
+      }
+      requests {
+        sequence {
+          name
+        }
+        position
+        ownerRequested
+      }
+      votes {
+        sequence {
+          name
+        }
+        votes
+        lastVoteTime
+        ownerVoted
+      }
+      activeViewers {
+        ipAddress
+        visitDateTime
+      }
+    }
+  }
+`;

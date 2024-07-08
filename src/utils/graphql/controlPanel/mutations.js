@@ -107,3 +107,9 @@ export const RESET_ALL_VOTES = gql`
     resetAllVotes
   }
 `;
+
+export const ADMIN_UPDATE_SHOW = gql`
+  mutation ($show: ShowInput!) {
+    adminUpdateShow(show: $show)
+  }
+`;
