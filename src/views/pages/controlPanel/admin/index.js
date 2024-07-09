@@ -97,7 +97,13 @@ const Admin = () => {
             <CardActions>
               <Grid container alignItems="center" justifyContent="space-between">
                 <Grid item xs={12} md={12} lg={12}>
-                  <JsonEditor data={_.cloneDeep(selectedShow)} onUpdate={editStuff} enableClipboard={false} minWidth="100%" />
+                  <JsonEditor
+                    data={_.cloneDeep(selectedShow)}
+                    onUpdate={editStuff}
+                    enableClipboard={false}
+                    restrictDelete
+                    minWidth="100%"
+                  />
                 </Grid>
               </Grid>
             </CardActions>
