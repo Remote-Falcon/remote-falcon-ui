@@ -32,7 +32,7 @@ const WhatsNew = ({ handleClose }) => (
           <li style={{ paddingBottom: '1em' }}>
             Added an option to the Sequences page to Delete Inactive or Delete All Sequences. Fair warning, if you choose to delete
             sequences, it will remove any customizations (display name, artist, etc.).{' '}
-            <a href="https://docs.remotefalcon.com/docs/control-panel/sequences#delete-sequences" target="_blank" rel="noreferrer">
+            <a href="https://docs.remotefalcon.com/docs/docs/control-panel/sequences#delete-sequences" target="_blank" rel="noreferrer">
               Docs link
             </a>
           </li>

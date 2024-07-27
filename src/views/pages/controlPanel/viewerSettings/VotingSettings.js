@@ -69,7 +69,7 @@ const VotingSettings = ({ setShowLinearProgress }) => {
                 <InfoTwoToneIcon
                   onClick={() =>
                     window.open(
-                      'https://docs.remotefalcon.com/docs/control-panel/remote-falcon-settings#prevent-multiple-votes',
+                      'https://docs.remotefalcon.com/docs/docs/control-panel/remote-falcon-settings#prevent-multiple-votes',
                       '_blank',
                       'noreferrer'
                     )
@@ -95,7 +95,7 @@ const VotingSettings = ({ setShowLinearProgress }) => {
                 <InfoTwoToneIcon
                   onClick={() =>
                     window.open(
-                      'https://docs.remotefalcon.com/docs/control-panel/remote-falcon-settings#reset-votes-after-round',
+                      'https://docs.remotefalcon.com/docs/docs/control-panel/remote-falcon-settings#reset-votes-after-round',
                       '_blank',
                       'noreferrer'
                     )

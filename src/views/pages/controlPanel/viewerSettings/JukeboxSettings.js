@@ -58,7 +58,7 @@ const JukeboxSettings = ({ setShowLinearProgress }) => {
                 <InfoTwoToneIcon
                   onClick={() =>
                     window.open(
-                      'https://docs.remotefalcon.com/docs/control-panel/remote-falcon-settings#jukebox-queue-depth',
+                      'https://docs.remotefalcon.com/docs/docs/control-panel/remote-falcon-settings#jukebox-queue-depth',
                       '_blank',
                       'noreferrer'
                     )
@@ -91,7 +91,7 @@ const JukeboxSettings = ({ setShowLinearProgress }) => {
                 <InfoTwoToneIcon
                   onClick={() =>
                     window.open(
-                      'https://docs.remotefalcon.com/docs/control-panel/remote-falcon-settings#jukebox-sequence-request-limit',
+                      'https://docs.remotefalcon.com/docs/docs/control-panel/remote-falcon-settings#jukebox-sequence-request-limit',
                       '_blank',
                       'noreferrer'
                     )

@@ -473,6 +473,10 @@ const ExternalViewerPage = () => {
       },
       onCompleted: (data) => {
         const showData = { ...data?.getShow };
+        if (showData?.preferences?.selfHostedRedirectUrl) {
+          window.location.href = showData?.preferences?.selfHostedRedirectUrl;
+          return;
+        }
         if (showData?.playingNext === '') {
           showData.playingNext = showData?.playingNextFromSchedule;
         }

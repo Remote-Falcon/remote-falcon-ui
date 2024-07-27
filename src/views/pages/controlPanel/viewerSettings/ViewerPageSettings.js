@@ -21,6 +21,7 @@ const ViewerPageSettings = ({ setShowLinearProgress }) => {
   const [viewerPageOptions, setViewerPageOptions] = useState([]);
   const [pageTitle, setPageTitle] = useState(show?.preferences?.pageTitle);
   const [pageIconUrl, setPageIconUrl] = useState(show?.preferences?.pageIconUrl);
+  const [selfHostedRedirectUrl, setSelfHostedRedirectUrl] = useState(show?.preferences?.selfHostedRedirectUrl);
 
   const [updatePagesMutation] = useMutation(UPDATE_PAGES);
   const [updatePreferencesMutation] = useMutation(UPDATE_PREFERENCES);
@@ -71,7 +72,8 @@ const ViewerPageSettings = ({ setShowLinearProgress }) => {
     const updatedPreferences = _.cloneDeep({
       ...show?.preferences,
       pageTitle,
-      pageIconUrl
+      pageIconUrl,
+      selfHostedRedirectUrl
     });
     savePreferencesService(updatedPreferences, updatePreferencesMutation, (response) => {
       if (response?.success) {
@@ -127,7 +129,7 @@ const ViewerPageSettings = ({ setShowLinearProgress }) => {
                 <InfoTwoToneIcon
                   onClick={() =>
                     window.open(
-                      'https://docs.remotefalcon.com/docs/control-panel/remote-falcon-settings#active-viewer-page',
+                      'https://docs.remotefalcon.com/docs/docs/control-panel/remote-falcon-settings#active-viewer-page',
                       '_blank',
                       'noreferrer'
                     )
@@ -155,11 +157,44 @@ const ViewerPageSettings = ({ setShowLinearProgress }) => {
           <Grid container alignItems="center" justifyContent="space-between" spacing={2}>
             <Grid item xs={12} md={6} lg={4}>
               <Stack direction="row" spacing={2} pb={1}>
+                <Typography variant="h4">Self Hosted Redirect URL</Typography>
+                <InfoTwoToneIcon
+                  onClick={() =>
+                    window.open(
+                      'https://docs.remotefalcon.com/docs/docs/control-panel/remote-falcon-settings#self-hosted-redirect-url',
+                      '_blank',
+                      'noreferrer'
+                    )
+                  }
+                  fontSize="small"
+                />
+              </Stack>
+              <Typography component="div" variant="caption">
+                If you are self-hosting Remote Falcon, this would be the URL of the viewer page you want to redirect to when a viewer visits
+                your show page on the main Remote Falcon site.
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={6} lg={4}>
+              <TextField
+                fullWidth
+                label="Self Hosted Redirect URL"
+                value={selfHostedRedirectUrl}
+                onChange={(e) => setSelfHostedRedirectUrl(e?.target?.value)}
+                onBlur={savePreferences}
+              />
+            </Grid>
+          </Grid>
+        </CardActions>
+        <Divider />
+        <CardActions>
+          <Grid container alignItems="center" justifyContent="space-between" spacing={2}>
+            <Grid item xs={12} md={6} lg={4}>
+              <Stack direction="row" spacing={2} pb={1}>
                 <Typography variant="h4">Viewer Page Title</Typography>
                 <InfoTwoToneIcon
                   onClick={() =>
                     window.open(
-                      'https://docs.remotefalcon.com/docs/control-panel/remote-falcon-settings#viewer-page-title',
+                      'https://docs.remotefalcon.com/docs/docs/control-panel/remote-falcon-settings#viewer-page-title',
                       '_blank',
                       'noreferrer'
                     )
@@ -191,7 +226,7 @@ const ViewerPageSettings = ({ setShowLinearProgress }) => {
                 <InfoTwoToneIcon
                   onClick={() =>
                     window.open(
-                      'https://docs.remotefalcon.com/docs/control-panel/remote-falcon-settings#viewer-page-icon-url',
+                      'https://docs.remotefalcon.com/docs/docs/control-panel/remote-falcon-settings#viewer-page-icon-url',
                       '_blank',
                       'noreferrer'
                     )
@@ -223,7 +258,7 @@ const ViewerPageSettings = ({ setShowLinearProgress }) => {
                 <InfoTwoToneIcon
                   onClick={() =>
                     window.open(
-                      'https://docs.remotefalcon.com/docs/control-panel/remote-falcon-settings#make-it-snow',
+                      'https://docs.remotefalcon.com/docs/docs/control-panel/remote-falcon-settings#make-it-snow',
                       '_blank',
                       'noreferrer'
                     )

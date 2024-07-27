@@ -64,6 +64,7 @@ export const GET_SHOW = gql`
         pageTitle
         pageIconUrl
         showOnMap
+        selfHostedRedirectUrl
       }
       sequences {
         name
@@ -241,6 +242,7 @@ export const GET_SHOW_BY_SHOW_SUBDOMAIN = gql`
         pageTitle
         pageIconUrl
         showOnMap
+        selfHostedRedirectUrl
       }
       sequences {
         name

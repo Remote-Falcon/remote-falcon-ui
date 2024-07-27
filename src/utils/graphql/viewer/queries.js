@@ -28,6 +28,7 @@ export const GET_SHOW = gql`
         sequencesPlayed
         pageTitle
         pageIconUrl
+        selfHostedRedirectUrl
       }
       sequences {
         name
