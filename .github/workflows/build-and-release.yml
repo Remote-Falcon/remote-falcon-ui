@@ -55,12 +55,12 @@ jobs:
             PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }}
             GA_TRACKING_ID=${{ secrets.GA_TRACKING_ID }}
             HOSTNAME_PARTS=2
-            BROWSER_TITLE="Remote Falcon"
-            BROWSER_ICON="rf-icon.png"
-            META_TITLE="Remote Falcon - Let viewers take control of your light show"
-            META_DESCRIPTION="Create a custom website where viewers can see and request sequences for your light show."
-            META_KEYWORDS="FPP, FalconPlayer, Falcon, Lights, Light Shows, Light Show, Holiday, Holiday Lighting, LED, Pixels, Remote Falcon, remotefalcon, xLights, xSchedule, Falcon Player"
-            SOCIAL_META="<meta property='og:locale' content='en_US'/><meta property='og:type' content='website'/><meta property='og:url' content='https://remotefalcon.com/'/><meta property='og:site_name' content='remotefalcon.com'/><meta property='article:publisher' content='https://www.facebook.com/groups/remotefalcon'/><meta property='og:title' content='Remote Falcon - Let viewers take control of your light show'/><meta property='og:description' content='Create a custom website where viewers can see and request sequences for your light show.'/><meta property='og:image' content='https://remotefalcon.com/jukebox.png'/>"
+            BROWSER_TITLE=Remote Falcon
+            BROWSER_ICON=rf-icon.png
+            META_TITLE=Remote Falcon - Let viewers take control of your light show
+            META_DESCRIPTION=Create a custom website where viewers can see and request sequences for your light show.
+            META_KEYWORDS=FPP, FalconPlayer, Falcon, Lights, Light Shows, Light Show, Holiday, Holiday Lighting, LED, Pixels, Remote Falcon, remotefalcon, xLights, xSchedule, Falcon Player
+            SOCIAL_META=<meta property='og:locale' content='en_US'/><meta property='og:type' content='website'/><meta property='og:url' content='https://remotefalcon.com/'/><meta property='og:site_name' content='remotefalcon.com'/><meta property='article:publisher' content='https://www.facebook.com/groups/remotefalcon'/><meta property='og:title' content='Remote Falcon - Let viewers take control of your light show'/><meta property='og:description' content='Create a custom website where viewers can see and request sequences for your light show.'/><meta property='og:image' content='https://remotefalcon.com/jukebox.png'/>
   release-production:
     name: Release Production
     environment: prod
