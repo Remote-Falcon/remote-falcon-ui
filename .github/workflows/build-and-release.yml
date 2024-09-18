@@ -55,7 +55,7 @@ jobs:
             PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }}
             GA_TRACKING_ID=${{ secrets.GA_TRACKING_ID }}
             HOSTNAME_PARTS=2
-            BROWSER_TITLE="Remote Falcon Dynamic"
+            BROWSER_TITLE="Remote Falcon"
             BROWSER_ICON="rf-icon.png"
             META_TITLE="Remote Falcon - Let viewers take control of your light show"
             META_DESCRIPTION="Create a custom website where viewers can see and request sequences for your light show."
