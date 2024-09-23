@@ -257,6 +257,12 @@ export const viewerPageMessageElements = {
     block: 'id="alreadyVoted" style="display: block"',
     none: 'id="alreadyVoted" style="display: none"'
   },
+  alreadyRequested: {
+    element: /id="alreadyRequested"/g,
+    current: 'id="alreadyRequested" style="display: none"',
+    block: 'id="alreadyRequested" style="display: block"',
+    none: 'id="alreadyRequested" style="display: none"'
+  },
   requestFailed: {
     element: /id="requestFailed"/g,
     current: 'id="requestFailed" style="display: none"',

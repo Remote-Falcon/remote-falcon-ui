@@ -113,3 +113,9 @@ export const ADMIN_UPDATE_SHOW = gql`
     adminUpdateShow(show: $show)
   }
 `;
+
+export const DELETE_NOW_PLAYING = gql`
+  mutation @api(name: controlPanel) {
+    deleteNowPlaying
+  }
+`;

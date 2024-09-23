@@ -1,17 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import * as React from 'react';
 
 import { useMutation } from '@apollo/client';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Avatar, Box, Modal, CircularProgress, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { IconMenu2 } from '@tabler/icons';
+import _ from 'lodash';
 
 import Customization from 'layout/Customization';
 import { useDispatch, useSelector } from 'store';
 import { openDrawer } from 'store/slices/menu';
 
+import RFSplitButton from '../../../ui-component/RFSplitButton';
 import { ViewerControlMode } from '../../../utils/enum';
-import { RESET_ALL_VOTES } from '../../../utils/graphql/controlPanel/mutations';
+import { DELETE_NOW_PLAYING, RESET_ALL_VOTES } from '../../../utils/graphql/controlPanel/mutations';
 import { showAlert } from '../../../views/pages/globalPageHelpers';
 import LogoSection from '../LogoSection';
 import LocalizationSection from './LocalizationSection';
@@ -23,15 +26,14 @@ const Header = () => {
   const dispatch = useDispatch();
   const { drawerOpen } = useSelector((state) => state.menu);
   const { show } = useSelector((state) => state.show);
-  const matchMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const [viewJukeboxRequestsOpen, setViewJukeboxRequestsOpen] = useState(false);
-  const [isResettingVotes, setIsResettingVotes] = useState(false);
+  const [actionOptions, setActionOptions] = useState([]);
 
   const [resetAllVotesMutation] = useMutation(RESET_ALL_VOTES);
+  const [deleteNowPlayingMutation] = useMutation(DELETE_NOW_PLAYING);
 
   const resetAllVotes = () => {
-    setIsResettingVotes(true);
     resetAllVotesMutation({
       context: {
         headers: {
@@ -39,15 +41,48 @@ const Header = () => {
         }
       },
       onCompleted: () => {
-        setIsResettingVotes(false);
         showAlert(dispatch, { message: 'All Votes Reset' });
       },
       onError: () => {
-        setIsResettingVotes(false);
         showAlert(dispatch, { alert: 'error' });
       }
     }).then();
   };
+
+  const deleteNowPlaying = () => {
+    deleteNowPlayingMutation({
+      context: {
+        headers: {
+          Route: 'Control-Panel'
+        }
+      },
+      onCompleted: () => {
+        showAlert(dispatch, { message: 'Now Playing/Up next Cleared' });
+      },
+      onError: () => {
+        showAlert(dispatch, { alert: 'error' });
+      }
+    }).then();
+  };
+
+  const takeAction = async (options, selectedIndex) => {
+    if (selectedIndex === 0) {
+      if (show?.preferences?.viewerControlMode === ViewerControlMode.JUKEBOX) {
+        setViewJukeboxRequestsOpen(true);
+      } else {
+        resetAllVotes();
+      }
+    } else if (selectedIndex === 1) {
+      deleteNowPlaying();
+    }
+  };
+
+  useEffect(() => {
+    const options = [];
+    options[0] = show?.preferences?.viewerControlMode === ViewerControlMode.JUKEBOX ? 'View Queue' : 'Reset Votes';
+    options[1] = 'Clear Now Playing/Up Next';
+    setActionOptions(options);
+  }, [show?.preferences?.viewerControlMode]);
 
   return (
     <>
@@ -93,22 +128,7 @@ const Header = () => {
       <Box sx={{ flexGrow: 1 }} />
       <Box sx={{ flexGrow: 1 }} />
 
-      <Box>
-        <LoadingButton
-          loading={isResettingVotes}
-          loadingIndicator={<CircularProgress color="error" size={25} />}
-          variant="contained"
-          size={matchMobile ? 'small' : 'large'}
-          sx={{ ml: 1, background: theme.palette.error.main, '&:hover': { background: theme.palette.error.dark } }}
-          onClick={
-            show?.preferences?.viewerControlMode === ViewerControlMode.JUKEBOX
-              ? () => setViewJukeboxRequestsOpen(true)
-              : () => resetAllVotes()
-          }
-        >
-          {show?.preferences?.viewerControlMode === ViewerControlMode.JUKEBOX ? <>View Queue</> : <>Reset Votes</>}
-        </LoadingButton>
-      </Box>
+      <RFSplitButton options={actionOptions} color="error" onClick={(options, selectedIndex) => takeAction(options, selectedIndex)} />
 
       {/* <Box sx={{ mr: -3 }}> */}
       {/*  <NotificationSection /> */}

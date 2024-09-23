@@ -18,6 +18,7 @@ export const GET_SHOW = gql`
         showLongitude
         allowedRadius
         checkIfVoted
+        checkIfRequested
         psaEnabled
         psaFrequency
         jukeboxRequestLimit

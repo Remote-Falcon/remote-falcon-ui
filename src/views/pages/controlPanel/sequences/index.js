@@ -26,6 +26,8 @@ const Sequences = () => {
 
   const [updateSequencesMutation] = useMutation(UPDATE_SEQUENCES);
 
+  const deleteSequencesOptions = ['Delete Inactive Sequences', 'Delete All Sequences'];
+
   const sortSequencesAlphabetically = () => {
     setShowLinearProgress(true);
     let updatedSequences = _.cloneDeep(show?.sequences);
@@ -126,7 +128,11 @@ const Sequences = () => {
                 <RFLoadingButton loading={showLinearProgress} onClick={sortSequencesAlphabetically} color="primary">
                   Sort Alphabetically
                 </RFLoadingButton>
-                <RFSplitButton color="error" onClick={(options, selectedIndex) => deleteSequences(options, selectedIndex)} />
+                <RFSplitButton
+                  options={deleteSequencesOptions}
+                  color="error"
+                  onClick={(options, selectedIndex) => deleteSequences(options, selectedIndex)}
+                />
               </Stack>
               <TableContainer>
                 <Table size="small" aria-label="collapsible table">

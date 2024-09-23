@@ -84,6 +84,8 @@ const ExternalViewerPage = () => {
         viewerPageMessageElements.invalidLocationCode.current = viewerPageMessageElements?.invalidLocationCode?.block;
       } else if (response?.error?.message === 'ALREADY_VOTED') {
         viewerPageMessageElements.alreadyVoted.current = viewerPageMessageElements?.alreadyVoted?.block;
+      } else if (response?.error?.message === 'ALREADY_REQUESTED') {
+        viewerPageMessageElements.alreadyRequested.current = viewerPageMessageElements?.alreadyRequested?.block;
       } else {
         viewerPageMessageElements.requestFailed.current = viewerPageMessageElements?.requestFailed?.block;
       }

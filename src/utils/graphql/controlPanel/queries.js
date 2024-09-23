@@ -53,6 +53,7 @@ export const GET_SHOW = gql`
         showLongitude
         allowedRadius
         checkIfVoted
+        checkIfRequested
         psaEnabled
         psaFrequency
         jukeboxRequestLimit
@@ -231,6 +232,7 @@ export const GET_SHOW_BY_SHOW_SUBDOMAIN = gql`
         showLongitude
         allowedRadius
         checkIfVoted
+        checkIfRequested
         psaEnabled
         psaFrequency
         jukeboxRequestLimit

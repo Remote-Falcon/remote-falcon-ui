@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useMutation } from '@apollo/client';
 import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
-import { Grid, CardActions, Divider, Typography, TextField, Stack } from '@mui/material';
+import { Grid, CardActions, Divider, Typography, TextField, Stack, Switch } from '@mui/material';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
@@ -22,6 +22,26 @@ const JukeboxSettings = ({ setShowLinearProgress }) => {
   const [jukeboxRequestLimit, setJukeboxRequestLimit] = useState(show?.preferences?.jukeboxRequestLimit);
 
   const [updatePreferencesMutation] = useMutation(UPDATE_PREFERENCES);
+
+  const handleCheckIfRequestedSwitch = (event, value) => {
+    setShowLinearProgress(true);
+    const updatedPreferences = _.cloneDeep({
+      ...show?.preferences,
+      checkIfRequested: value
+    });
+    savePreferencesService(updatedPreferences, updatePreferencesMutation, (response) => {
+      dispatch(
+        setShow({
+          ...show,
+          preferences: {
+            ...updatedPreferences
+          }
+        })
+      );
+      showAlert(dispatch, response?.toast);
+      setShowLinearProgress(false);
+    });
+  };
 
   const savePreferences = () => {
     setShowLinearProgress(true);
@@ -112,6 +132,37 @@ const JukeboxSettings = ({ setShowLinearProgress }) => {
                 onChange={(e) => setJukeboxRequestLimit(parseInt(e?.target?.value, 10))}
                 value={jukeboxRequestLimit}
                 onBlur={savePreferences}
+              />
+            </Grid>
+          </Grid>
+        </CardActions>
+        <Divider />
+        <CardActions>
+          <Grid container alignItems="center" justifyContent="space-between" spacing={2}>
+            <Grid item xs={12} md={6} lg={4}>
+              <Stack direction="row" spacing={2} pb={1}>
+                <Typography variant="h4">Prevent Multiple Requests</Typography>
+                <InfoTwoToneIcon
+                  onClick={() =>
+                    window.open(
+                      'https://docs.remotefalcon.com/docs/docs/control-panel/remote-falcon-settings#prevent-multiple-votes',
+                      '_blank',
+                      'noreferrer'
+                    )
+                  }
+                  fontSize="small"
+                />
+              </Stack>
+              <Typography component="div" variant="caption">
+                Prevents a viewer from requesting more than one sequence while a song is currently playing.
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={6} lg={4}>
+              <Switch
+                name="checkIfRequested"
+                color="primary"
+                checked={show?.preferences?.checkIfRequested}
+                onChange={handleCheckIfRequestedSwitch}
               />
             </Grid>
           </Grid>

@@ -12,9 +12,7 @@ import Popper from '@mui/material/Popper';
 import { useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 
-const options = ['Delete Inactive Sequences', 'Delete All Sequences'];
-
-const RFSplitButton = ({ disabled, onClick, color, variant, sx }) => {
+const RFSplitButton = ({ disabled, onClick, color, variant, sx, options }) => {
   const theme = useTheme();
 
   let background = theme.palette.primary.main;
@@ -115,7 +113,8 @@ RFSplitButton.propTypes = {
   color: PropTypes.string,
   variant: PropTypes.string,
   sx: PropTypes.object,
-  callback: PropTypes.func
+  callback: PropTypes.func,
+  options: PropTypes.array
 };
 
 export default RFSplitButton;
