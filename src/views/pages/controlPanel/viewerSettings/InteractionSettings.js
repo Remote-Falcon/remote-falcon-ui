@@ -135,6 +135,28 @@ const InteractionSettings = ({ setShowLinearProgress }) => {
     setPsaSequences(psaSequences);
   };
 
+  const handleViewerIpChange = (event, value) => {
+    setShowLinearProgress(true);
+    const updatedPreferences = _.cloneDeep({
+      ...show?.preferences,
+      blockedViewerIps: value
+    });
+    savePreferencesService(updatedPreferences, updatePreferencesMutation, (response) => {
+      if (response?.success) {
+        dispatch(
+          setShow({
+            ...show,
+            preferences: {
+              ...updatedPreferences
+            }
+          })
+        );
+      }
+      showAlert(dispatch, response?.toast);
+      setShowLinearProgress(false);
+    });
+  };
+
   const handleLocationCheckMethodChange = (event, value) => {
     setShowLinearProgress(true);
     const updatedPreferences = _.cloneDeep({
@@ -609,6 +631,42 @@ const InteractionSettings = ({ setShowLinearProgress }) => {
                 value={hideSequenceCount}
                 onChange={(e) => setHideSequenceCount(parseInt(e?.target?.value, 10))}
                 onBlur={savePreferences}
+              />
+            </Grid>
+          </Grid>
+        </CardActions>
+        <Divider />
+        <CardActions>
+          <Grid container alignItems="center" justifyContent="space-between" spacing={2}>
+            <Grid item xs={12} md={6} lg={4}>
+              <Stack direction="row" spacing={2} pb={1}>
+                <Typography variant="h4">Block Viewer IP Addresses</Typography>
+                <InfoTwoToneIcon
+                  onClick={() =>
+                    window.open(
+                      'https://docs.remotefalcon.com/docs/docs/control-panel/remote-falcon-settings#block-viewer-ip-addresses',
+                      '_blank',
+                      'noreferrer'
+                    )
+                  }
+                  fontSize="small"
+                />
+              </Stack>
+              <Typography component="div" variant="caption">
+                Adding an IP address here will prevent the device from being able to request or vote on a sequence. After entering an IP
+                address, press enter.
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={6} lg={4}>
+              <Autocomplete
+                freeSolo
+                multiple
+                disableCloseOnSelect
+                filterSelectedOptions
+                options={[]}
+                defaultValue={show?.preferences?.blockedViewerIps || []}
+                renderInput={(params) => <TextField {...params} />}
+                onChange={handleViewerIpChange}
               />
             </Grid>
           </Grid>

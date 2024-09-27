@@ -74,6 +74,8 @@ const ExternalViewerPage = () => {
     (response) => {
       if (response?.success) {
         viewerPageMessageElements.requestSuccessful.current = viewerPageMessageElements?.requestSuccessful?.block;
+      } else if (response?.error?.message === 'NAUGHTY') {
+        // Do nothing, say nothing
       } else if (response?.error?.message === 'SEQUENCE_REQUESTED') {
         viewerPageMessageElements.requestPlaying.current = viewerPageMessageElements?.requestPlaying?.block;
       } else if (response?.error?.message === 'INVALID_LOCATION') {

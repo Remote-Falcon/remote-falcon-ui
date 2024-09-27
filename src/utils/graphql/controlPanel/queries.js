@@ -66,6 +66,7 @@ export const GET_SHOW = gql`
         pageIconUrl
         showOnMap
         selfHostedRedirectUrl
+        blockedViewerIps
       }
       sequences {
         name
@@ -245,6 +246,7 @@ export const GET_SHOW_BY_SHOW_SUBDOMAIN = gql`
         pageIconUrl
         showOnMap
         selfHostedRedirectUrl
+        blockedViewerIps
       }
       sequences {
         name

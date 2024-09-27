@@ -31,7 +31,7 @@ const Sequences = () => {
   const sortSequencesAlphabetically = () => {
     setShowLinearProgress(true);
     let updatedSequences = _.cloneDeep(show?.sequences);
-    updatedSequences = _.sortBy(updatedSequences, ['displayName']);
+    updatedSequences = _.orderBy(updatedSequences, ['active', 'displayName'], ['desc', 'asc']);
     _.map(updatedSequences, (sequence, index) => {
       sequence.order = index;
     });
