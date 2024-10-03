@@ -9,6 +9,7 @@ import sign from 'jwt-encode';
 import _ from 'lodash';
 import moment from 'moment';
 import Loading from 'react-fullscreen-loading';
+import ReactGA from 'react-ga4';
 import { Helmet } from 'react-helmet';
 
 import useInterval from 'hooks/useInterval';
@@ -74,22 +75,67 @@ const ExternalViewerPage = () => {
     (response) => {
       if (response?.success) {
         viewerPageMessageElements.requestSuccessful.current = viewerPageMessageElements?.requestSuccessful?.block;
+        ReactGA.event({
+          category: 'Viewer Interaction',
+          action: 'Request Vote Success',
+          label: 'Request Vote Success'
+        });
       } else if (response?.error?.message === 'NAUGHTY') {
         // Do nothing, say nothing
+        ReactGA.event({
+          category: 'Viewer Interaction',
+          action: 'Request Vote Naughty',
+          label: 'Request Vote Naughty'
+        });
       } else if (response?.error?.message === 'SEQUENCE_REQUESTED') {
         viewerPageMessageElements.requestPlaying.current = viewerPageMessageElements?.requestPlaying?.block;
+        ReactGA.event({
+          category: 'Viewer Interaction',
+          action: 'Request Vote Sequence Requested',
+          label: 'Request Vote Sequence Requested'
+        });
       } else if (response?.error?.message === 'INVALID_LOCATION') {
         viewerPageMessageElements.invalidLocation.current = viewerPageMessageElements?.invalidLocation?.block;
+        ReactGA.event({
+          category: 'Viewer Interaction',
+          action: 'Request Vote Invalid Location',
+          label: 'Request Vote Invalid Location'
+        });
       } else if (response?.error?.message === 'QUEUE_FULL') {
         viewerPageMessageElements.queueFull.current = viewerPageMessageElements?.queueFull?.block;
+        ReactGA.event({
+          category: 'Viewer Interaction',
+          action: 'Request Vote Queue Full',
+          label: 'Request Vote Queue Full'
+        });
       } else if (response?.error?.message === 'INVALID_CODE') {
         viewerPageMessageElements.invalidLocationCode.current = viewerPageMessageElements?.invalidLocationCode?.block;
+        ReactGA.event({
+          category: 'Viewer Interaction',
+          action: 'Request Vote Invalid Code',
+          label: 'Request Vote Invalid Code'
+        });
       } else if (response?.error?.message === 'ALREADY_VOTED') {
         viewerPageMessageElements.alreadyVoted.current = viewerPageMessageElements?.alreadyVoted?.block;
+        ReactGA.event({
+          category: 'Viewer Interaction',
+          action: 'Request Vote Already Voted',
+          label: 'Request Vote Already Voted'
+        });
       } else if (response?.error?.message === 'ALREADY_REQUESTED') {
         viewerPageMessageElements.alreadyRequested.current = viewerPageMessageElements?.alreadyRequested?.block;
+        ReactGA.event({
+          category: 'Viewer Interaction',
+          action: 'Request Vote Already Requested',
+          label: 'Request Vote Already Requested'
+        });
       } else {
         viewerPageMessageElements.requestFailed.current = viewerPageMessageElements?.requestFailed?.block;
+        ReactGA.event({
+          category: 'Viewer Interaction',
+          action: 'Request Vote Failed',
+          label: 'Request Vote Failed'
+        });
       }
       setTimeout(() => {
         _.map(viewerPageMessageElements, (message) => {
@@ -103,6 +149,11 @@ const ExternalViewerPage = () => {
   const addSequenceToQueue = useCallback(
     async (e) => {
       const sequenceName = e.target.attributes.getNamedItem('data-key') ? e.target.attributes.getNamedItem('data-key').value : '';
+      ReactGA.event({
+        category: 'Viewer Interaction',
+        action: 'Add Sequence to Queue',
+        label: 'Add Sequence to Queue'
+      });
       if (show?.preferences?.enableGeolocation) {
         await setViewerLocation();
       }
@@ -138,6 +189,11 @@ const ExternalViewerPage = () => {
   const voteForSequence = useCallback(
     async (e) => {
       const sequenceName = e.target.attributes.getNamedItem('data-key') ? e.target.attributes.getNamedItem('data-key').value : '';
+      ReactGA.event({
+        category: 'Viewer Interaction',
+        action: 'Vote for Sequence',
+        label: 'Vote for Sequence'
+      });
       if (show?.preferences?.enableGeolocation) {
         await setViewerLocation();
       }
@@ -493,6 +549,11 @@ const ExternalViewerPage = () => {
         if (showData?.preferences?.locationCheckMethod === LocationCheckMethod.GEO) {
           setViewerLocation();
         }
+        ReactGA.event({
+          category: 'Viewer Interaction',
+          action: 'Viewer Page View',
+          label: 'Viewer Page View'
+        });
         setLoading(false);
       },
       onError: () => {
