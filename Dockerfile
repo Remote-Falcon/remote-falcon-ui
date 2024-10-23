@@ -1,3 +1,4 @@
+# Step 1: Create the build artifacts
 FROM node:16.14.0-alpine AS build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
@@ -5,7 +6,7 @@ COPY package.json ./
 COPY package-lock.json ./
 RUN npm ci --silent
 RUN npm install react-scripts@3.4.1 -g --silent
-RUN npm install serve -g --silent
+
 COPY . ./
 
 ARG HOST_ENV
@@ -34,9 +35,16 @@ ENV REACT_APP_HOSTNAME_PARTS=$HOSTNAME_PARTS
 
 ARG REACT_APP_SOCIAL_META=$SOCIAL_META
 
-EXPOSE 3000
 
 RUN npm run build
 
-# start the nginx web server
+# Step 2: Create the compact production image
+FROM node:16.14.0-alpine AS production
+WORKDIR /app
+COPY --from=build /app/build ./build
+RUN npm install serve -g --silent
+
+EXPOSE 3000
+
+# start the web server
 CMD ["serve", "-s", "/app/build"]
