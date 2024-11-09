@@ -125,3 +125,9 @@ export const PURGE_STATS = gql`
     purgeStats
   }
 `;
+
+export const DELETE_STATS_WITHIN_RANGE = gql`
+  mutation ($startDate: Long!, $endDate: Long!, $timezone: String) @api(name: controlPanel) {
+    deleteStatsWithinRange(startDate: $startDate, endDate: $endDate, timezone: $timezone)
+  }
+`;

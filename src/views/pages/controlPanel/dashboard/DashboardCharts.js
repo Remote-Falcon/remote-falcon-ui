@@ -6,6 +6,7 @@ import { useTheme } from '@mui/material/styles';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import _ from 'lodash';
 
 import { useDispatch, useSelector } from 'store';
 import MainCard from 'ui-component/cards/MainCard';
@@ -15,8 +16,8 @@ import RFLoadingButton from 'ui-component/RFLoadingButton';
 import { ViewerControlMode } from 'utils/enum';
 import { DASHBOARD_STATS } from 'utils/graphql/controlPanel/queries';
 
-import { PURGE_STATS } from '../../../../utils/graphql/controlPanel/mutations';
-import { showAlertOld } from '../../globalPageHelpers';
+import { DELETE_STATS_WITHIN_RANGE, PURGE_STATS } from '../../../../utils/graphql/controlPanel/mutations';
+import { showAlert } from '../../globalPageHelpers';
 import ApexBarChart from './ApexBarChart';
 import ApexLineChart from './ApexLineChart';
 import {
@@ -41,6 +42,7 @@ const DashboardCharts = () => {
   dateMinus7.setDate(dateMinus7.getDate() - 7);
 
   const [purgeStatsMutation] = useMutation(PURGE_STATS);
+  const [deleteStatsWithinRangeMutation] = useMutation(DELETE_STATS_WITHIN_RANGE);
 
   const [dashboardStatsQuery] = useLazyQuery(DASHBOARD_STATS);
 
@@ -62,14 +64,40 @@ const DashboardCharts = () => {
         endDate: dateFilterEnd,
         timezone: show?.timezone
       },
+      fetchPolicy: 'network-only',
       onCompleted: (data) => {
+        console.log(data?.dashboardStats);
         setDashboardStats(data?.dashboardStats);
       },
       onError: () => {
-        showAlertOld({ dispatch, alert: 'error' });
+        showAlert(dispatch, { alert: 'error' });
       }
     });
-  }, [dispatch, dateFilterStart, dateFilterEnd, show?.timezone]);
+  }, [dashboardStatsQuery, dateFilterStart, dateFilterEnd, show?.timezone, dispatch]);
+
+  const deleteStatsWithinRange = async () => {
+    setLoading(true);
+    await deleteStatsWithinRangeMutation({
+      context: {
+        headers: {
+          Route: 'Control-Panel'
+        }
+      },
+      variables: {
+        startDate: dateFilterStart,
+        endDate: dateFilterEnd,
+        timezone: show?.timezone
+      },
+      onCompleted: async () => {
+        await fetchDashboardStats();
+        showAlert(dispatch, { message: 'Stats Deleted' });
+      },
+      onError: () => {
+        showAlert(dispatch, { alert: 'error' });
+      }
+    });
+    setLoading(false);
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -118,10 +146,13 @@ const DashboardCharts = () => {
           <Stack direction="row" spacing={2} justifyContent="right" pt={2}>
             <RFLoadingButton
               loading={isDownloadingStats}
-              onClick={() => downloadStatsToExcel(dispatch, show?.timezone, setIsDownloadingStats)}
+              onClick={() => downloadStatsToExcel(dispatch, show?.timezone, dateFilterStart, dateFilterEnd, setIsDownloadingStats)}
               color="primary"
             >
-              Download Stats
+              Download Stats Within Date Range
+            </RFLoadingButton>
+            <RFLoadingButton loading={isDownloadingStats} onClick={() => deleteStatsWithinRange()} color="error">
+              Delete Stats Within Date Range
             </RFLoadingButton>
           </Stack>
         </SubCard>

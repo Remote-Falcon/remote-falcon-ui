@@ -127,10 +127,10 @@ const ExternalViewerPage = () => {
       const sequenceName = e.target.attributes.getNamedItem('data-key') ? e.target.attributes.getNamedItem('data-key').value : '';
       const sequenceDisplayName = e.target.attributes.getNamedItem('data-key-2')
         ? e.target.attributes.getNamedItem('data-key-2').value
-        : '';
+        : null;
       mixpanel.track('Viewer Interaction', {
         Action: 'Add Sequence to Queue',
-        Sequence: sequenceDisplayName || sequenceName
+        Sequence: sequenceDisplayName != null ? sequenceDisplayName : sequenceName
       });
       if (show?.preferences?.enableGeolocation) {
         await setViewerLocation();
@@ -169,10 +169,10 @@ const ExternalViewerPage = () => {
       const sequenceName = e.target.attributes.getNamedItem('data-key') ? e.target.attributes.getNamedItem('data-key').value : '';
       const sequenceDisplayName = e.target.attributes.getNamedItem('data-key-2')
         ? e.target.attributes.getNamedItem('data-key-2').value
-        : '';
+        : null;
       mixpanel.track('Viewer Interaction', {
         Action: 'Vote for Sequence',
-        Sequence: sequenceDisplayName || sequenceName
+        Sequence: sequenceDisplayName != null ? sequenceDisplayName : sequenceName
       });
       if (show?.preferences?.enableGeolocation) {
         await setViewerLocation();
@@ -246,6 +246,10 @@ const ExternalViewerPage = () => {
 
     const sequencesElement = [];
     const categoriesPlaced = [];
+    let jukeboxRequestsElement = [];
+
+    let playingNow = '';
+    let playingNext = '';
 
     _.map(show?.sequences, (sequence) => {
       if (sequence.visible && sequence.visibilityCount === 0) {
@@ -265,6 +269,37 @@ const ExternalViewerPage = () => {
             if (sequence.category == null || sequence.category === '') {
               const votingListClassname = `cell-vote-playlist cell-vote-playlist-${sequence.key}`;
               const votingListArtistClassname = `cell-vote-playlist-artist cell-vote-playlist-artist-${sequence.key}`;
+
+              if (show?.playingNow === sequence.displayName) {
+                let sequenceImageElement = [<></>];
+                if (sequence && sequence.imageUrl && sequence.imageUrl.replace(/\s/g, '').length) {
+                  const classname = `sequence-image sequence-image-${sequence.key}`;
+                  sequenceImageElement = <img alt={sequence.name} className={classname} src={sequence.imageUrl} data-key={sequence.name} />;
+                  playingNow = (
+                    <>
+                      {sequenceImageElement}
+                      {sequence.displayName}
+                      <div className={votingListArtistClassname}>{sequence.artist}</div>
+                    </>
+                  );
+                }
+              }
+
+              if (show?.playingNext === sequence.displayName) {
+                let sequenceImageElement = [<></>];
+                if (sequence && sequence.imageUrl && sequence.imageUrl.replace(/\s/g, '').length) {
+                  const classname = `sequence-image sequence-image-${sequence.key}`;
+                  sequenceImageElement = <img alt={sequence.name} className={classname} src={sequence.imageUrl} data-key={sequence.name} />;
+                  playingNext = (
+                    <>
+                      {sequenceImageElement}
+                      {sequence.displayName}
+                      <div className={votingListArtistClassname}>{sequence.artist}</div>
+                    </>
+                  );
+                }
+              }
+
               sequencesElement.push(
                 <>
                   <div
@@ -338,9 +373,40 @@ const ExternalViewerPage = () => {
             }
           }
         } else if (show?.preferences?.viewerControlMode === ViewerControlMode.JUKEBOX) {
+          const jukeboxListClassname = `jukebox-list jukebox-list-${sequence.key}`;
+          const jukeboxListArtistClassname = `jukebox-list-artist jukebox-list-artist-${sequence.key}`;
+
+          if (show?.playingNow === sequence.displayName) {
+            let sequenceImageElement = [<></>];
+            if (sequence && sequence.imageUrl && sequence.imageUrl.replace(/\s/g, '').length) {
+              const classname = `sequence-image sequence-image-${sequence.key}`;
+              sequenceImageElement = <img alt={sequence.name} className={classname} src={sequence.imageUrl} data-key={sequence.name} />;
+              playingNow = (
+                <>
+                  {sequenceImageElement}
+                  {sequence.displayName}
+                  <div className={jukeboxListArtistClassname}>{sequence.artist}</div>
+                </>
+              );
+            }
+          }
+
+          if (show?.playingNext === sequence.displayName) {
+            let sequenceImageElement = [<></>];
+            if (sequence && sequence.imageUrl && sequence.imageUrl.replace(/\s/g, '').length) {
+              const classname = `sequence-image sequence-image-${sequence.key}`;
+              sequenceImageElement = <img alt={sequence.name} className={classname} src={sequence.imageUrl} data-key={sequence.name} />;
+              playingNext = (
+                <>
+                  {sequenceImageElement}
+                  {sequence.displayName}
+                  <div className={jukeboxListArtistClassname}>{sequence.artist}</div>
+                </>
+              );
+            }
+          }
+
           if (sequence.category == null || sequence.category === '') {
-            const jukeboxListClassname = `jukebox-list jukebox-list-${sequence.key}`;
-            const jukeboxListArtistClassname = `jukebox-list-artist jukebox-list-artist-${sequence.key}`;
             sequencesElement.push(
               <>
                 <div
@@ -403,21 +469,36 @@ const ExternalViewerPage = () => {
               </>
             );
           }
-        }
-      }
-    });
 
-    const jukeboxRequestsElement = [];
-    let updatedRequests = show?.requests;
-    updatedRequests = _.orderBy(updatedRequests, ['position'], ['asc']);
-    _.map(updatedRequests, (request, index) => {
-      // Don't add Playing Now or Next Playing to list
-      if (index !== 0) {
-        jukeboxRequestsElement.push(
-          <>
-            <div className="jukebox-queue">{request?.sequence?.displayName}</div>
-          </>
-        );
+          jukeboxRequestsElement = [];
+          let updatedRequests = show?.requests;
+          updatedRequests = _.orderBy(updatedRequests, ['position'], ['asc']);
+          _.map(updatedRequests, (request, index) => {
+            // Don't add Playing Now or Next Playing to list
+            if (index !== 0) {
+              _.map(show?.sequences, (sequence) => {
+                if (request?.sequence?.name === sequence.name) {
+                  let sequenceImageElement = [<></>];
+                  if (sequence && sequence.imageUrl && sequence.imageUrl.replace(/\s/g, '').length) {
+                    const classname = `sequence-image sequence-image-${sequence.key}`;
+                    sequenceImageElement = (
+                      <img alt={sequence.name} className={classname} src={sequence.imageUrl} data-key={sequence.name} />
+                    );
+                    jukeboxRequestsElement.push(
+                      <>
+                        <div className="jukebox-queue">
+                          {sequenceImageElement}
+                          {request?.sequence?.displayName}
+                          <div className={jukeboxListArtistClassname}>{sequence.artist}</div>
+                        </div>
+                      </>
+                    );
+                  }
+                }
+              });
+            }
+          });
+        }
       }
     });
 
@@ -434,8 +515,8 @@ const ExternalViewerPage = () => {
       show?.preferences?.locationCheckMethod,
       sequencesElement,
       jukeboxRequestsElement,
-      show?.playingNow,
-      show?.playingNext,
+      playingNow,
+      playingNext,
       show?.requests?.length,
       locationCodeElement,
       formattedNowPlayingTimer

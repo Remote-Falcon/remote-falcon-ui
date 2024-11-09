@@ -126,20 +126,22 @@ export const sequenceVoteWins = (dashboardStats) => {
   };
 };
 
-const downloadStatsToExcelService = async (timezone) => {
+const downloadStatsToExcelService = async (timezone, dateFilterStart, dateFilterEnd) => {
   const response = await axios.post(
     `${process.env.REACT_APP_CONTROL_PANEL_API}/controlPanel/downloadStatsToExcel`,
     {
-      timezone
+      timezone,
+      dateFilterStart,
+      dateFilterEnd
     },
     { responseType: 'blob' }
   );
   return response;
 };
 
-export const downloadStatsToExcel = async (dispatch, timezone, setIsDownloadingStats) => {
+export const downloadStatsToExcel = async (dispatch, timezone, dateFilterStart, dateFilterEnd, setIsDownloadingStats) => {
   setIsDownloadingStats(true);
-  const response = await downloadStatsToExcelService(timezone);
+  const response = await downloadStatsToExcelService(timezone, dateFilterStart, dateFilterEnd);
   if (response?.status === 200) {
     fileDownload(response.data, 'Remote Falcon Stats.xlsx');
     showAlertOld({ dispatch, message: 'Dashboard Stats Downloaded' });
