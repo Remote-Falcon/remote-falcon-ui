@@ -66,7 +66,6 @@ const DashboardCharts = () => {
       },
       fetchPolicy: 'network-only',
       onCompleted: (data) => {
-        console.log(data?.dashboardStats);
         setDashboardStats(data?.dashboardStats);
       },
       onError: () => {
