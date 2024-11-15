@@ -324,7 +324,9 @@ const ExternalViewerPage = () => {
                   >
                     {sequenceImageElement}
                     {sequence.displayName}
-                    <div className={votingListArtistClassname}>{sequence.artist}</div>
+                    <div data-key={sequence.name} data-key-2={sequence.displayName} className={votingListArtistClassname}>
+                      {sequence.artist}
+                    </div>
                   </div>
                   <div className="cell-vote">{sequenceVotes}</div>
                 </>
@@ -366,7 +368,9 @@ const ExternalViewerPage = () => {
                         >
                           {sequenceImageElement}
                           {categorizedSequence.displayName}
-                          <div className={categorizedVotingListArtistClassname}>{categorizedSequence.artist}</div>
+                          <div data-key={categorizedSequence.name} className={categorizedVotingListArtistClassname}>
+                            {categorizedSequence.artist}
+                          </div>
                         </div>
                         <div className="cell-vote">{categorizedSequenceVotes}</div>
                       </>
@@ -445,7 +449,9 @@ const ExternalViewerPage = () => {
                 >
                   {sequenceImageElement}
                   {sequence.displayName}
-                  <div className={jukeboxListArtistClassname}>{sequence.artist}</div>
+                  <div data-key={sequence.name} data-key-2={sequence.displayName} className={jukeboxListArtistClassname}>
+                    {sequence.artist}
+                  </div>
                 </div>
               </>
             );
@@ -479,7 +485,9 @@ const ExternalViewerPage = () => {
                       >
                         {sequenceImageElement}
                         {categorizedSequence.displayName}
-                        <div className={categorizedJukeboxListArtistClassname}>{categorizedSequence.artist}</div>
+                        <div data-key={categorizedSequence.name} className={categorizedJukeboxListArtistClassname}>
+                          {categorizedSequence.artist}
+                        </div>
                       </div>
                     </>
                   );
