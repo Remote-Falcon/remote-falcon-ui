@@ -1,11 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { Grid, TextField, Stack, Typography } from '@mui/material';
+import { Grid, TextField, Stack, Typography, Modal } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import moment from 'moment';
 
 import { useDispatch, useSelector } from 'store';
 import MainCard from 'ui-component/cards/MainCard';
@@ -19,6 +20,7 @@ import { DELETE_STATS_WITHIN_RANGE, PURGE_STATS } from '../../../../utils/graphq
 import { showAlert } from '../../globalPageHelpers';
 import ApexBarChart from './ApexBarChart';
 import ApexLineChart from './ApexLineChart';
+import DeleteStatsModal from './DeleteStats.modal';
 import {
   uniqueViewersByDate,
   totalViewersByDate,
@@ -44,16 +46,21 @@ const DashboardCharts = () => {
   datePlus1.setDate(datePlus1.getDate() + 1);
   datePlus1.setHours(0, 0, 0);
 
+  const dateMinus7Formatted = moment(dateMinus7).format('YYYY-MM-DD');
+  const datePlus1Formatted = moment(datePlus1).format('YYYY-MM-DD');
+
   const [purgeStatsMutation] = useMutation(PURGE_STATS);
   const [deleteStatsWithinRangeMutation] = useMutation(DELETE_STATS_WITHIN_RANGE);
 
   const [dashboardStatsQuery] = useLazyQuery(DASHBOARD_STATS);
 
-  const [dateFilterStart, setDateFilterStart] = useState(dateMinus7.setHours(0, 0, 0));
-  const [dateFilterEnd, setDateFilterEnd] = useState(datePlus1.setHours(23, 59, 59));
+  const [dateFilterStart, setDateFilterStart] = useState(dateMinus7.valueOf());
+  const [dateFilterEnd, setDateFilterEnd] = useState(datePlus1.valueOf());
   const [dashboardStats, setDashboardStats] = useState();
   const [isLoading, setLoading] = useState(false);
   const [isDownloadingStats, setIsDownloadingStats] = useState(false);
+  const [deleteStatsOpen, setDeleteStatsOpen] = useState(false);
+  const [isDeletingStats, setIsDeletingStats] = useState(false);
 
   const fetchDashboardStats = useCallback(async () => {
     await dashboardStatsQuery({
@@ -79,6 +86,7 @@ const DashboardCharts = () => {
 
   const deleteStatsWithinRange = async () => {
     setLoading(true);
+    setIsDeletingStats(true);
     await deleteStatsWithinRangeMutation({
       context: {
         headers: {
@@ -98,7 +106,9 @@ const DashboardCharts = () => {
         showAlert(dispatch, { alert: 'error' });
       }
     });
+    setDeleteStatsOpen(false);
     setLoading(false);
+    setIsDeletingStats(false);
   };
 
   useEffect(() => {
@@ -153,7 +163,7 @@ const DashboardCharts = () => {
             >
               Download Stats Within Date Range
             </RFLoadingButton>
-            <RFLoadingButton loading={isDownloadingStats} onClick={() => deleteStatsWithinRange()} color="error">
+            <RFLoadingButton loading={isDownloadingStats} onClick={() => setDeleteStatsOpen(true)} color="error">
               Delete Stats Within Date Range
             </RFLoadingButton>
           </Stack>
@@ -243,6 +253,21 @@ const DashboardCharts = () => {
           </Grid>
         )
       )}
+      <Modal
+        open={deleteStatsOpen}
+        onClose={() => setDeleteStatsOpen(false)}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <DeleteStatsModal
+          theme={theme}
+          dateMinus7Formatted={dateMinus7Formatted}
+          datePlus1Formatted={datePlus1Formatted}
+          handleClose={() => setDeleteStatsOpen(false)}
+          deleteStats={deleteStatsWithinRange}
+          isDeleting={isDeletingStats}
+        />
+      </Modal>
     </>
   );
 };
