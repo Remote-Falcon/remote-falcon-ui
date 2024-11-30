@@ -59,6 +59,9 @@ const ApexLineChart = ({ ...otherProps }) => {
         size: 5
       },
       xaxis: {
+        axisTicks: {
+          offsetX: 15
+        },
         labels: {
           style: {
             colors: primary
