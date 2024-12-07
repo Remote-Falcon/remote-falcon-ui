@@ -46,9 +46,6 @@ const DashboardCharts = () => {
   // datePlus1.setDate(datePlus1.getDate() + 1);
   datePlus1.setHours(0, 0, 0);
 
-  const dateMinus7Formatted = moment(dateMinus7).format('YYYY-MM-DD');
-  const datePlus1Formatted = moment(datePlus1).format('YYYY-MM-DD');
-
   const [purgeStatsMutation] = useMutation(PURGE_STATS);
   const [deleteStatsWithinRangeMutation] = useMutation(DELETE_STATS_WITHIN_RANGE);
 
@@ -61,6 +58,9 @@ const DashboardCharts = () => {
   const [isDownloadingStats, setIsDownloadingStats] = useState(false);
   const [deleteStatsOpen, setDeleteStatsOpen] = useState(false);
   const [isDeletingStats, setIsDeletingStats] = useState(false);
+
+  const dateFilterStartFormatted = moment(dateFilterStart).format('YYYY-MM-DD');
+  const dateFilterEndFormatted = moment(dateFilterEnd).format('YYYY-MM-DD');
 
   const fetchDashboardStats = useCallback(async () => {
     await dashboardStatsQuery({
@@ -261,8 +261,8 @@ const DashboardCharts = () => {
       >
         <DeleteStatsModal
           theme={theme}
-          dateMinus7Formatted={dateMinus7Formatted}
-          datePlus1Formatted={datePlus1Formatted}
+          dateMinus7Formatted={dateFilterStartFormatted}
+          datePlus1Formatted={dateFilterEndFormatted}
           handleClose={() => setDeleteStatsOpen(false)}
           deleteStats={deleteStatsWithinRange}
           isDeleting={isDeletingStats}
