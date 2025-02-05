@@ -57,7 +57,11 @@ const Sidebar = ({ window }) => {
           <Typography variant="h5" align="center">
             100% of Patreon support goes directly to keeping Remote Falcon running
             <a href="https://www.patreon.com/RemoteFalcon" target="_blank" rel="noreferrer">
-              <img src="https://icon-library.com/images/patreon-icon-png/patreon-icon-png-29.jpg" alt="become-a-patron" width="270" />
+              <img
+                src="https://images.squarespace-cdn.com/content/v1/5cca6990fd6793515a091e5f/1574705049575-1BVQRVG2UTGE9EBEKI6X/become-a-patron-button.png"
+                alt="become-a-patron"
+                width="270"
+              />
             </a>
           </Typography>
         </Stack>

@@ -4,8 +4,10 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { TextField } from '@mui/material';
+import newAxios from 'axios';
 import htmlToReact from 'html-to-react';
 import sign from 'jwt-encode';
+import loadjs from 'loadjs';
 import _ from 'lodash';
 import mixpanel from 'mixpanel-browser';
 import moment from 'moment';
@@ -28,6 +30,8 @@ const ExternalViewerPage = () => {
   const dispatch = useDispatch();
 
   const blockRedirectReferrers = ['https://player.pulsemesh.io/'];
+  const baseGithubPath = 'https://raw.githubusercontent.com/Remote-Falcon/remote-falcon-viewer-page-js/refs/heads/main/';
+  const baseCdnPath = 'https://cdn.jsdelivr.net/gh/Remote-Falcon/remote-falcon-viewer-page-js@main/';
 
   const [loading, setLoading] = useState(false);
   const [show, setShow] = useState();
@@ -38,7 +42,6 @@ const ExternalViewerPage = () => {
   const [viewerLongitude, setViewerLongitude] = useState(0.0);
   const [enteredLocationCode, setEnteredLocationCode] = useState(null);
   const [messageDisplayTime] = useState(6000);
-  const [makeItSnowScript, setMakeItSnowScript] = useState(null);
   const [nowPlaying, setNowPlaying] = useState(null);
   const [nowPlayingTimer, setNowPlayingTimer] = useState(0);
 
@@ -219,10 +222,6 @@ const ExternalViewerPage = () => {
     const isValidNode = () => true;
 
     let parsedViewerPage = activeViewerPage;
-
-    if (show?.preferences?.makeItSnow) {
-      setMakeItSnowScript(<script type="text/javascript" src="https://app.embed.im/snow.js" />);
-    }
 
     const htmlToReactParser = new htmlToReact.Parser();
     const processNodeDefinitions = new htmlToReact.ProcessNodeDefinitions(React);
@@ -684,7 +683,7 @@ const ExternalViewerPage = () => {
           Route: 'Viewer'
         }
       },
-      onCompleted: (data) => {
+      onCompleted: async (data) => {
         const showData = { ...data?.getShow };
 
         const subdomain = getSubdomain();
@@ -711,6 +710,23 @@ const ExternalViewerPage = () => {
           mixpanel.track('Viewer Page View', {
             Show_Name: showData?.showName
           });
+
+          setTimeout(async () => {
+            const config = {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            };
+            await newAxios.get(`${baseGithubPath}scripts.json`, config).then(async (scriptsRes) => {
+              _.forEach(scriptsRes?.data, (script) => {
+                if (script === 'makeItSnow' && !showData?.preferences?.makeItSnow) {
+                  return;
+                }
+                loadjs(`${baseCdnPath + script}.js`);
+              });
+            });
+          }, 500);
+
           setLoading(false);
         }
       },
@@ -775,7 +791,6 @@ const ExternalViewerPage = () => {
         </style>
         <title>{show?.preferences?.pageTitle}</title>
         <link rel="icon" href={show?.preferences?.pageIconUrl} />
-        {makeItSnowScript}
       </Helmet>
       <Loading loading={loading} background="black" loaderColor="white" />
       {remoteViewerReactPage}
