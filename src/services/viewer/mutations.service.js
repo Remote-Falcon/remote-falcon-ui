@@ -1,4 +1,4 @@
-export const addSequenceToQueueService = (addSequenceToQueueMutation, name, viewerLatitude, viewerLongitude, callback) => {
+export const addSequenceToQueueService = (addSequenceToQueueMutation, showSubdomain, name, viewerLatitude, viewerLongitude, callback) => {
   addSequenceToQueueMutation({
     context: {
       headers: {
@@ -6,6 +6,7 @@ export const addSequenceToQueueService = (addSequenceToQueueMutation, name, view
       }
     },
     variables: {
+      showSubdomain,
       name,
       latitude: parseFloat(viewerLatitude),
       longitude: parseFloat(viewerLongitude)
@@ -25,7 +26,7 @@ export const addSequenceToQueueService = (addSequenceToQueueMutation, name, view
   });
 };
 
-export const voteForSequenceService = (voteForSequenceMutation, name, viewerLatitude, viewerLongitude, callback) => {
+export const voteForSequenceService = (voteForSequenceMutation, showSubdomain, name, viewerLatitude, viewerLongitude, callback) => {
   voteForSequenceMutation({
     context: {
       headers: {
@@ -33,6 +34,7 @@ export const voteForSequenceService = (voteForSequenceMutation, name, viewerLati
       }
     },
     variables: {
+      showSubdomain,
       name,
       latitude: parseFloat(viewerLatitude),
       longitude: parseFloat(viewerLongitude)

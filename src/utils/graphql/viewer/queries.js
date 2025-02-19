@@ -2,13 +2,12 @@ import { gql } from '@apollo/client';
 
 // eslint-disable-next-line import/prefer-default-export
 export const GET_SHOW = gql`
-  query @api(name: viewer) {
-    getShow {
+  query ($showSubdomain: String!) @api(name: viewer) {
+    getShow(showSubdomain: $showSubdomain) {
       showSubdomain
       playingNow
       playingNowSequence {
         name
-        key
         displayName
         duration
         visible
@@ -25,7 +24,6 @@ export const GET_SHOW = gql`
       playingNext
       playingNextSequence {
         name
-        key
         displayName
         duration
         visible
@@ -66,7 +64,6 @@ export const GET_SHOW = gql`
       }
       sequences {
         name
-        key
         displayName
         duration
         visible

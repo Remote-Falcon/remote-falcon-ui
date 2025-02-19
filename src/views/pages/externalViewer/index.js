@@ -18,7 +18,6 @@ import useInterval from 'hooks/useInterval';
 import { useDispatch } from 'store';
 import { getSubdomain } from 'utils/route-guard/helpers/helpers';
 
-import { setSession } from '../../../contexts/JWTContext';
 import { addSequenceToQueueService, voteForSequenceService } from '../../../services/viewer/mutations.service';
 import { LocationCheckMethod, ViewerControlMode } from '../../../utils/enum';
 import { ADD_SEQUENCE_TO_QUEUE, INSERT_VIEWER_PAGE_STATS, VOTE_FOR_SEQUENCE } from '../../../utils/graphql/viewer/mutations';
@@ -49,17 +48,6 @@ const ExternalViewerPage = () => {
   const [insertViewerPageStatsMutation] = useMutation(INSERT_VIEWER_PAGE_STATS);
   const [addSequenceToQueueMutation] = useMutation(ADD_SEQUENCE_TO_QUEUE);
   const [voteForSequenceMutation] = useMutation(VOTE_FOR_SEQUENCE);
-
-  const signViewerJwt = useCallback(async () => {
-    const showSubdomain = getSubdomain();
-    const viewerJwtData = {
-      showSubdomain,
-      expiresIn: 86400,
-      iss: 'remotefalcon'
-    };
-    const viewerJwt = sign(viewerJwtData, process.env.REACT_APP_VIEWER_JWT_KEY);
-    setSession(viewerJwt);
-  }, []);
 
   const setViewerLocation = useCallback(async () => {
     if ('geolocation' in navigator) {
@@ -152,9 +140,16 @@ const ExternalViewerPage = () => {
           return;
         }
       }
-      addSequenceToQueueService(addSequenceToQueueMutation, sequenceName, viewerLatitude || 0.0, viewerLongitude || 0.0, (response) => {
-        showViewerMessage(response);
-      });
+      addSequenceToQueueService(
+        addSequenceToQueueMutation,
+        getSubdomain(),
+        sequenceName,
+        viewerLatitude || 0.0,
+        viewerLongitude || 0.0,
+        (response) => {
+          showViewerMessage(response);
+        }
+      );
     },
     [
       show?.preferences?.enableGeolocation,
@@ -194,9 +189,16 @@ const ExternalViewerPage = () => {
           return;
         }
       }
-      voteForSequenceService(voteForSequenceMutation, sequenceName, viewerLatitude || 0.0, viewerLongitude || 0.0, (response) => {
-        showViewerMessage(response);
-      });
+      voteForSequenceService(
+        voteForSequenceMutation,
+        getSubdomain(),
+        sequenceName,
+        viewerLatitude || 0.0,
+        viewerLongitude || 0.0,
+        (response) => {
+          showViewerMessage(response);
+        }
+      );
     },
     [
       show?.preferences?.enableGeolocation,
@@ -651,6 +653,9 @@ const ExternalViewerPage = () => {
           Route: 'Viewer'
         }
       },
+      variables: {
+        showSubdomain: getSubdomain()
+      },
       fetchPolicy: 'network-only',
       onCompleted: (data) => {
         const showData = { ...data?.getShow };
@@ -682,6 +687,9 @@ const ExternalViewerPage = () => {
         headers: {
           Route: 'Viewer'
         }
+      },
+      variables: {
+        showSubdomain: getSubdomain()
       },
       onCompleted: async (data) => {
         const showData = { ...data?.getShow };
@@ -739,7 +747,6 @@ const ExternalViewerPage = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      await signViewerJwt();
 
       getShowForInit();
       insertViewerPageStatsMutation({
@@ -749,13 +756,14 @@ const ExternalViewerPage = () => {
           }
         },
         variables: {
+          showSubdomain: getSubdomain(),
           date: moment().format('YYYY-MM-DDTHH:mm:ss')
         }
       }).then();
     };
 
     init().then();
-  }, [signViewerJwt, getShowForInit, insertViewerPageStatsMutation]);
+  }, [getShowForInit, insertViewerPageStatsMutation]);
 
   useInterval(() => {
     getShow();
