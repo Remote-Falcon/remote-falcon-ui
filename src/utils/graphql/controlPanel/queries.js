@@ -124,8 +124,8 @@ export const GET_SHOW = gql`
 export const DASHBOARD_LIVE_STATS = gql`
   query ($startDate: Long!, $endDate: Long!, $timezone: String) @api(name: controlPanel) {
     dashboardLiveStats(startDate: $startDate, endDate: $endDate, timezone: $timezone) {
-      activeViewers
-      totalViewers
+      playingNow
+      playingNext
       currentRequests
       totalRequests
       currentVotes

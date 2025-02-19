@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 
 import { useLazyQuery } from '@apollo/client';
-import PeopleTwoTone from '@mui/icons-material/PeopleTwoTone';
+import LibraryMusicTwoTone from '@mui/icons-material/LibraryMusicTwoTone';
 import ThumbUpTwoTone from '@mui/icons-material/ThumbUpTwoTone';
 import { Grid } from '@mui/material';
 import { useTheme } from '@mui/styles';
@@ -20,8 +20,8 @@ const DashboardHeader = () => {
   const dispatch = useDispatch();
   const { show } = useSelector((state) => state.show);
 
-  const [activeViewers, setActiveViewers] = useState('0');
-  const [totalViewers, setTotalViewers] = useState('0');
+  const [playingNow, setPlayingNow] = useState(null);
+  const [playingNext, setPlayingNext] = useState(null);
   const [currentRequests, setCurrentRequests] = useState('0');
   const [totalRequests, setTotalRequests] = useState('0');
   const [isLoading, setIsLoading] = useState(false);
@@ -42,8 +42,8 @@ const DashboardHeader = () => {
       },
       onCompleted: (data) => {
         const dashboardLiveStats = data?.dashboardLiveStats;
-        setActiveViewers(dashboardLiveStats?.activeViewers?.toString());
-        setTotalViewers(`${dashboardLiveStats?.totalViewers} Today`);
+        setPlayingNow(dashboardLiveStats?.playingNow || '--');
+        setPlayingNext(`Next: ${dashboardLiveStats?.playingNext || '--'}`);
         if (show?.preferences?.viewerControlMode === ViewerControlMode.JUKEBOX) {
           setCurrentRequests(dashboardLiveStats?.currentRequests?.toString());
           setTotalRequests(`${dashboardLiveStats?.totalRequests} Today`);
@@ -78,10 +78,10 @@ const DashboardHeader = () => {
       ) : (
         <Grid item xs={12} md={6} lg={6}>
           <RevenueCard
-            primary="Active Viewers"
-            secondary={activeViewers}
-            content={totalViewers}
-            iconPrimary={PeopleTwoTone}
+            primary="Playing Now"
+            secondary={playingNow}
+            content={playingNext}
+            iconPrimary={LibraryMusicTwoTone}
             color={theme.palette.secondary.main}
           />
         </Grid>

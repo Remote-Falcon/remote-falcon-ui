@@ -43,7 +43,6 @@ const DashboardCharts = () => {
   dateMinus7.setDate(dateMinus7.getDate() - 7);
   dateMinus7.setHours(0, 0, 0);
   const datePlus1 = new Date();
-  // datePlus1.setDate(datePlus1.getDate() + 1);
   datePlus1.setHours(0, 0, 0);
 
   const [purgeStatsMutation] = useMutation(PURGE_STATS);
