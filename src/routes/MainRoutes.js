@@ -16,6 +16,7 @@ const ViewerPageTemplates = Loadable(lazy(() => import('views/pages/controlPanel
 const Tracker = Loadable(lazy(() => import('views/pages/controlPanel/tracker')));
 const ShowsMap = Loadable(lazy(() => import('views/pages/controlPanel/showsMap')));
 const Admin = Loadable(lazy(() => import('views/pages/controlPanel/admin')));
+const ImageHosting = Loadable(lazy(() => import('views/pages/controlPanel/imageHosting')));
 
 const MainRoutes = {
   path: '/',
@@ -44,6 +45,10 @@ const MainRoutes = {
     {
       path: '/control-panel/remote-falcon-settings',
       element: <ViewerSettings />
+    },
+    {
+      path: '/control-panel/image-hosting',
+      element: <ImageHosting />
     },
     {
       path: '/control-panel/viewer-page',

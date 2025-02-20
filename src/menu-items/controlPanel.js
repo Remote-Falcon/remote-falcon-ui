@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import {
   IconDashboard,
   IconAdjustmentsHorizontal,
@@ -5,9 +7,12 @@ import {
   IconPlaylist,
   IconPalette,
   IconManualGearbox,
-  IconMap
+  IconMap,
+  IconFileUpload
 } from '@tabler/icons';
 import { FormattedMessage } from 'react-intl';
+
+import Chip from '../ui-component/extended/Chip';
 
 const controlPanel = {
   id: 'control-panel-menu-items',
@@ -27,6 +32,19 @@ const controlPanel = {
       type: 'item',
       url: '/control-panel/remote-falcon-settings',
       icon: IconAdjustmentsHorizontal,
+      breadcrumbs: false
+    },
+    {
+      id: 'image-hosting',
+      title: (
+        <>
+          <span style={{ paddingRight: '1em' }}>Image Hosting</span>
+          <Chip label="NEW" chipcolor="primary" />
+        </>
+      ),
+      type: 'item',
+      url: '/control-panel/image-hosting',
+      icon: IconFileUpload,
       breadcrumbs: false
     },
     {
