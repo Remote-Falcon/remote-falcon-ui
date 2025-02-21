@@ -18,6 +18,7 @@ import { DELETE_NOW_PLAYING, RESET_ALL_VOTES } from '../../../utils/graphql/cont
 import { showAlert } from '../../../views/pages/globalPageHelpers';
 import LogoSection from '../LogoSection';
 import LocalizationSection from './LocalizationSection';
+import NotificationSection from './NotificationSection';
 import ProfileSection from './ProfileSection';
 import ViewJukeboxRequests from './ViewJukeboxRequests.modal';
 
@@ -130,9 +131,9 @@ const Header = () => {
 
       <RFSplitButton options={actionOptions} color="error" onClick={(options, selectedIndex) => takeAction(options, selectedIndex)} />
 
-      {/* <Box sx={{ mr: -3 }}> */}
-      {/*  <NotificationSection /> */}
-      {/* </Box> */}
+      <Box sx={{ mr: -3 }}>
+        <NotificationSection />
+      </Box>
 
       <Box sx={{ mr: 1 }}>
         <LocalizationSection />

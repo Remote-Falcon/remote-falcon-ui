@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 
+import { useLazyQuery, useMutation } from '@apollo/client';
 import {
   Avatar,
   Box,
@@ -32,6 +33,8 @@ import { useSelector } from 'store';
 import MainCard from 'ui-component/cards/MainCard';
 import Transitions from 'ui-component/extended/Transitions';
 
+import { GET_NOTIFICATIONS } from '../../../../utils/graphql/controlPanel/queries';
+import { showAlert } from '../../../../views/pages/globalPageHelpers';
 import NotificationModal from './Notification.modal';
 import NotificationList from './NotificationList';
 
@@ -39,6 +42,8 @@ const NotificationSection = () => {
   const theme = useTheme();
   const matchesXs = useMediaQuery(theme.breakpoints.down('md'));
   const { show } = useSelector((state) => state.show);
+
+  const [getNotificationsQuery] = useLazyQuery(GET_NOTIFICATIONS);
 
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -62,18 +67,41 @@ const NotificationSection = () => {
   };
 
   const fetchNotifications = useCallback(async () => {
-    const notificationsResponse = await getNotificationsService();
-    const notificationsData = notificationsResponse?.data;
-    setNotificationsCount(notificationsData.length);
-    let notificationsCount = 0;
-    _.forEach(notificationsData, (notification) => {
-      if (!notification.notificationRead) {
-        notificationsCount += 1;
-      }
+    // const notificationsResponse = await getNotificationsService();
+    // const notificationsData = notificationsResponse?.data;
+    // setNotificationsCount(notificationsData.length);
+    // let notificationsCount = 0;
+    // _.forEach(notificationsData, (notification) => {
+    //   if (!notification.notificationRead) {
+    //     notificationsCount += 1;
+    //   }
+    // });
+    // setNotifications(notificationsData);
+    // setNotificationsUnreadCount(notificationsCount);
+
+    await getNotificationsQuery({
+      context: {
+        headers: {
+          Route: 'Control-Panel'
+        }
+      },
+      fetchPolicy: 'network-only',
+      onCompleted: (data) => {
+        const notificationClone = _.cloneDeep(data?.getNotifications);
+        _.forEach(notificationClone, (notification) => {
+          if (notification.message.length > 40) {
+            notification.preview = `${notification.message.substring(0, 40)}...`;
+          } else {
+            notification.preview = notification.message;
+          }
+        });
+        setNotifications(notificationClone);
+        setNotificationsCount(notificationClone?.length);
+        setNotificationsUnreadCount(notificationClone?.length - 5);
+      },
+      onError: () => {}
     });
-    setNotifications(notificationsData);
-    setNotificationsUnreadCount(notificationsCount);
-  }, []);
+  }, [getNotificationsQuery]);
 
   const closeNotificationModal = () => {
     setTimeout(() => {
@@ -86,7 +114,7 @@ const NotificationSection = () => {
     setSelectedNotification(notification);
     setNotificationModalOpen(true);
     if (!notification.notificationRead) {
-      await markNotificationAsReadService(notification.notificationKey);
+      // await markNotificationAsReadService(notification.notificationKey);
     }
     fetchNotifications();
   };
@@ -219,7 +247,8 @@ const NotificationSection = () => {
                           style={{
                             height: '100%',
                             maxHeight: 'calc(100vh - 205px)',
-                            overflow: 'auto'
+                            overflowY: 'auto',
+                            overflowX: 'hidden'
                           }}
                         >
                           <Grid container direction="column" spacing={2}>

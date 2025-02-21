@@ -14,7 +14,7 @@ const NotificationModal = ({ handleClose, notification }) => (
       left: '50%',
       transform: 'translate(-50%, -50%)'
     }}
-    title={notification.notificationTitle}
+    title={notification.subject}
     content={false}
     secondary={
       <IconButton onClick={handleClose} size="large">
@@ -23,7 +23,7 @@ const NotificationModal = ({ handleClose, notification }) => (
     }
   >
     <CardContent>
-      <ReactMarkdown linkTarget="_blank">{notification.notificationText}</ReactMarkdown>
+      <ReactMarkdown linkTarget="_blank">{notification.message}</ReactMarkdown>
     </CardContent>
     <Divider />
     <CardActions>

@@ -55,7 +55,7 @@ const NotificationList = ({ notifications, openNotificationModal, deleteNotifica
         <>
           <ListItemWrapper onClick={() => openNotificationModal(notification)}>
             <ListItem alignItems="center">
-              <ListItemText primary={notification.notificationTitle} />
+              <ListItemText primary={notification.subject} />
               <Tooltip placement="top" title="Delete Notification">
                 <Stack direction="row" justifyContent="right">
                   <RFLoadingButton
@@ -75,7 +75,7 @@ const NotificationList = ({ notifications, openNotificationModal, deleteNotifica
             </ListItem>
             <Grid container direction="column">
               <Grid item xs={12} sx={{ pb: 2 }}>
-                <Typography variant="subtitle2">{notification.notificationPreview}</Typography>
+                <Typography variant="subtitle2">{notification.preview}</Typography>
               </Grid>
               <Grid item xs={12}>
                 <Grid container>
