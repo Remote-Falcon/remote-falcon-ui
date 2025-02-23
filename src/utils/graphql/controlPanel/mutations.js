@@ -131,3 +131,9 @@ export const DELETE_STATS_WITHIN_RANGE = gql`
     deleteStatsWithinRange(startDate: $startDate, endDate: $endDate, timezone: $timezone)
   }
 `;
+
+export const MARK_NOTIFICATIONS_AS_READ = gql`
+  mutation ($ids: [String]!) @api(name: controlPanel) {
+    markNotificationsAsRead(ids: $ids)
+  }
+`;

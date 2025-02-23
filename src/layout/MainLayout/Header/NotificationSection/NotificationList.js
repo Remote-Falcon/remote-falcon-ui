@@ -79,7 +79,7 @@ const NotificationList = ({ notifications, openNotificationModal, deleteNotifica
               </Grid>
               <Grid item xs={12}>
                 <Grid container>
-                  <Grid item>{!notification.notificationRead && <Chip label="Unread" sx={chipWarningSX} />}</Grid>
+                  <Grid item>{!notification.read && <Chip label="Unread" sx={chipWarningSX} />}</Grid>
                 </Grid>
               </Grid>
             </Grid>

@@ -29,10 +29,12 @@ import {
   markAllNotificationsAsReadService,
   deleteNotificationService
 } from 'services/controlPanel/headerFunctions.service';
-import { useSelector } from 'store';
+import { useDispatch, useSelector } from 'store';
 import MainCard from 'ui-component/cards/MainCard';
 import Transitions from 'ui-component/extended/Transitions';
 
+import { setShow } from '../../../../store/slices/show';
+import { MARK_NOTIFICATIONS_AS_READ } from '../../../../utils/graphql/controlPanel/mutations';
 import { GET_NOTIFICATIONS } from '../../../../utils/graphql/controlPanel/queries';
 import { showAlert } from '../../../../views/pages/globalPageHelpers';
 import NotificationModal from './Notification.modal';
@@ -40,10 +42,12 @@ import NotificationList from './NotificationList';
 
 const NotificationSection = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const matchesXs = useMediaQuery(theme.breakpoints.down('md'));
   const { show } = useSelector((state) => state.show);
 
   const [getNotificationsQuery] = useLazyQuery(GET_NOTIFICATIONS);
+  const [markNotificationsAsReadMutation] = useMutation(MARK_NOTIFICATIONS_AS_READ);
 
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -67,18 +71,6 @@ const NotificationSection = () => {
   };
 
   const fetchNotifications = useCallback(async () => {
-    // const notificationsResponse = await getNotificationsService();
-    // const notificationsData = notificationsResponse?.data;
-    // setNotificationsCount(notificationsData.length);
-    // let notificationsCount = 0;
-    // _.forEach(notificationsData, (notification) => {
-    //   if (!notification.notificationRead) {
-    //     notificationsCount += 1;
-    //   }
-    // });
-    // setNotifications(notificationsData);
-    // setNotificationsUnreadCount(notificationsCount);
-
     await getNotificationsQuery({
       context: {
         headers: {
@@ -88,16 +80,27 @@ const NotificationSection = () => {
       fetchPolicy: 'network-only',
       onCompleted: (data) => {
         const notificationClone = _.cloneDeep(data?.getNotifications);
+        let unreadCount = 0;
         _.forEach(notificationClone, (notification) => {
           if (notification.message.length > 40) {
             notification.preview = `${notification.message.substring(0, 40)}...`;
           } else {
             notification.preview = notification.message;
           }
+          notification.read = false;
+          unreadCount += 1;
+          if (!_.isEmpty(show?.showNotifications)) {
+            _.forEach(show?.showNotifications, (showNotification) => {
+              if (showNotification?.id === notification.id && showNotification?.read && !showNotification?.deleted) {
+                notification.read = true;
+                unreadCount -= 1;
+              }
+            });
+          }
         });
         setNotifications(notificationClone);
+        setNotificationsUnreadCount(unreadCount);
         setNotificationsCount(notificationClone?.length);
-        setNotificationsUnreadCount(notificationClone?.length - 5);
       },
       onError: () => {}
     });
@@ -106,23 +109,73 @@ const NotificationSection = () => {
   const closeNotificationModal = () => {
     setTimeout(() => {
       setNotificationModalOpen(false);
-      fetchNotifications();
     }, 50);
   };
 
   const openNotificationModal = async (notification) => {
     setSelectedNotification(notification);
     setNotificationModalOpen(true);
-    if (!notification.notificationRead) {
-      // await markNotificationAsReadService(notification.notificationKey);
+    const updatedShow = _.cloneDeep({
+      ...show
+    });
+    if (_.isEmpty(updatedShow?.showNotifications)) {
+      await markNotificationsAsReadMutation({
+        context: {
+          headers: {
+            Route: 'Control-Panel'
+          }
+        },
+        variables: {
+          ids: [notification.id]
+        },
+        fetchPolicy: 'network-only',
+        onCompleted: () => {
+          updatedShow.showNotifications = {
+            id: notification.id,
+            read: true,
+            deleted: false
+          };
+          dispatch(
+            setShow({
+              ...show
+            })
+          );
+          fetchNotifications();
+        },
+        onError: () => {}
+      });
+    } else {
+      _.forEach(updatedShow?.showNotifications, (showNotification) => {
+        if (showNotification?.id === notification.id && !showNotification?.read) {
+          markNotificationsAsReadMutation({
+            context: {
+              headers: {
+                Route: 'Control-Panel'
+              }
+            },
+            variables: {
+              ids: [notification.id]
+            },
+            fetchPolicy: 'network-only',
+            onCompleted: async () => {
+              showNotification.read = true;
+              await dispatch(
+                setShow({
+                  ...show
+                })
+              );
+              fetchNotifications();
+            },
+            onError: () => {}
+          });
+        }
+      });
     }
-    fetchNotifications();
   };
 
   const markAllNotificationsAsRead = async () => {
     await markAllNotificationsAsReadService();
     setOpen(false);
-    fetchNotifications();
   };
 
   const deleteNotification = async (event, notification) => {
@@ -136,7 +189,7 @@ const NotificationSection = () => {
   };
 
   useInterval(async () => {
-    fetchNotifications();
+    await fetchNotifications();
   }, 30000);
 
   const prevOpen = useRef(open);
@@ -146,7 +199,7 @@ const NotificationSection = () => {
     }
     prevOpen.current = open;
 
-    fetchNotifications();
+    fetchNotifications().then();
   }, [open, fetchNotifications]);
 
   return (

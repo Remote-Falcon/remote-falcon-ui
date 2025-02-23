@@ -117,6 +117,11 @@ export const GET_SHOW = gql`
         ipAddress
         visitDateTime
       }
+      showNotifications {
+        id
+        read
+        deleted
+      }
     }
   }
 `;
