@@ -60,42 +60,43 @@ const ExternalViewerPage = () => {
 
   const showViewerMessage = useCallback(
     (response) => {
+      const errorMessage = response?.error?.graphQLErrors[0]?.extensions?.message;
       if (response?.success) {
         viewerPageMessageElements.requestSuccessful.current = viewerPageMessageElements?.requestSuccessful?.block;
         mixpanel.track('Viewer Interaction Result', {
           Result: 'Success'
         });
-      } else if (response?.error?.message === 'NAUGHTY') {
+      } else if (errorMessage === 'NAUGHTY') {
         // Do nothing, say nothing
         mixpanel.track('Viewer Interaction Result', {
           Result: 'Naughty'
         });
-      } else if (response?.error?.message === 'SEQUENCE_REQUESTED') {
+      } else if (errorMessage === 'SEQUENCE_REQUESTED') {
         viewerPageMessageElements.requestPlaying.current = viewerPageMessageElements?.requestPlaying?.block;
         mixpanel.track('Viewer Interaction Result', {
           Result: 'Sequence Already Requested'
         });
-      } else if (response?.error?.message === 'INVALID_LOCATION') {
+      } else if (errorMessage === 'INVALID_LOCATION') {
         viewerPageMessageElements.invalidLocation.current = viewerPageMessageElements?.invalidLocation?.block;
         mixpanel.track('Viewer Interaction Result', {
           Result: 'Invalid Location'
         });
-      } else if (response?.error?.message === 'QUEUE_FULL') {
+      } else if (errorMessage === 'QUEUE_FULL') {
         viewerPageMessageElements.queueFull.current = viewerPageMessageElements?.queueFull?.block;
         mixpanel.track('Viewer Interaction Result', {
           Result: 'Queue Full'
         });
-      } else if (response?.error?.message === 'INVALID_CODE') {
+      } else if (errorMessage === 'INVALID_CODE') {
         viewerPageMessageElements.invalidLocationCode.current = viewerPageMessageElements?.invalidLocationCode?.block;
         mixpanel.track('Viewer Interaction Result', {
           Result: 'Invalid Code'
         });
-      } else if (response?.error?.message === 'ALREADY_VOTED') {
+      } else if (errorMessage === 'ALREADY_VOTED') {
         viewerPageMessageElements.alreadyVoted.current = viewerPageMessageElements?.alreadyVoted?.block;
         mixpanel.track('Viewer Interaction Result', {
           Result: 'Already Voted'
         });
-      } else if (response?.error?.message === 'ALREADY_REQUESTED') {
+      } else if (errorMessage === 'ALREADY_REQUESTED') {
         viewerPageMessageElements.alreadyRequested.current = viewerPageMessageElements?.alreadyRequested?.block;
         mixpanel.track('Viewer Interaction Result', {
           Result: 'Viewer Already Requested'
@@ -132,7 +133,13 @@ const ExternalViewerPage = () => {
         if (parseInt(enteredLocationCode, 10) !== parseInt(show?.preferences?.locationCode, 10)) {
           const invalidCodeResponse = {
             error: {
-              message: 'INVALID_CODE'
+              graphQLErrors: [
+                {
+                  extensions: {
+                    message: 'INVALID_CODE'
+                  }
+                }
+              ]
             }
           };
           showViewerMessage(invalidCodeResponse);
@@ -181,7 +188,13 @@ const ExternalViewerPage = () => {
         if (parseInt(enteredLocationCode, 10) !== parseInt(show?.preferences?.locationCode, 10)) {
           const invalidCodeResponse = {
             error: {
-              message: 'INVALID_CODE'
+              graphQLErrors: [
+                {
+                  extensions: {
+                    message: 'INVALID_CODE'
+                  }
+                }
+              ]
             }
           };
           showViewerMessage(invalidCodeResponse);
