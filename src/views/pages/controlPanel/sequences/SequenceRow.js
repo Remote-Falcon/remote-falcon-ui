@@ -13,12 +13,12 @@ import PropTypes from 'prop-types';
 
 import Chip from 'ui-component/extended/Chip';
 
+import SequenceDetails from './SequenceDetails';
 import { playSequenceFromControlPanelService, saveSequencesService } from '../../../../services/controlPanel/mutations.service';
 import { useDispatch, useSelector } from '../../../../store';
 import { setShow } from '../../../../store/slices/show';
 import { PLAY_SEQUENCE_FROM_CONTROL_PANEL, UPDATE_SEQUENCES } from '../../../../utils/graphql/controlPanel/mutations';
 import { showAlert } from '../../globalPageHelpers';
-import SequenceDetails from './SequenceDetails';
 
 function SequenceRow({ provided, sequence, setShowLinearProgress }) {
   const theme = useTheme();

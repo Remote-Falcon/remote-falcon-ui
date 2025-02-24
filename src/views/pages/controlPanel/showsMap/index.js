@@ -11,13 +11,13 @@ import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 import TrackerSkeleton from 'ui-component/cards/Skeleton/TrackerSkeleton';
 
+import MarkerWithInfo from './MarkerWithInfo';
 import { savePreferencesService } from '../../../../services/controlPanel/mutations.service';
 import { setShow } from '../../../../store/slices/show';
 import RFLoadingButton from '../../../../ui-component/RFLoadingButton';
 import { UPDATE_PREFERENCES } from '../../../../utils/graphql/controlPanel/mutations';
 import { SHOWS_ON_MAP } from '../../../../utils/graphql/controlPanel/queries';
 import { showAlert } from '../../globalPageHelpers';
-import MarkerWithInfo from './MarkerWithInfo';
 
 const ShowsMap = () => {
   const dispatch = useDispatch();

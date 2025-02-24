@@ -16,7 +16,7 @@ import {
   Typography
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { IconLogout, IconSettings, IconBook, IconBug } from '@tabler/icons';
+import { IconLogout, IconSettings, IconBook, IconBug } from '@tabler/icons-react';
 import md5 from 'md5';
 import { useNavigate } from 'react-router-dom';
 

@@ -12,15 +12,15 @@ import { useTheme } from '@mui/material/styles';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
+import CreateViewerPageModal from './CreateViewerPage.modal';
+import ManageViewerPagesModal from './ManageViewerPages.modal';
+import ViewerPagePreviewDialog from './ViewerPagePreview.dialog';
 import { savePagesService } from '../../../../services/controlPanel/mutations.service';
 import { useDispatch, useSelector } from '../../../../store';
 import { setShow } from '../../../../store/slices/show';
 import { Environments } from '../../../../utils/enum';
 import { UPDATE_PAGES } from '../../../../utils/graphql/controlPanel/mutations';
 import { showAlert } from '../../globalPageHelpers';
-import CreateViewerPageModal from './CreateViewerPage.modal';
-import ManageViewerPagesModal from './ManageViewerPages.modal';
-import ViewerPagePreviewDialog from './ViewerPagePreview.dialog';
 
 const ViewerPageActions = ({
   activeViewerPageHtml,

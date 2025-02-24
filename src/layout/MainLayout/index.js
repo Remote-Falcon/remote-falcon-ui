@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 
 import { AppBar, Box, Container, CssBaseline, Modal, Toolbar, useMediaQuery } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
-import { IconChevronRight } from '@tabler/icons';
+import { IconChevronRight } from '@tabler/icons-react';
 import { Outlet } from 'react-router-dom';
 
 import useConfig from 'hooks/useConfig';

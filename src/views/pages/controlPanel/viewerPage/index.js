@@ -9,9 +9,9 @@ import { useDispatch, useSelector } from 'store';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 
+import ViewerPageActions from './ViewerPageActions';
 import HtmlValidationSkeleton from '../../../../ui-component/cards/Skeleton/HtmlValidationSkeleton';
 import { showAlertOld } from '../../globalPageHelpers';
-import ViewerPageActions from './ViewerPageActions';
 
 const validationExceptions = [
   'Start tag seen without seeing a doctype first',

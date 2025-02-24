@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { AppBar, Box, IconButton, ClickAwayListener, Grid, Paper, Popper, Toolbar, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { IconDotsVertical } from '@tabler/icons';
+import { IconDotsVertical } from '@tabler/icons-react';
 
 import Transitions from 'ui-component/extended/Transitions';
 

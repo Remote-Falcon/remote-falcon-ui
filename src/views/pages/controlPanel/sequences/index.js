@@ -11,12 +11,12 @@ import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 import RFLoadingButton from 'ui-component/RFLoadingButton';
 
+import SequenceRow from './SequenceRow';
 import { saveSequencesService } from '../../../../services/controlPanel/mutations.service';
 import { setShow } from '../../../../store/slices/show';
 import RFSplitButton from '../../../../ui-component/RFSplitButton';
 import { UPDATE_SEQUENCES } from '../../../../utils/graphql/controlPanel/mutations';
 import { showAlert } from '../../globalPageHelpers';
-import SequenceRow from './SequenceRow';
 
 const Sequences = () => {
   const dispatch = useDispatch();

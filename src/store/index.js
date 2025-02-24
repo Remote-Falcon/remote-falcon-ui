@@ -4,8 +4,8 @@ import { persistStore } from 'redux-persist';
 
 import Reactotron from 'ReactotronConfig';
 
-import { Environments } from '../utils/enum';
 import rootReducer from './reducer';
+import { Environments } from '../utils/enum';
 
 const store = configureStore({
   reducer: rootReducer,

@@ -3,7 +3,7 @@ import { Buffer } from 'buffer';
 import { createContext, useEffect } from 'react';
 
 import { useLazyQuery, useMutation, useApolloClient } from '@apollo/client';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 

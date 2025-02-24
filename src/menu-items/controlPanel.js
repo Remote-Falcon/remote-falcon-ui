@@ -9,7 +9,7 @@ import {
   IconManualGearbox,
   IconMap,
   IconFileUpload
-} from '@tabler/icons';
+} from '@tabler/icons-react';
 import { FormattedMessage } from 'react-intl';
 
 import Chip from '../ui-component/extended/Chip';

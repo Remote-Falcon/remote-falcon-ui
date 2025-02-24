@@ -6,7 +6,7 @@ import HomeTwoToneIcon from '@mui/icons-material/HomeTwoTone';
 import { Box, Card, Divider, Grid, Typography } from '@mui/material';
 import MuiBreadcrumbs from '@mui/material/Breadcrumbs';
 import { useTheme } from '@mui/material/styles';
-import { IconTallymark1 } from '@tabler/icons';
+import { IconTallymark1 } from '@tabler/icons-react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 

@@ -3,7 +3,7 @@ import LaunchIcon from '@mui/icons-material/Launch';
 import { Box, Button, Divider, Drawer, Grid, Typography, Stack, Link } from '@mui/material';
 import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import ReactMarkdown from 'react-markdown';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import remarkBreaks from 'remark-breaks';
 

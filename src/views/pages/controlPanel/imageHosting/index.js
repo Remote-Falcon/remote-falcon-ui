@@ -27,8 +27,8 @@ import { useDispatch, useSelector } from 'store';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 
-import { showAlert } from '../../globalPageHelpers';
 import { uploadImageService, getImagesService, deleteImageService } from './index.service';
+import { showAlert } from '../../globalPageHelpers';
 
 const ImageHosting = () => {
   const theme = useTheme();

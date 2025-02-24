@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Drawer, Fab, Grid, IconButton, Tooltip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { IconSettings } from '@tabler/icons';
+import { IconSettings } from '@tabler/icons-react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 import { gridSpacing } from 'store/constant';
