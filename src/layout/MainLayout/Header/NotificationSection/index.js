@@ -23,31 +23,22 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Link } from 'react-router-dom';
 
 import useInterval from 'hooks/useInterval';
-import {
-  getNotificationsService,
-  markNotificationAsReadService,
-  markAllNotificationsAsReadService,
-  deleteNotificationService
-} from 'services/controlPanel/headerFunctions.service';
-import { useDispatch, useSelector } from 'store';
+import { deleteNotificationService } from 'services/controlPanel/headerFunctions.service';
 import MainCard from 'ui-component/cards/MainCard';
 import Transitions from 'ui-component/extended/Transitions';
 
-import { setShow } from '../../../../store/slices/show';
-import { MARK_NOTIFICATIONS_AS_READ } from '../../../../utils/graphql/controlPanel/mutations';
+import { DELETE_NOTIFICATION_FOR_USER, MARK_NOTIFICATIONS_AS_READ } from '../../../../utils/graphql/controlPanel/mutations';
 import { GET_NOTIFICATIONS } from '../../../../utils/graphql/controlPanel/queries';
-import { showAlert } from '../../../../views/pages/globalPageHelpers';
 import NotificationModal from './Notification.modal';
 import NotificationList from './NotificationList';
 
 const NotificationSection = () => {
   const theme = useTheme();
-  const dispatch = useDispatch();
   const matchesXs = useMediaQuery(theme.breakpoints.down('md'));
-  const { show } = useSelector((state) => state.show);
 
   const [getNotificationsQuery] = useLazyQuery(GET_NOTIFICATIONS);
   const [markNotificationsAsReadMutation] = useMutation(MARK_NOTIFICATIONS_AS_READ);
+  const [deleteNotificationForUserMutation] = useMutation(DELETE_NOTIFICATION_FOR_USER);
 
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -79,28 +70,23 @@ const NotificationSection = () => {
       },
       fetchPolicy: 'network-only',
       onCompleted: (data) => {
-        const notificationClone = _.cloneDeep(data?.getNotifications);
+        const showNotifications = _.cloneDeep(data?.getNotifications);
+        const sortedShowNotifications = _.orderBy(showNotifications, ['notification.id'], ['desc']);
         let unreadCount = 0;
-        _.forEach(notificationClone, (notification) => {
-          if (notification.message.length > 40) {
-            notification.preview = `${notification.message.substring(0, 40)}...`;
-          } else {
-            notification.preview = notification.message;
+        _.forEach(showNotifications, (showNotification) => {
+          if (!showNotification?.read && !showNotification?.deleted) {
+            unreadCount += 1;
           }
-          notification.read = false;
-          unreadCount += 1;
-          if (!_.isEmpty(show?.showNotifications)) {
-            _.forEach(show?.showNotifications, (showNotification) => {
-              if (showNotification?.id === notification.id && showNotification?.read && !showNotification?.deleted) {
-                notification.read = true;
-                unreadCount -= 1;
-              }
-            });
+          if (showNotification?.notification?.message?.length > 40) {
+            showNotification.notification.preview = `${showNotification?.notification?.message?.substring(0, 40)}...`;
+          } else {
+            showNotification.notification.preview = showNotification?.notification?.message;
           }
         });
-        setNotifications(notificationClone);
+
+        setNotifications(sortedShowNotifications);
         setNotificationsUnreadCount(unreadCount);
-        setNotificationsCount(notificationClone?.length);
+        setNotificationsCount(showNotifications?.length);
       },
       onError: () => {}
     });
@@ -115,81 +101,68 @@ const NotificationSection = () => {
   const openNotificationModal = async (notification) => {
     setSelectedNotification(notification);
     setNotificationModalOpen(true);
-    const updatedShow = _.cloneDeep({
-      ...show
-    });
-    if (_.isEmpty(updatedShow?.showNotifications)) {
-      await markNotificationsAsReadMutation({
-        context: {
-          headers: {
-            Route: 'Control-Panel'
-          }
-        },
-        variables: {
-          ids: [notification.id]
-        },
-        fetchPolicy: 'network-only',
-        onCompleted: () => {
-          updatedShow.showNotifications = {
-            id: notification.id,
-            read: true,
-            deleted: false
-          };
-          dispatch(
-            setShow({
-              ...show
-            })
-          );
-          fetchNotifications();
-        },
-        onError: () => {}
-      });
-    } else {
-      _.forEach(updatedShow?.showNotifications, (showNotification) => {
-        if (showNotification?.id === notification.id && !showNotification?.read) {
-          markNotificationsAsReadMutation({
-            context: {
-              headers: {
-                Route: 'Control-Panel'
-              }
-            },
-            variables: {
-              ids: [notification.id]
-            },
-            fetchPolicy: 'network-only',
-            onCompleted: async () => {
-              showNotification.read = true;
-              await dispatch(
-                setShow({
-                  ...show
-                })
-              );
-              fetchNotifications();
-            },
-            onError: () => {}
-          });
+    await markNotificationsAsReadMutation({
+      context: {
+        headers: {
+          Route: 'Control-Panel'
         }
-      });
-    }
+      },
+      variables: {
+        ids: [notification?.notification?.id]
+      },
+      fetchPolicy: 'network-only',
+      onCompleted: () => {
+        fetchNotifications().then();
+      },
+      onError: () => {}
+    });
   };
 
   const markAllNotificationsAsRead = async () => {
-    await markAllNotificationsAsReadService();
-    setOpen(false);
+    const notificationIds = notifications.map((notification) => notification?.notification?.id);
+    await markNotificationsAsReadMutation({
+      context: {
+        headers: {
+          Route: 'Control-Panel'
+        }
+      },
+      variables: {
+        ids: notificationIds
+      },
+      fetchPolicy: 'network-only',
+      onCompleted: () => {
+        fetchNotifications().then();
+      },
+      onError: () => {}
+    });
   };
 
   const deleteNotification = async (event, notification) => {
     event.preventDefault();
     event.stopPropagation();
     setIsDeleting(true);
-    await deleteNotificationService(notification.notificationKey);
-    await fetchNotifications();
-    setIsDeleting(false);
+    console.log(notification);
+    await deleteNotificationForUserMutation({
+      context: {
+        headers: {
+          Route: 'Control-Panel'
+        }
+      },
+      variables: {
+        id: notification?.notification?.id
+      },
+      fetchPolicy: 'network-only',
+      onCompleted: () => {
+        setIsDeleting(false);
+        fetchNotifications().then();
+      },
+      onError: () => {}
+    });
     setNotificationModalOpen(false);
   };
 
   useInterval(async () => {
-    await fetchNotifications();
+    await fetchNotifications().then();
   }, 30000);
 
   const prevOpen = useRef(open);
@@ -198,9 +171,11 @@ const NotificationSection = () => {
       anchorRef.current.focus();
     }
     prevOpen.current = open;
+  }, [open]);
 
+  useEffect(() => {
     fetchNotifications().then();
-  }, [open, fetchNotifications]);
+  }, [fetchNotifications]);
 
   return (
     <>

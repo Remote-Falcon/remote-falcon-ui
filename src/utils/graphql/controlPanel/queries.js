@@ -117,11 +117,6 @@ export const GET_SHOW = gql`
         ipAddress
         visitDateTime
       }
-      showNotifications {
-        id
-        read
-        deleted
-      }
     }
   }
 `;
@@ -309,9 +304,13 @@ export const GET_SHOW_BY_SHOW_SUBDOMAIN = gql`
 export const GET_NOTIFICATIONS = gql`
   query @api(name: controlPanel) {
     getNotifications {
-      id
-      subject
-      message
+      notification {
+        id
+        subject
+        message
+      }
+      read
+      deleted
     }
   }
 `;

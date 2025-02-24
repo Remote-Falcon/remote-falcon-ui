@@ -134,6 +134,28 @@ export const DELETE_STATS_WITHIN_RANGE = gql`
 
 export const MARK_NOTIFICATIONS_AS_READ = gql`
   mutation ($ids: [String]!) @api(name: controlPanel) {
-    markNotificationsAsRead(ids: $ids)
+    markNotificationsAsRead(ids: $ids) {
+      notification {
+        id
+        subject
+        message
+      }
+      read
+      deleted
+    }
+  }
+`;
+
+export const DELETE_NOTIFICATION_FOR_USER = gql`
+  mutation ($id: String!) @api(name: controlPanel) {
+    deleteNotificationForUser(id: $id) {
+      notification {
+        id
+        subject
+        message
+      }
+      read
+      deleted
+    }
   }
 `;
