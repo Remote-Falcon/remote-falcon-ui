@@ -1,11 +1,11 @@
 # Step 1: Create the build artifacts
-FROM node:16.14.0-alpine AS build
+FROM node:22.14.0-alpine AS build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json ./
 COPY package-lock.json ./
 RUN npm ci --silent
-RUN npm install react-scripts@3.4.1 -g --silent
+RUN npm install react-scripts@5.0.1 -g --silent
 
 COPY . ./
 
@@ -39,7 +39,7 @@ ARG REACT_APP_SOCIAL_META=$SOCIAL_META
 RUN npm run build
 
 # Step 2: Create the compact production image
-FROM node:16.14.0-alpine AS production
+FROM node:22.14.0-alpine AS production
 WORKDIR /app
 COPY --from=build /app/build ./build
 RUN npm install serve -g --silent
