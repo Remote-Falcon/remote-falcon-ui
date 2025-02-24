@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { Grid, TextField, Stack, Typography, Modal } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import moment from 'moment';
@@ -16,8 +16,6 @@ import RFLoadingButton from 'ui-component/RFLoadingButton';
 import { ViewerControlMode } from 'utils/enum';
 import { DASHBOARD_STATS } from 'utils/graphql/controlPanel/queries';
 
-import { DELETE_STATS_WITHIN_RANGE, PURGE_STATS } from '../../../../utils/graphql/controlPanel/mutations';
-import { showAlert } from '../../globalPageHelpers';
 import ApexBarChart from './ApexBarChart';
 import ApexLineChart from './ApexLineChart';
 import DeleteStatsModal from './DeleteStats.modal';
@@ -33,6 +31,8 @@ import {
   downloadStatsToExcel,
   validateDatePicker
 } from './index.service';
+import { DELETE_STATS_WITHIN_RANGE, PURGE_STATS } from '../../../../utils/graphql/controlPanel/mutations';
+import { showAlert } from '../../globalPageHelpers';
 
 const DashboardCharts = () => {
   const theme = useTheme();

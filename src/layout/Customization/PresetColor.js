@@ -1,6 +1,6 @@
 import { Avatar, Grid } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { IconChecks } from '@tabler/icons';
+import { IconChecks } from '@tabler/icons-react';
 import PropTypes from 'prop-types';
 
 import theme1 from 'assets/scss/_theme1.module.scss';

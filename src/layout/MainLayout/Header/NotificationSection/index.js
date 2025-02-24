@@ -16,7 +16,7 @@ import {
   Modal
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { IconBell } from '@tabler/icons';
+import { IconBell } from '@tabler/icons-react';
 import _ from 'lodash';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Link } from 'react-router-dom';

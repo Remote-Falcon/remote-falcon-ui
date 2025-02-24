@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Avatar, Box, Card, Grid, InputAdornment, OutlinedInput, Popper } from '@mui/material';
 import { useTheme, styled } from '@mui/material/styles';
 import { shouldForwardProp } from '@mui/system';
-import { IconAdjustmentsHorizontal, IconSearch, IconX } from '@tabler/icons';
+import { IconAdjustmentsHorizontal, IconSearch, IconX } from '@tabler/icons-react';
 import PopupState, { bindPopper, bindToggle } from 'material-ui-popup-state';
 import PropTypes from 'prop-types';
 

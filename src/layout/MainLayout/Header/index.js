@@ -5,7 +5,7 @@ import { useMutation } from '@apollo/client';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Avatar, Box, Modal, CircularProgress, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { IconMenu2 } from '@tabler/icons';
+import { IconMenu2 } from '@tabler/icons-react';
 import _ from 'lodash';
 
 import Customization from 'layout/Customization';

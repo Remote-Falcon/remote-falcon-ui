@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import Carousel from 'react-images';
+import Carousel from 'react-responsive-carousel';
 
 const LightBox = ({ currentImage, photos }) => (
   <>

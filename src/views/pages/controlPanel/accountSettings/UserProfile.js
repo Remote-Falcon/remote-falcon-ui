@@ -15,10 +15,10 @@ import { setShow } from 'store/slices/show';
 import Avatar from 'ui-component/extended/Avatar';
 import { UPDATE_SHOW, UPDATE_USER_PROFILE } from 'utils/graphql/controlPanel/mutations';
 
-import { StatusResponse } from '../../../../utils/enum';
-import { showAlert } from '../../globalPageHelpers';
 import UpdateEmailModal from './UpdateEmail.modal';
 import UpdateShowNameModal from './UpdateShowName.modal';
+import { StatusResponse } from '../../../../utils/enum';
+import { showAlert } from '../../globalPageHelpers';
 
 const UserProfile = ({ gravatar, setShowLinearProgress }) => {
   const theme = useTheme();

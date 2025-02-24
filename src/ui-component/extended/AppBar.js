@@ -19,7 +19,7 @@ import {
   useScrollTrigger
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { IconBook, IconLogin, IconChevronRight, IconMan } from '@tabler/icons';
+import { IconBook, IconLogin, IconChevronRight, IconMan } from '@tabler/icons-react';
 import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';
 
