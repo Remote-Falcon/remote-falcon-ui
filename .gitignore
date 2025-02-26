@@ -34,6 +34,7 @@ chrome-user-data
 
 # production
 /build
+/dist
 
 # misc
 .env
