@@ -41,6 +41,7 @@ export const GET_SHOW = gql`
       showName
       preferences {
         viewerControlEnabled
+        viewerPageViewOnly
         viewerControlMode
         resetVotes
         jukeboxDepth

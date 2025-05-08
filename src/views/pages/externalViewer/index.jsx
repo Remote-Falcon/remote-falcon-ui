@@ -350,7 +350,7 @@ const ExternalViewerPage = () => {
                 <>
                   <div
                     className={votingListClassname}
-                    onClick={(e) => voteForSequence(e)}
+                    onClick={(e) => show?.preferences?.viewerPageViewOnly ? _.noop() : voteForSequence(e)}
                     data-key={sequence.name}
                     data-key-2={sequence.displayName}
                   >
@@ -395,7 +395,7 @@ const ExternalViewerPage = () => {
                       <>
                         <div
                           className={categorizedVotingListClassname}
-                          onClick={(e) => voteForSequence(e)}
+                          onClick={(e) => show?.preferences?.viewerPageViewOnly ? _.noop() : voteForSequence(e)}
                           data-key={categorizedSequence.name}
                         >
                           {sequenceImageElement}
@@ -491,7 +491,7 @@ const ExternalViewerPage = () => {
               <>
                 <div
                   className={jukeboxListClassname}
-                  onClick={(e) => addSequenceToQueue(e)}
+                  onClick={(e) => show?.preferences?.viewerPageViewOnly ? _.noop() : addSequenceToQueue(e)}
                   data-key={sequence.name}
                   data-key-2={sequence.displayName}
                 >
@@ -528,7 +528,7 @@ const ExternalViewerPage = () => {
                     <>
                       <div
                         className={categorizedJukeboxListClassname}
-                        onClick={(e) => addSequenceToQueue(e)}
+                        onClick={(e) => show?.preferences?.viewerPageViewOnly ? _.noop() : addSequenceToQueue(e)}
                         data-key={categorizedSequence.name}
                       >
                         {sequenceImageElement}

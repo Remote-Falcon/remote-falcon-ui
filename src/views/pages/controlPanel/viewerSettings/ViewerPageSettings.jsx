@@ -113,6 +113,26 @@ const ViewerPageSettings = ({ setShowLinearProgress }) => {
     });
   };
 
+  const handleViewerPageViewOnlySwitch = (event, value) => {
+    setShowLinearProgress(true);
+    const updatedPreferences = _.cloneDeep({
+      ...show?.preferences,
+      viewerPageViewOnly: value
+    });
+    savePreferencesService(updatedPreferences, updatePreferencesMutation, (response) => {
+      dispatch(
+          setShow({
+            ...show,
+            preferences: {
+              ...updatedPreferences
+            }
+          })
+      );
+      showAlert(dispatch, response?.toast);
+      setShowLinearProgress(false);
+    });
+  };
+
   useEffect(() => {
     getViewerPageOptions();
   }, [getViewerPageOptions]);
@@ -120,6 +140,32 @@ const ViewerPageSettings = ({ setShowLinearProgress }) => {
   return (
     <Grid item xs={12}>
       <MainCard content={false}>
+        <Divider />
+        <CardActions>
+          <Grid container alignItems="center" justifyContent="space-between" spacing={2}>
+            <Grid item xs={12} md={6} lg={4}>
+              <Stack direction="row" spacing={2} pb={1}>
+                <Typography variant="h4">Viewer Page View Only</Typography>
+                <InfoTwoToneIcon
+                    onClick={() =>
+                        window.open(
+                            'https://docs.remotefalcon.com/docs/docs/control-panel/remote-falcon-settings#viewer-page-view-only',
+                            '_blank',
+                            'noreferrer'
+                        )
+                    }
+                    fontSize="small"
+                />
+              </Stack>
+              <Typography component="div" variant="caption">
+                If enabled, viewers will not be able to interact with your viewer page (ie. make requests or vote).
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={6} lg={4}>
+              <Switch color="primary" checked={show?.preferences?.viewerPageViewOnly} onChange={handleViewerPageViewOnlySwitch} />
+            </Grid>
+          </Grid>
+        </CardActions>
         <Divider />
         <CardActions>
           <Grid container alignItems="center" justifyContent="space-between" spacing={2}>

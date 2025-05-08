@@ -45,6 +45,7 @@ export const GET_SHOW = gql`
       }
       preferences {
         viewerControlEnabled
+        viewerPageViewOnly
         viewerControlMode
         resetVotes
         jukeboxDepth
@@ -231,6 +232,7 @@ export const GET_SHOW_BY_SHOW_SUBDOMAIN = gql`
       }
       preferences {
         viewerControlEnabled
+        viewerPageViewOnly
         viewerControlMode
         resetVotes
         jukeboxDepth

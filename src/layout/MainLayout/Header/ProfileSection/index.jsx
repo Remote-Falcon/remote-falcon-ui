@@ -71,7 +71,7 @@ const ProfileSection = () => {
   useEffect(() => {
     let showUrl = `https://${show?.showSubdomain}.remotefalcon.com`;
     if (import.meta.env.VITE_HOST_ENV === Environments.LOCAL) {
-      showUrl = `http://${show?.showSubdomain}.localhost:3000`;
+      showUrl = `http://${show?.showSubdomain}.localhost:5173`;
     } else if (import.meta.env.VITE_HOST_ENV === Environments.TEST) {
       showUrl = `https://${show?.showSubdomain}.remotefalcon.dev`;
     }
