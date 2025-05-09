@@ -157,6 +157,9 @@ const ViewerPage = () => {
                       />
                     </Grid>
                     <Grid item xs={6}>
+                      <Typography variant="h3" align="center" color="error" mt={-7} pb={4}>
+                        NOTE! This preview displays all page elements and is not based on current viewer control settings!
+                      </Typography>
                       <iframe title="viewerPagePreview" src={activeViewerPageHtmlBase64} style={{ height: '100%', width: '100%' }} />
                     </Grid>
                   </Grid>
