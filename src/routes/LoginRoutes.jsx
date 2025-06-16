@@ -6,6 +6,7 @@ import Loadable from '../ui-component/Loadable';
 import GuestGuard from '../utils/route-guard/GuestGuard';
 
 const Landing = Loadable(lazy(() => import('../views/pages/landing')));
+const NotFound = Loadable(lazy(() => import('../views/pages/NotFound')));
 const AuthLogin = Loadable(lazy(() => import('../views/pages/authentication/Login')));
 const AuthRegister = Loadable(lazy(() => import('../views/pages/authentication/Register')));
 const AuthForgotPassword = Loadable(lazy(() => import('../views/pages/authentication/ForgotPassword')));
@@ -28,6 +29,10 @@ const LoginRoutes = {
     {
       path: '/',
       element: <Landing />
+    },
+    {
+      path: '/404',
+      element: <NotFound />
     },
     {
       path: '/signin',

@@ -69,9 +69,10 @@ const ProfileSection = () => {
 
   const prevOpen = useRef(open);
   useEffect(() => {
+    const swapCP = import.meta.env.VITE_SWAP_CP === 'true';
     let showUrl = `https://${show?.showSubdomain}.remotefalcon.com`;
     if (import.meta.env.VITE_HOST_ENV === Environments.LOCAL) {
-      showUrl = `http://${show?.showSubdomain}.localhost:5173`;
+      showUrl = swapCP ? 'http://localhost:5173' : `http://${show?.showSubdomain}.localhost:5173`;
     } else if (import.meta.env.VITE_HOST_ENV === Environments.TEST) {
       showUrl = `https://${show?.showSubdomain}.remotefalcon.dev`;
     }
