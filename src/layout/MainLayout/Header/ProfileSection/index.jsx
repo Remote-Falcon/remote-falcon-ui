@@ -16,7 +16,7 @@ import {
   Typography
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { IconLogout, IconSettings, IconBook, IconBug } from '@tabler/icons-react';
+import {IconLogout, IconSettings, IconBook, IconBug, IconAi} from '@tabler/icons-react';
 import md5 from 'md5';
 import { useNavigate } from 'react-router-dom';
 
@@ -204,6 +204,16 @@ const ProfileSection = () => {
                           }
                         }}
                       >
+                        <ListItemButton
+                          sx={{ borderRadius: `${borderRadius}px` }}
+                          selected={selectedIndex === 2}
+                          onClick={() => window.open(`https://us.posthog.com/external_surveys/0198d3fa-23d1-0000-b6d5-e212a46a5b92?distinct_id=${show.email}`, '_blank', 'noreferrer')}
+                        >
+                          <ListItemIcon>
+                            <IconAi stroke={1.5} size="20px" />
+                          </ListItemIcon>
+                          <ListItemText primary={<Typography variant="body2">Ask Wattson Beta</Typography>} />
+                        </ListItemButton>
                         <ListItemButton
                           sx={{ borderRadius: `${borderRadius}px` }}
                           selected={selectedIndex === 0}
