@@ -6,10 +6,13 @@ import { useSelector } from '../../../../../store';
 
 import NavCollapse from '../NavCollapse';
 import NavItem from '../NavItem';
+import {useFeatureFlagPayload} from "posthog-js/react";
 
 const NavGroup = ({ item }) => {
   const theme = useTheme();
   const { show } = useSelector((state) => state.show);
+
+  const askWattsonPayload = useFeatureFlagPayload('ask-wattson');
 
   // menu list collapse & items
   const items = item.children?.map((menu) => {
@@ -17,6 +20,9 @@ const NavGroup = ({ item }) => {
       if (show?.showRole !== 'ADMIN') {
         return <></>;
       }
+    }
+    if (menu.id === 'ask-wattson' && !askWattsonPayload?.includes(show?.showSubdomain)) {
+      return <></>;
     }
     switch (menu.type) {
       case 'collapse':

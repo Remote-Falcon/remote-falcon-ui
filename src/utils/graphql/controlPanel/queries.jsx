@@ -325,3 +325,15 @@ export const GET_NOTIFICATIONS = gql`
     }
   }
 `;
+
+export const ASK_WATTSON = gql`
+  query($prompt: String!) @api(name: controlPanel) {
+    askWattson(prompt: $prompt) {
+        choices {
+            message {
+                content
+            }
+        }
+    }
+}
+`;

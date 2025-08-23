@@ -206,16 +206,6 @@ const ProfileSection = () => {
                       >
                         <ListItemButton
                           sx={{ borderRadius: `${borderRadius}px` }}
-                          selected={selectedIndex === 2}
-                          onClick={() => window.open(`https://us.posthog.com/external_surveys/0198d3fa-23d1-0000-b6d5-e212a46a5b92?distinct_id=${show.email}`, '_blank', 'noreferrer')}
-                        >
-                          <ListItemIcon>
-                            <IconAi stroke={1.5} size="20px" />
-                          </ListItemIcon>
-                          <ListItemText primary={<Typography variant="body2">Ask Wattson Beta</Typography>} />
-                        </ListItemButton>
-                        <ListItemButton
-                          sx={{ borderRadius: `${borderRadius}px` }}
                           selected={selectedIndex === 0}
                           onClick={(event) => handleListItemClick(event, 0, '/control-panel/account-settings')}
                         >

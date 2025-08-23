@@ -8,7 +8,7 @@ import {
   IconPalette,
   IconManualGearbox,
   IconMap,
-  IconFileUpload
+  IconFileUpload, IconAi
 } from '@tabler/icons-react';
 import { FormattedMessage } from 'react-intl';
 
@@ -18,6 +18,18 @@ const controlPanel = {
   id: 'control-panel-menu-items',
   type: 'group',
   children: [
+    {
+      id: 'ask-wattson',
+      title: (
+        <>
+          <span style={{ paddingRight: '1em' }}>Ask Wattson</span>
+        </>
+      ),
+      type: 'item',
+      url: '/control-panel/ask-wattson',
+      icon: IconAi,
+      breadcrumbs: false
+    },
     {
       id: 'dashboard',
       title: <FormattedMessage id="dashboard" />,
@@ -39,7 +51,6 @@ const controlPanel = {
       title: (
         <>
           <span style={{ paddingRight: '1em' }}>Image Hosting</span>
-          <Chip label="NEW" chipcolor="primary" sx={{ height: 13 }} />
         </>
       ),
       type: 'item',
