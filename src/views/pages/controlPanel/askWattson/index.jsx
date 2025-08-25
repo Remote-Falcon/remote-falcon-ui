@@ -7,8 +7,8 @@ import {gridSpacing} from "../../../../store/constant";
 import {Box, Grid} from "@mui/material";
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import remarkBreaks from "remark-breaks";
-import {useFeatureFlagPayload} from "posthog-js/react";
 import mixpanel from "mixpanel-browser";
+import useIsFeatureFlagEnabled from "../../../../utils/featureFlags";
 
 // Storage key for chat history
 const STORAGE_KEY = 'wattson_chat_history';
@@ -19,7 +19,7 @@ const AskWattson = () => {
   const dispatch = useDispatch();
   const { show } = useSelector((state) => state.show);
 
-  const askWattsonPayload = useFeatureFlagPayload('ask-wattson');
+  const isAskWattsonEnabled = useIsFeatureFlagEnabled('ask-wattson', show?.showSubdomain);
 
   // Storage key (no user-specific partitioning)
   const getUserStorageKey = () => STORAGE_KEY;
@@ -196,7 +196,7 @@ const AskWattson = () => {
 
   return (
     <Box sx={{ mt: 0, height: 'calc(100vh - 130px)', overflow: 'hidden' }}>
-      {askWattsonPayload?.includes(show?.showSubdomain) ? (
+      {isAskWattsonEnabled ? (
         <Grid container spacing={gridSpacing} sx={{ height: '100%', overflow: 'hidden' }}>
           <Grid item xs={12} sx={{ height: '100%', overflow: 'hidden' }}>
             <div className="wattson-chat">
