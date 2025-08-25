@@ -1,6 +1,7 @@
 import { Buffer } from 'buffer';
 
 import { createContext, useEffect } from 'react';
+import { usePostHog } from 'posthog-js/react';
 
 import { useLazyQuery, useMutation, useApolloClient } from '@apollo/client';
 import jwtDecode from 'jwt-decode';
@@ -47,6 +48,9 @@ export const JWTProvider = ({ children }) => {
 
   const client = useApolloClient();
 
+  // PostHog instance (available because PostHogProvider wraps the app in index.jsx)
+  const posthog = usePostHog?.();
+
   const [signUpMutation] = useMutation(SIGN_UP);
   const [verifyEmailMutation] = useMutation(VERIFY_EMAIL);
   const [forgotPasswordMutation] = useMutation(FORGOT_PASSWORD);
@@ -58,6 +62,10 @@ export const JWTProvider = ({ children }) => {
   const logout = () => {
     client.clearStore();
     setSession(null);
+    // Clear PostHog identity on logout to avoid cross-user leakage
+    try {
+      posthog?.reset?.();
+    } catch (_) {}
     dispatch(startLogoutAction());
   };
 
@@ -81,6 +89,16 @@ export const JWTProvider = ({ children }) => {
                   ...showData
                 })
               );
+              // Identify this user/show in PostHog using the showSubdomain as distinct_id
+              try {
+                if (posthog && showData?.showSubdomain) {
+                  posthog.identify(showData.showSubdomain, {
+                    email: showData?.email,
+                    showName: showData?.showName,
+                    showRole: showData?.showRole
+                  });
+                }
+              } catch (_) {}
             },
             onError: () => {
               logout();
@@ -121,6 +139,16 @@ export const JWTProvider = ({ children }) => {
                 ...showData
               })
             );
+            // Identify this user/show in PostHog using the showSubdomain as distinct_id
+            try {
+              if (posthog && showData?.showSubdomain) {
+                posthog.identify(showData.showSubdomain, {
+                  email: showData?.email,
+                  showName: showData?.showName,
+                  showRole: showData?.showRole
+                });
+              }
+            } catch (_) {}
           }
         });
       },
