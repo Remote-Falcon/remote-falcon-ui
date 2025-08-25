@@ -328,13 +328,10 @@ export const GET_NOTIFICATIONS = gql`
 `;
 
 export const ASK_WATTSON = gql`
-  query($prompt: String!) @api(name: controlPanel) {
-    askWattson(prompt: $prompt) {
-        choices {
-            message {
-                content
-            }
-        }
+  query($prompt: String!, $previousResponseId: String) @api(name: controlPanel) {
+    askWattson(prompt: $prompt, previousResponseId: $previousResponseId) {
+        responseId
+        text
     }
 }
 `;

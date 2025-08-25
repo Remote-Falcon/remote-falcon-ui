@@ -20,6 +20,19 @@ const AskWattson = () => {
   const { show } = useSelector((state) => state.show);
 
   const isAskWattsonEnabled = useIsFeatureFlagEnabled('ask-wattson', show?.showSubdomain);
+  
+  const [loadingMessages, setLoadingMessages] = useState([
+      "🤖 Training the reindeer model...",
+      "💡 Neural net untangling holiday lights...",
+      "🎄 Fetching results from the cloud... of snow.",
+      "🔌 Calibrating twinkle weights and biases...",
+      "🌟 Generating bright ideas with GPT (Glow-Powered Trees).",
+      "🎅 Santa’s running inference on your wishlist...",
+      "✨ Optimizing holiday joy... please stand by.",
+      "🕯️ Processing festive queries at light speed",
+      "🔦 Loading your illuminations... with extra AI-sparkle.",
+      "🎶 Synthesizing fa-la-la-language patterns"
+  ]);
 
   // Storage key (no user-specific partitioning)
   const getUserStorageKey = () => STORAGE_KEY;
@@ -43,6 +56,7 @@ const AskWattson = () => {
     return [
       {
         id: 'welcome',
+        responseId: null,
         role: 'assistant',
         content:
           `Hey, ${show.showName}! I'm Wattson, your light show assistant. You can ask me anything about Remote Falcon, FPP, or xLights!`,
@@ -82,6 +96,7 @@ const AskWattson = () => {
       setMessages([
         {
           id: 'welcome',
+          responseId: null,
           role: 'assistant',
           content:
             `Hey, ${show.showName}! I'm Wattson, your light show assistant. You can ask me anything about Remote Falcon, FPP, or xLights!`,
@@ -121,8 +136,13 @@ const AskWattson = () => {
   const handleSubmit = async () => {
     if (inputValue.trim() === '' || isLoading) return;
 
+    const previousResponseId = Array.isArray(messages)
+      ? messages.slice().reverse().find((m) => m.role === 'assistant' && m.responseId)?.responseId ?? null
+      : null;
+
     const userMessage = {
       id: Date.now().toString(),
+      responseId: null,
       role: 'user',
       content: inputValue.trim(),
       timestamp: new Date()
@@ -143,52 +163,32 @@ const AskWattson = () => {
         }
       },
       variables: {
-        prompt: inputValue.trim()
+        prompt: inputValue.trim(),
+        previousResponseId
       },
       fetchPolicy: 'network-only',
       onCompleted: (data) => {
-        const agentResponse =
-          data && data.askWattson && data.askWattson.choices && data.askWattson.choices[0] &&
-          data.askWattson.choices[0].message && data.askWattson.choices[0].message.content;
-
         mixpanel.track('Ask Wattson', {
           Prompt: inputValue.trim(),
-          Response: agentResponse || 'No response received.'
+          Response: data?.askWattson?.text || 'No response received.'
         });
 
         const assistantMessage = {
           id: (Date.now() + 1).toString(),
+          responseId: data?.askWattson?.responseId,
           role: 'assistant',
-          content: agentResponse || 'No response received.',
+          content: data?.askWattson?.text || 'No response received.',
           timestamp: new Date()
         };
 
         setMessages((prev) => [...prev, assistantMessage]);
         setIsLoading(false);
       },
-      onError: (error) => {
-        const errorMessage = error?.graphQLErrors?.[0]?.message;
-        if(errorMessage === 'TOKEN_LIMIT_EXCEEDED') {
-          const nextRefreshDate = new Date(show?.userProfile?.lastTokenResetDate);
-          nextRefreshDate.setMonth(nextRefreshDate.getMonth() + 1);
-
-          const assistantMessage = {
-            id: (Date.now() + 1).toString(),
-            role: 'assistant',
-            content: 'Usage limit exceeded. Please try again after ' + nextRefreshDate.toLocaleDateString() + ' at ' + nextRefreshDate.toLocaleTimeString() + '.',
-            timestamp: new Date()
-          };
-          setMessages((prev) => [...prev, assistantMessage]);
-
-          mixpanel.track('Ask Wattson Tokens Exceeded', {
-            Show: show.showName,
-          });
-        } else {
-          showAlert(dispatch, { alert: 'error', message: 'Error getting response from Wattson.' });
-          mixpanel.track('Ask Wattson Error', {
-            Prompt: inputValue.trim()
-          });
-        }
+      onError: () => {
+        showAlert(dispatch, { alert: 'error', message: 'Error getting response from Wattson.' });
+        mixpanel.track('Ask Wattson Error', {
+          Prompt: inputValue.trim()
+        });
         setIsLoading(false);
       }
     });
@@ -263,6 +263,7 @@ const AskWattson = () => {
                 .message.user .message-time { text-align: right; }
                 .message.assistant .message-time { text-align: left; }
                 .typing-indicator { display: flex; align-items: center; gap: 5px; padding: 10px 18px; border-radius: 18px; background: var(--bot-msg-bg); border: 1px solid var(--bot-msg-border); width: fit-content; border-bottom-left-radius: 4px; margin-bottom: 20px; }
+                .typing-message { font-size: 14px; color: var(--text-muted); margin-right: 10px; }
                 .typing-dot { width: 8px; height: 8px; background: var(--secondary); border-radius: 50%; opacity: 0.6; animation: typing-dot 1.4s infinite ease-in-out; }
                 .typing-dot:nth-child(1) { animation-delay: 0s; }
                 .typing-dot:nth-child(2) { animation-delay: 0.2s; }
@@ -377,6 +378,7 @@ const AskWattson = () => {
 
                   {isLoading && (
                     <div className="typing-indicator">
+                      <div>{loadingMessages[Math.floor(Math.random() * loadingMessages.length)]}</div>
                       <div className="typing-dot"></div>
                       <div className="typing-dot"></div>
                       <div className="typing-dot"></div>
