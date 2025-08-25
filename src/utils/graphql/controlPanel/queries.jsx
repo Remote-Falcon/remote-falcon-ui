@@ -42,6 +42,7 @@ export const GET_SHOW = gql`
         lastName
         facebookUrl
         youtubeUrl
+        lastTokenResetDate
       }
       preferences {
         viewerControlEnabled

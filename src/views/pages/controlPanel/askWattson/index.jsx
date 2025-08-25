@@ -166,11 +166,29 @@ const AskWattson = () => {
         setMessages((prev) => [...prev, assistantMessage]);
         setIsLoading(false);
       },
-      onError: () => {
-        showAlert(dispatch, { alert: 'error', message: 'Error getting response from Wattson.' });
-        mixpanel.track('Ask Wattson Error', {
-          Prompt: inputValue.trim()
-        });
+      onError: (error) => {
+        const errorMessage = error?.graphQLErrors?.[0]?.message;
+        if(errorMessage === 'TOKEN_LIMIT_EXCEEDED') {
+          const nextRefreshDate = new Date(show?.userProfile?.lastTokenResetDate);
+          nextRefreshDate.setMonth(nextRefreshDate.getMonth() + 1);
+
+          const assistantMessage = {
+            id: (Date.now() + 1).toString(),
+            role: 'assistant',
+            content: 'Usage limit exceeded. Please try again after ' + nextRefreshDate.toLocaleDateString() + ' at ' + nextRefreshDate.toLocaleTimeString() + '.',
+            timestamp: new Date()
+          };
+          setMessages((prev) => [...prev, assistantMessage]);
+
+          mixpanel.track('Ask Wattson Tokens Exceeded', {
+            Show: show.showName,
+          });
+        } else {
+          showAlert(dispatch, { alert: 'error', message: 'Error getting response from Wattson.' });
+          mixpanel.track('Ask Wattson Error', {
+            Prompt: inputValue.trim()
+          });
+        }
         setIsLoading(false);
       }
     });
