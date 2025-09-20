@@ -335,3 +335,22 @@ export const ASK_WATTSON = gql`
     }
 }
 `;
+
+export const GET_WATTSON_FEEDBACK = gql `
+  query($filterBy: String) @api(name: controlPanel) {
+    getWattsonFeedback(filterBy: $filterBy) {
+      showSubdomain
+      responseId
+      feedback
+    }
+  }
+`;
+
+export const GET_WATTSON_RESPONSE = gql `
+  query($responseId: String!) @api(name: controlPanel) {
+    getWattsonResponse(responseId: $responseId) {
+      prompt
+      response
+    }
+  }
+`;
