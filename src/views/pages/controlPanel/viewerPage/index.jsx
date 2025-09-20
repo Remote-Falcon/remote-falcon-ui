@@ -2,8 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 
 import Editor from '@monaco-editor/react';
 import { Box, Grid, Link, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import newAxios from 'axios';
 import _ from 'lodash';
+import { HtmlValidate } from 'html-validate';
 
 import { useDispatch, useSelector } from '../../../../store';
 import { gridSpacing } from '../../../../store/constant';
@@ -23,6 +23,10 @@ const validationExceptions = [
   'instructional-text'
 ];
 
+const htmlValidator = new HtmlValidate({
+  extends: ['html-validate:recommended']
+});
+
 const ViewerPage = () => {
   const dispatch = useDispatch();
   const { show } = useSelector((state) => state.show);
@@ -35,30 +39,29 @@ const ViewerPage = () => {
   const [editorLineNumber, setEditorLineNumber] = useState(0);
   const [openSidePreview, setOpenSidePreview] = useState(false);
 
-  const validateHtmlService = async (html) => {
-    const url = 'https://validator.nu/';
-    const formData = new FormData();
-    formData.append('out', 'json');
-    formData.append('parser', 'html');
-    formData.append('content', html);
-    const config = {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    };
-    return newAxios.post(url, formData, config);
-  };
-
   const validateHtml = async (html) => {
     setIsHtmlValidating(true);
     try {
-      const response = await validateHtmlService(html);
-      const messages = response?.data?.messages;
-      const sortedMessages = _.orderBy(messages, ['lastLine'], ['asc']);
-      setHtmlValidation(sortedMessages);
-      setIsHtmlValidating(false);
+      const report = await htmlValidator.validateString(html || '');
+      const results = report?.results ?? [];
+      const formattedMessages = _.orderBy(
+        _.flatMap(results, (result) =>
+          _.map(result.messages ?? [], (message) => {
+            const lineNumber = message.line ?? message.location?.line ?? message.offset?.line ?? null;
+            return {
+              type: message.severity === 2 ? 'error' : 'warning',
+              message: message.message,
+              lastLine: lineNumber
+            };
+          })
+        ),
+        ['lastLine'],
+        ['asc']
+      );
+      setHtmlValidation(formattedMessages);
     } catch (err) {
       showAlertOld({ dispatch, message: 'Unable to validate HTML', alert: 'warning' });
+    } finally {
       setIsHtmlValidating(false);
     }
   };
