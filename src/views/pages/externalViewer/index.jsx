@@ -560,35 +560,31 @@ const ExternalViewerPage = () => {
           _.map(updatedRequests, (request, index) => {
             // Don't add Playing Now or Next Playing to list
             if (index !== 0) {
-              _.map(show?.sequences, (sequence) => {
-                if (request?.sequence?.name === sequence.name) {
-                  let sequenceImageElement = [<></>];
-                  if (sequence && sequence.imageUrl && sequence.imageUrl.replace(/\s/g, '').length) {
-                    const classname = `sequence-image sequence-image-${sequence.key}`;
-                    sequenceImageElement = (
-                      <img alt={sequence.name} className={classname} src={sequence.imageUrl} data-key={sequence.name} />
-                    );
-                    jukeboxRequestsElement.push(
-                      <>
-                        <div className="jukebox-queue">
-                          {sequenceImageElement}
-                          {request?.sequence?.displayName}
-                          <div className={jukeboxListArtistClassname}>{sequence.artist}</div>
-                        </div>
-                      </>
-                    );
-                  } else {
-                    jukeboxRequestsElement.push(
-                      <>
-                        <div className="jukebox-queue">
-                          {request?.sequence?.displayName}
-                          <div className={jukeboxListArtistClassname}>{sequence.artist}</div>
-                        </div>
-                      </>
-                    );
-                  }
-                }
-              });
+              let sequenceImageElement = [<></>];
+              if (sequence && sequence.imageUrl && sequence.imageUrl.replace(/\s/g, '').length) {
+                const classname = `sequence-image sequence-image-${sequence.key}`;
+                sequenceImageElement = (
+                  <img alt={sequence.name} className={classname} src={sequence.imageUrl} data-key={sequence.name} />
+                );
+                jukeboxRequestsElement.push(
+                  <>
+                    <div className="jukebox-queue">
+                      {sequenceImageElement}
+                      {request?.sequence?.displayName}
+                      <div className={jukeboxListArtistClassname}>{sequence.artist}</div>
+                    </div>
+                  </>
+                );
+              } else {
+                jukeboxRequestsElement.push(
+                  <>
+                    <div className="jukebox-queue">
+                      {request?.sequence?.displayName}
+                      <div className={jukeboxListArtistClassname}>{sequence.artist}</div>
+                    </div>
+                  </>
+                );
+              }
             }
           });
         }
