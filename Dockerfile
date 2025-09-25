@@ -1,5 +1,5 @@
 # Step 1: Create the build artifacts
-FROM node:22.14.0-alpine AS build
+FROM public.ecr.aws/docker/library/node:22-alpine AS build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json ./
@@ -45,7 +45,7 @@ ARG VITE_SOCIAL_META=$SOCIAL_META
 RUN npm run build
 
 # Step 2: Create the compact production image
-FROM node:22.14.0-alpine AS production
+FROM public.ecr.aws/docker/library/node:22-alpine AS production
 WORKDIR /app
 COPY --from=build /app/dist ./dist
 RUN npm install serve -g --silent
