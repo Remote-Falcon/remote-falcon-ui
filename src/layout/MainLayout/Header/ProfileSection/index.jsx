@@ -13,7 +13,8 @@ import {
   Paper,
   Popper,
   Stack,
-  Typography
+  Typography,
+  Button
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import {IconLogout, IconSettings, IconBook, IconBug, IconAi} from '@tabler/icons-react';
@@ -39,6 +40,7 @@ const ProfileSection = () => {
   const [open, setOpen] = useState(false);
   const [gravatar, setGravatar] = useState();
   const [showNameUrl, setShowNameUrl] = useState();
+  const [isImpersonating, setIsImpersonating] = useState(false);
 
   const anchorRef = useRef(null);
   const handleLogout = async () => {
@@ -67,8 +69,16 @@ const ProfileSection = () => {
     setOpen((prevOpen) => !prevOpen);
   };
 
+  const stopImpersonating = () => {
+    localStorage.removeItem('isImpersonating');
+    localStorage.removeItem('impersonationServiceToken');
+    window.location.reload();
+  }
+
   const prevOpen = useRef(open);
   useEffect(() => {
+    const isImpersonating = localStorage.getItem('isImpersonating');
+    setIsImpersonating(!!isImpersonating);
     const swapCP = import.meta.env.VITE_SWAP_CP === 'true';
     let showUrl = `https://${show?.showSubdomain}.remotefalcon.com`;
     if (import.meta.env.VITE_HOST_ENV === Environments.LOCAL) {
@@ -184,6 +194,13 @@ const ProfileSection = () => {
                             {showNameUrl}
                           </Typography>
                         </Stack>
+                        {isImpersonating && (
+                          <Stack direction="row" spacing={0.5} alignItems="center" sx={{ pt: 1 }}>
+                            <Button size="small" variant="contained" color="error" onClick={stopImpersonating}>
+                              Stop Impersonating
+                            </Button>
+                          </Stack>
+                        )}
                       </Stack>
                     </Box>
                     <Divider />

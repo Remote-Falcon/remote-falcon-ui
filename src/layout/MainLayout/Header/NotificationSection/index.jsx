@@ -136,7 +136,6 @@ const NotificationSection = () => {
     event.preventDefault();
     event.stopPropagation();
     setIsDeleting(true);
-    console.log(notification);
     await deleteNotificationForUserMutation({
       context: {
         headers: {

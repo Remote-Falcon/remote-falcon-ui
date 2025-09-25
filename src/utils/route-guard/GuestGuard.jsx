@@ -19,14 +19,12 @@ const GuestGuard = ({ children }) => {
   const location = useLocation();
 
   useEffect(() => {
-    console.log("isExternalViewer(): ", isExternalViewer());
     if (isExternalViewer()) {
       navigate('/remote-falcon', { replace: true });
       return;
     }
     const swapCP = import.meta.env.VITE_SWAP_CP === 'true';
     if(swapCP && !isSubdomainCP()) {
-      console.log("Should be 404");
       navigate('/404', { replace: true });
       return;
     }

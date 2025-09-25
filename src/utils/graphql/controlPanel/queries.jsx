@@ -205,9 +205,9 @@ export const SHOWS_ON_MAP = gql`
   }
 `;
 
-export const GET_SHOW_BY_SHOW_SUBDOMAIN = gql`
-  query ($showSubdomain: String!) @api(name: controlPanel) {
-    getShowByShowSubdomain(showSubdomain: $showSubdomain) {
+export const GET_SHOW_BY_SHOW_NAME = gql`
+  query ($showName: String!) @api(name: controlPanel) {
+    getShowByShowName(showName: $showName) {
       showToken
       email
       showName
@@ -352,5 +352,19 @@ export const GET_WATTSON_RESPONSE = gql `
       prompt
       response
     }
+  }
+`;
+
+export const IMPERSONATE = gql`
+  query($showSubdomain: String!) @api(name: controlPanel) {
+    impersonateShow(showSubdomain: $showSubdomain) {
+      serviceToken
+    }
+  }
+`;
+
+export const GET_SHOWS_AUTO_SUGGEST = gql`
+  query($showName: String!) @api(name: controlPanel) {
+    getShowsAutoSuggest(showName: $showName)
   }
 `;

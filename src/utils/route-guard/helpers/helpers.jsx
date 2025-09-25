@@ -18,7 +18,6 @@ export const isSubdomainCP = () => {
 
 export const isExternalViewer = () => {
   const swapCP = import.meta.env.VITE_SWAP_CP === 'true';
-  console.log("swapCP: ", swapCP);
   const subdomain = getSubdomain();
   if(swapCP && !isSubdomainCP()) {
     return true;

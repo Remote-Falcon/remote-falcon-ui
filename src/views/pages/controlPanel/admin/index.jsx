@@ -22,14 +22,14 @@ const Admin = () => {
 
   const tabOptions = [
     {
-      label: 'Wattson Feedback',
-      icon: <PersonOutlineTwoToneIcon />,
-      caption: 'Ask Wattson Feedback'
-    },
-    {
       label: 'Account Maintenance',
       icon: <DescriptionTwoToneIcon />,
       caption: 'Account Maintenance'
+    },
+    {
+      label: 'Wattson Feedback',
+      icon: <PersonOutlineTwoToneIcon />,
+      caption: 'Ask Wattson Feedback'
     }
   ];
 
@@ -56,11 +56,11 @@ const Admin = () => {
                   }}
                 >
                   <>
-                    <RFTab index={0} value="WattsonFeedback">
-                      <WattsonFeedback />
-                    </RFTab>
-                    <RFTab index={1} value="AccountMaintenance">
+                    <RFTab index={0} value="AccountMaintenance">
                       <AccountDetails />
+                    </RFTab>
+                    <RFTab index={1} value="WattsonFeedback">
+                      <WattsonFeedback />
                     </RFTab>
                   </>
                 </CardContent>

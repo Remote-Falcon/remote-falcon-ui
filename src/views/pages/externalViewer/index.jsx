@@ -707,7 +707,6 @@ const ExternalViewerPage = () => {
 
         if (showData?.preferences?.selfHostedRedirectUrl) {
           const referrer = document.referrer;
-          console.log('Referrer URL: ', referrer);
           if (!_.includes(blockRedirectReferrers, referrer)) {
             window.location.href = showData?.preferences?.selfHostedRedirectUrl;
           }

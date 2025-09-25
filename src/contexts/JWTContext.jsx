@@ -36,7 +36,25 @@ export const setSession = (serviceToken) => {
     setGraphqlHeaders(null);
     delete axios.defaults.headers.common.Authorization;
   }
+
+  const isImpersonating = localStorage.getItem('isImpersonating');
+  if(isImpersonating) {
+    const impersonationServiceToken = window.localStorage.getItem('impersonationServiceToken');
+    setImpersonationSession(impersonationServiceToken);
+  }
 };
+
+export const setImpersonationSession = (serviceToken) => {
+  if (serviceToken) {
+    localStorage.setItem('impersonationServiceToken', serviceToken);
+    setGraphqlHeaders(serviceToken);
+    axios.defaults.headers.common.Authorization = `Bearer ${serviceToken}`;
+  }
+}
+
+export const clearImpersonationSession = () => {
+  localStorage.removeItem('impersonationServiceToken');
+}
 
 const JWTContext = createContext(null);
 
@@ -56,8 +74,12 @@ export const JWTProvider = ({ children }) => {
   const [forgotPasswordMutation] = useMutation(FORGOT_PASSWORD);
   const [resetPasswordMutation] = useMutation(RESET_PASSWORD);
 
-  const [signInQuery] = useLazyQuery(SIGN_IN);
-  const [getShowQuery] = useLazyQuery(GET_SHOW);
+  const [signInQuery] = useLazyQuery(SIGN_IN, {
+    fetchPolicy: 'network-only'
+  });
+  const [getShowQuery] = useLazyQuery(GET_SHOW, {
+    fetchPolicy: 'network-only'
+  });
 
   const logout = () => {
     client.clearStore();
