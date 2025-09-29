@@ -90,7 +90,7 @@ const AccountDetails = () => {
           }
         },
         variables: {
-          showSubdomain: showSearchValue
+          showSubdomain: selectedShow?.showSubdomain
         },
         fetchPolicy: 'network-only'
       });
