@@ -89,6 +89,9 @@ export const GET_SHOW = gql`
       }
       requests {
         sequence {
+          index
+          imageUrl
+          artist
           name
           displayName
         }

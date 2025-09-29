@@ -5,7 +5,6 @@ import { gridSpacing } from '../../../../store/constant';
 
 import DashboardCharts from './DashboardCharts';
 import DashboardHeader from './DashboardHeader';
-import DashboardSponsor from './DashboardSponsor';
 
 const Dashboard = () => {
   mixpanel.track('Page View', {

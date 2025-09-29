@@ -271,7 +271,7 @@ const ExternalViewerPage = () => {
       if (sequence.visible && sequence.visibilityCount === 0) {
         let sequenceImageElement = [<></>];
         if (sequence && sequence.imageUrl && sequence.imageUrl.replace(/\s/g, '').length) {
-          const classname = `sequence-image sequence-image-${sequence.key}`;
+          const classname = `sequence-image sequence-image-${sequence.index}`;
           sequenceImageElement = <img alt={sequence.name} className={classname} src={sequence.imageUrl} data-key={sequence.name} />;
         }
         if (show?.preferences?.viewerControlMode === ViewerControlMode.VOTING) {
@@ -283,14 +283,14 @@ const ExternalViewerPage = () => {
           });
           if (sequenceVotes !== -1) {
             if (sequence.category == null || sequence.category === '') {
-              const votingListClassname = `cell-vote-playlist cell-vote-playlist-${sequence.key}`;
-              const votingListArtistClassname = `cell-vote-playlist-artist cell-vote-playlist-artist-${sequence.key}`;
+              const votingListClassname = `cell-vote-playlist cell-vote-playlist-${sequence.index}`;
+              const votingListArtistClassname = `cell-vote-playlist-artist cell-vote-playlist-artist-${sequence.index}`;
 
               if (show?.playingNowSequence != null) {
                 const playingNowSequence = show?.playingNowSequence;
                 let sequenceImageElement = [<></>];
                 if (playingNowSequence && playingNowSequence?.imageUrl && playingNowSequence?.imageUrl.replace(/\s/g, '').length) {
-                  const classname = `sequence-image sequence-image-${playingNowSequence?.key}`;
+                  const classname = `sequence-image sequence-image-${playingNowSequence?.index}`;
                   sequenceImageElement = (
                     <img
                       alt={playingNowSequence?.name}
@@ -320,7 +320,7 @@ const ExternalViewerPage = () => {
                 const playingNextSequence = show?.playingNextSequence;
                 let sequenceImageElement = [<></>];
                 if (playingNextSequence && playingNextSequence?.imageUrl && playingNextSequence?.imageUrl.replace(/\s/g, '').length) {
-                  const classname = `sequence-image sequence-image-${playingNextSequence?.key}`;
+                  const classname = `sequence-image sequence-image-${playingNextSequence?.index}`;
                   sequenceImageElement = (
                     <img
                       alt={playingNextSequence?.name}
@@ -379,7 +379,7 @@ const ExternalViewerPage = () => {
                   if (categorizedSequence.category === sequence.category) {
                     sequenceImageElement = [<></>];
                     if (categorizedSequence && categorizedSequence.imageUrl && categorizedSequence.imageUrl.replace(/\s/g, '').length) {
-                      const classname = `sequence-image sequence-image-${categorizedSequence.key}`;
+                      const classname = `sequence-image sequence-image-${categorizedSequence.index}`;
                       sequenceImageElement = (
                         <img
                           alt={categorizedSequence.name}
@@ -389,8 +389,8 @@ const ExternalViewerPage = () => {
                         />
                       );
                     }
-                    const categorizedVotingListClassname = `cell-vote-playlist cell-vote-playlist-${sequence.key}`;
-                    const categorizedVotingListArtistClassname = `cell-vote-playlist-artist cell-vote-playlist-artist-${sequence.key}`;
+                    const categorizedVotingListClassname = `cell-vote-playlist cell-vote-playlist-${sequence.index}`;
+                    const categorizedVotingListArtistClassname = `cell-vote-playlist-artist cell-vote-playlist-artist-${sequence.index}`;
                     const theElement = (
                       <>
                         <div
@@ -423,14 +423,14 @@ const ExternalViewerPage = () => {
             }
           }
         } else if (show?.preferences?.viewerControlMode === ViewerControlMode.JUKEBOX) {
-          const jukeboxListClassname = `jukebox-list jukebox-list-${sequence.key}`;
-          const jukeboxListArtistClassname = `jukebox-list-artist jukebox-list-artist-${sequence.key}`;
+          const jukeboxListClassname = `jukebox-list jukebox-list-${sequence.index}`;
+          const jukeboxListArtistClassname = `jukebox-list-artist jukebox-list-artist-${sequence.index}`;
 
           if (show?.playingNowSequence != null) {
             const playingNowSequence = show?.playingNowSequence;
             let sequenceImageElement = [<></>];
             if (playingNowSequence && playingNowSequence?.imageUrl && playingNowSequence?.imageUrl.replace(/\s/g, '').length) {
-              const classname = `sequence-image sequence-image-${playingNowSequence?.key}`;
+              const classname = `sequence-image sequence-image-${playingNowSequence?.index}`;
               sequenceImageElement = (
                 <img
                   alt={playingNowSequence?.name}
@@ -460,7 +460,7 @@ const ExternalViewerPage = () => {
             const playingNextSequence = show?.playingNextSequence;
             let sequenceImageElement = [<></>];
             if (playingNextSequence && playingNextSequence?.imageUrl && playingNextSequence?.imageUrl.replace(/\s/g, '').length) {
-              const classname = `sequence-image sequence-image-${playingNextSequence?.key}`;
+              const classname = `sequence-image sequence-image-${playingNextSequence?.index}`;
               sequenceImageElement = (
                 <img
                   alt={playingNextSequence?.name}
@@ -512,7 +512,7 @@ const ExternalViewerPage = () => {
                 if (categorizedSequence.category === sequence.category) {
                   sequenceImageElement = [<></>];
                   if (categorizedSequence && categorizedSequence.imageUrl && categorizedSequence.imageUrl.replace(/\s/g, '').length) {
-                    const classname = `sequence-image sequence-image-${categorizedSequence.key}`;
+                    const classname = `sequence-image sequence-image-${categorizedSequence.index}`;
                     sequenceImageElement = (
                       <img
                         alt={categorizedSequence.name}
@@ -522,8 +522,8 @@ const ExternalViewerPage = () => {
                       />
                     );
                   }
-                  const categorizedJukeboxListClassname = `jukebox-list jukebox-list-${categorizedSequence.key}`;
-                  const categorizedJukeboxListArtistClassname = `jukebox-list-artist jukebox-list-artist-${categorizedSequence.key}`;
+                  const categorizedJukeboxListClassname = `jukebox-list jukebox-list-${categorizedSequence.index}`;
+                  const categorizedJukeboxListArtistClassname = `jukebox-list-artist jukebox-list-artist-${categorizedSequence.index}`;
                   const theElement = (
                     <>
                       <div
@@ -561,17 +561,17 @@ const ExternalViewerPage = () => {
             // Don't add Playing Now or Next Playing to list
             if (index !== 0) {
               let sequenceImageElement = [<></>];
-              if (sequence && sequence.imageUrl && sequence.imageUrl.replace(/\s/g, '').length) {
-                const classname = `sequence-image sequence-image-${sequence.key}`;
+              if (request?.sequence && request?.sequence.imageUrl && request?.sequence.imageUrl.replace(/\s/g, '').length) {
+                const classname = `sequence-image sequence-image-${request?.sequence.index}`;
                 sequenceImageElement = (
-                  <img alt={sequence.name} className={classname} src={sequence.imageUrl} data-key={sequence.name} />
+                  <img alt={request?.sequence.name} className={classname} src={request?.sequence.imageUrl} data-key={request?.sequence.name} />
                 );
                 jukeboxRequestsElement.push(
                   <>
                     <div className="jukebox-queue">
                       {sequenceImageElement}
                       {request?.sequence?.displayName}
-                      <div className={jukeboxListArtistClassname}>{sequence.artist}</div>
+                      <div className={jukeboxListArtistClassname}>{request?.sequence.artist}</div>
                     </div>
                   </>
                 );
@@ -580,7 +580,7 @@ const ExternalViewerPage = () => {
                   <>
                     <div className="jukebox-queue">
                       {request?.sequence?.displayName}
-                      <div className={jukeboxListArtistClassname}>{sequence.artist}</div>
+                      <div className={jukeboxListArtistClassname}>{request?.sequence.artist}</div>
                     </div>
                   </>
                 );
