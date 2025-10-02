@@ -797,17 +797,19 @@ const ExternalViewerPage = () => {
 
   return (
     <>
-      <Helmet>
-        <style type="text/css">
-          {`
-            #embedim--snow {
-              text-align: inherit;
-            }
-          `}
-        </style>
-        <title>{show?.preferences?.pageTitle}</title>
-        <link rel="icon" href={show?.preferences?.pageIconUrl} />
-      </Helmet>
+      {show && (
+        <Helmet>
+          <style type="text/css">
+            {`
+              #embedim--snow {
+                text-align: inherit;
+              }
+            `}
+          </style>
+          <title>{show?.preferences?.pageTitle}</title>
+          <link rel="icon" href={show?.preferences?.pageIconUrl} />
+        </Helmet>
+      )}
       <Loading loading={loading} background="black" loaderColor="white" />
       {remoteViewerReactPage}
     </>
