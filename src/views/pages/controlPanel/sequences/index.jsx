@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as React from 'react';
 
 import { useMutation } from '@apollo/client';
@@ -23,6 +23,7 @@ const Sequences = () => {
   const { show } = useSelector((state) => state.show);
 
   const [showLinearProgress, setShowLinearProgress] = useState(false);
+  const [panelTitle, setPanelTitle] = useState('Sequences');
 
   const [updateSequencesMutation] = useMutation(UPDATE_SEQUENCES);
 
@@ -115,11 +116,15 @@ const Sequences = () => {
     }
   };
 
+  useEffect(() => {
+    setPanelTitle(`Sequences (${show?.sequences?.length || 0} of 200)`);
+  }, [show]);
+
   return (
     <Box sx={{ mt: 2 }}>
       <Grid container spacing={gridSpacing}>
         <Grid item xs={12}>
-          <MainCard title="Sequences" content={false}>
+          <MainCard title={panelTitle} content={false}>
             <Grid item xs={12}>
               {showLinearProgress && <LinearProgress />}
             </Grid>
