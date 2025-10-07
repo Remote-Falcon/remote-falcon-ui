@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { TextField } from '@mui/material';
 import newAxios from 'axios';
 import htmlToReact from 'html-to-react';
@@ -48,6 +48,24 @@ const ExternalViewerPage = () => {
   const [insertViewerPageStatsMutation] = useMutation(INSERT_VIEWER_PAGE_STATS);
   const [addSequenceToQueueMutation] = useMutation(ADD_SEQUENCE_TO_QUEUE);
   const [voteForSequenceMutation] = useMutation(VOTE_FOR_SEQUENCE);
+
+  // Polling query for continuous updates
+  const { data: pollingData } = useQuery(GET_SHOW, {
+    context: {
+      headers: {
+        Route: 'Viewer'
+      }
+    },
+    variables: {
+      showSubdomain: getSubdomain()
+    },
+    pollInterval: 5000,
+    skip: loading, // Skip polling during initial load
+    notifyOnNetworkStatusChange: true,
+    onError: () => {
+      showAlert(dispatch, { alert: 'error' });
+    }
+  });
 
   const setViewerLocation = useCallback(async () => {
     if ('geolocation' in navigator) {
@@ -638,7 +656,7 @@ const ExternalViewerPage = () => {
     });
   };
 
-  const orderSequencesForVoting = (showData) => {
+  const orderSequencesForVoting = useCallback((showData) => {
     let updatedSequences = [];
     _.forEach(showData?.sequences, (sequence) => {
       const sequenceVotes = _.find(
@@ -653,7 +671,7 @@ const ExternalViewerPage = () => {
     });
     updatedSequences = _.orderBy(updatedSequences, ['votes', 'lastVoteTime'], ['desc', 'asc']);
     showData.sequences = updatedSequences;
-  };
+  }, []);
 
   const getShow = useCallback(() => {
     getShowQuery({
@@ -773,9 +791,23 @@ const ExternalViewerPage = () => {
     init().then();
   }, [getShowForInit, insertViewerPageStatsMutation]);
 
-  useInterval(() => {
-    getShow();
-  }, 2000);
+  // Process polling data updates
+  useEffect(() => {
+    if (pollingData?.getShow) {
+      const showData = { ...pollingData.getShow };
+      const subdomain = getSubdomain();
+      if (subdomain === showData?.showSubdomain) {
+        if (showData?.playingNext === '') {
+          showData.playingNext = showData?.playingNextFromSchedule;
+        }
+        if (showData?.preferences?.viewerControlMode === ViewerControlMode.VOTING) {
+          orderSequencesForVoting(showData);
+        }
+        setShow(showData);
+        getActiveViewerPage(showData);
+      }
+    }
+  }, [pollingData, orderSequencesForVoting]);
 
   useInterval(async () => {
     await convertViewerPageToReact();

@@ -3,7 +3,12 @@
     "allow": [
       "Read(//d/Development/remote-falcon/remote-falcon-plugins-api/src/main/java/com/remotefalcon/plugins/api/service/**)",
       "Bash(./gradlew:*)",
-      "Read(//d/Development/remote-falcon/remote-falcon-plugins-api/**)"
+      "Read(//d/Development/remote-falcon/remote-falcon-plugins-api/**)",
+      "Read(//d/Development/remote-falcon/remote-falcon-viewer/**)",
+      "Read(//d/Development/remote-falcon/**)",
+      "Bash(git restore:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
