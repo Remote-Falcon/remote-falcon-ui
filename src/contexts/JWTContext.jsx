@@ -2,6 +2,7 @@ import { Buffer } from 'buffer';
 
 import { createContext, useEffect } from 'react';
 import { usePostHog } from 'posthog-js/react';
+import mixpanel from 'mixpanel-browser';
 
 import { useLazyQuery, useMutation, useApolloClient } from '@apollo/client';
 import jwtDecode from 'jwt-decode';
@@ -202,6 +203,9 @@ export const JWTProvider = ({ children }) => {
         }
       },
       onCompleted: () => {
+        mixpanel.track('Sign Up', {
+          showName: showName
+        });
         showAlert(dispatch, { id: 'snackbar-sign-up', message: `A verification email has been sent to ${email}` });
         setTimeout(() => {
           navigate('/signin', { replace: true });
