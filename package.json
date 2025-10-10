@@ -9,6 +9,7 @@
     "@emotion/styled": "^11.8.1",
     "@habx/apollo-multi-endpoint-link": "^2.9.0",
     "@hello-pangea/dnd": "^18.0.1",
+    "@microsoft/clarity": "^1.0.0",
     "@monaco-editor/react": "^4.4.6",
     "@mui/icons-material": "^5.6.2",
     "@mui/lab": "^5.0.0-alpha.70",

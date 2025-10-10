@@ -59,6 +59,7 @@ jobs:
             SOCIAL_META=<meta property='og:type' content='website'/><meta property='og:url' content='https://remotefalcon.com/'/><meta property='og:title' content='Remote Falcon'/><meta property='og:description' content='Create a custom website where viewers can request or vote for sequences to watch on your light show.'/><meta property='og:image' content='https://remotefalcon.com/jukebox.png'/>
             SWAP_CP=false
             VIEWER_PAGE_SUBDOMAIN=
+            CLARITY_PROJECT_ID=${{ secrets.CLARITY_PROJECT_ID }}
   release-production:
     name: Release Production
     environment: prod
