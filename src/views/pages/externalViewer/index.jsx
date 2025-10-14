@@ -21,7 +21,7 @@ import { getSubdomain } from '../../../utils/route-guard/helpers/helpers';
 import { addSequenceToQueueService, voteForSequenceService } from '../../../services/viewer/mutations.service';
 import { LocationCheckMethod, ViewerControlMode } from '../../../utils/enum';
 import { ADD_SEQUENCE_TO_QUEUE, INSERT_VIEWER_PAGE_STATS, VOTE_FOR_SEQUENCE } from '../../../utils/graphql/viewer/mutations';
-import { GET_SHOW } from '../../../utils/graphql/viewer/queries';
+import { GET_ACTIVE_VIEWER_PAGE, GET_SHOW } from '../../../utils/graphql/viewer/queries';
 import { showAlert } from '../globalPageHelpers';
 import { defaultProcessingInstructions, processingInstructions, viewerPageMessageElements } from './helpers/helpers';
 
@@ -45,6 +45,7 @@ const ExternalViewerPage = () => {
   const [nowPlayingTimer, setNowPlayingTimer] = useState(0);
 
   const [getShowQuery] = useLazyQuery(GET_SHOW);
+  const [getActiveViewerPageQuery] = useLazyQuery(GET_ACTIVE_VIEWER_PAGE);
   const [insertViewerPageStatsMutation] = useMutation(INSERT_VIEWER_PAGE_STATS);
   const [addSequenceToQueueMutation] = useMutation(ADD_SEQUENCE_TO_QUEUE);
   const [voteForSequenceMutation] = useMutation(VOTE_FOR_SEQUENCE);
@@ -648,13 +649,25 @@ const ExternalViewerPage = () => {
     nowPlayingTimer
   ]);
 
-  const getActiveViewerPage = (showData) => {
-    _.forEach(showData?.pages, (page) => {
-      if (page?.active) {
-        setActiveViewerPage(page?.html);
+  const getActiveViewerPage = useCallback(() => {
+    getActiveViewerPageQuery({
+      context: {
+        headers: {
+          Route: 'Viewer'
+        }
+      },
+      variables: {
+        showSubdomain: getSubdomain()
+      },
+      fetchPolicy: 'network-only',
+      onCompleted: (data) => {
+        setActiveViewerPage(data?.getActiveViewerPage);
+      },
+      onError: () => {
+        showAlert(dispatch, { alert: 'error' });
       }
     });
-  };
+  }, [dispatch, getActiveViewerPageQuery]);
 
   const orderSequencesForVoting = useCallback((showData) => {
     let updatedSequences = [];
@@ -695,7 +708,7 @@ const ExternalViewerPage = () => {
             orderSequencesForVoting(showData);
           }
           setShow(showData);
-          getActiveViewerPage(showData);
+          getActiveViewerPage();
           if (showData?.preferences?.locationCheckMethod === LocationCheckMethod.GEO) {
             setViewerLocation();
           }
@@ -706,7 +719,7 @@ const ExternalViewerPage = () => {
         showAlert(dispatch, { alert: 'error' });
       }
     }).then();
-  }, [dispatch, getShowQuery, setViewerLocation]);
+  }, [dispatch, getShowQuery, getActiveViewerPage, orderSequencesForVoting, setViewerLocation]);
 
   const getShowForInit = useCallback(() => {
     getShowQuery({
@@ -737,7 +750,7 @@ const ExternalViewerPage = () => {
             orderSequencesForVoting(showData);
           }
           setShow(showData);
-          getActiveViewerPage(showData);
+          getActiveViewerPage();
           if (showData?.preferences?.locationCheckMethod === LocationCheckMethod.GEO) {
             setViewerLocation();
           }
@@ -768,7 +781,7 @@ const ExternalViewerPage = () => {
         showAlert(dispatch, { alert: 'error' });
       }
     }).then();
-  }, [dispatch, getShowQuery, setViewerLocation]);
+  }, [dispatch, getShowQuery, getActiveViewerPage, orderSequencesForVoting, setViewerLocation]);
 
   useEffect(() => {
     const init = async () => {
@@ -804,7 +817,8 @@ const ExternalViewerPage = () => {
           orderSequencesForVoting(showData);
         }
         setShow(showData);
-        getActiveViewerPage(showData);
+        // Note: We don't fetch the active viewer page HTML during polling
+        // It's only fetched on initial load and doesn't change during a viewer session
       }
     }
   }, [pollingData, orderSequencesForVoting]);

@@ -1,6 +1,11 @@
 import { gql } from '@apollo/client';
 
-// eslint-disable-next-line import/prefer-default-export
+export const GET_ACTIVE_VIEWER_PAGE = gql`
+  query GetActiveViewerPage($showSubdomain: String!) @api(name: viewer) {
+    getActiveViewerPage(showSubdomain: $showSubdomain)
+  }
+`;
+
 export const GET_SHOW = gql`
   query GetShow($showSubdomain: String!) @api(name: viewer) {
     getShow(showSubdomain: $showSubdomain) {
@@ -81,11 +86,6 @@ export const GET_SHOW = gql`
       sequenceGroups {
         name
         visibilityCount
-      }
-      pages {
-        name
-        active
-        html
       }
       requests {
         sequence {

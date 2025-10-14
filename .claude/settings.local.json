@@ -11,7 +11,9 @@
       "Bash(git commit:*)",
       "Bash(mkdir:*)",
       "Bash(cat:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(dir)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []
