@@ -21,7 +21,7 @@ import { getSubdomain } from '../../../utils/route-guard/helpers/helpers';
 import { addSequenceToQueueService, voteForSequenceService } from '../../../services/viewer/mutations.service';
 import { LocationCheckMethod, ViewerControlMode } from '../../../utils/enum';
 import { ADD_SEQUENCE_TO_QUEUE, INSERT_VIEWER_PAGE_STATS, VOTE_FOR_SEQUENCE } from '../../../utils/graphql/viewer/mutations';
-import { GET_ACTIVE_VIEWER_PAGE, GET_SHOW } from '../../../utils/graphql/viewer/queries';
+import { GET_ACTIVE_VIEWER_PAGE, GET_SHOW_FOR_VIEWER } from '../../../utils/graphql/viewer/queries';
 import { showAlert } from '../globalPageHelpers';
 import { defaultProcessingInstructions, processingInstructions, viewerPageMessageElements } from './helpers/helpers';
 
@@ -44,14 +44,14 @@ const ExternalViewerPage = () => {
   const [nowPlaying, setNowPlaying] = useState(null);
   const [nowPlayingTimer, setNowPlayingTimer] = useState(0);
 
-  const [getShowQuery] = useLazyQuery(GET_SHOW);
+  const [getShowQuery] = useLazyQuery(GET_SHOW_FOR_VIEWER);
   const [getActiveViewerPageQuery] = useLazyQuery(GET_ACTIVE_VIEWER_PAGE);
   const [insertViewerPageStatsMutation] = useMutation(INSERT_VIEWER_PAGE_STATS);
   const [addSequenceToQueueMutation] = useMutation(ADD_SEQUENCE_TO_QUEUE);
   const [voteForSequenceMutation] = useMutation(VOTE_FOR_SEQUENCE);
 
   // Polling query for continuous updates
-  const { data: pollingData } = useQuery(GET_SHOW, {
+  const { data: pollingData } = useQuery(GET_SHOW_FOR_VIEWER, {
     context: {
       headers: {
         Route: 'Viewer'

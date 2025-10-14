@@ -6,8 +6,8 @@ export const GET_ACTIVE_VIEWER_PAGE = gql`
   }
 `;
 
-export const GET_SHOW = gql`
-  query GetShow($showSubdomain: String!) @api(name: viewer) {
+export const GET_SHOW_FOR_VIEWER = gql`
+  query GetShowForViewer($showSubdomain: String!) @api(name: viewer) {
     getShow(showSubdomain: $showSubdomain) {
       showSubdomain
       playingNow
