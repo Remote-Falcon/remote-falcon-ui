@@ -740,8 +740,11 @@ const ExternalViewerPage = () => {
           const referrer = document.referrer;
           if (!_.includes(blockRedirectReferrers, referrer)) {
             window.location.href = showData?.preferences?.selfHostedRedirectUrl;
+            return; // Exit early since we're redirecting
           }
-        } else if (subdomain === showData?.showSubdomain) {
+        }
+
+        if (subdomain === showData?.showSubdomain) {
           if (showData?.playingNext === '') {
             showData.playingNext = showData?.playingNextFromSchedule;
           }
