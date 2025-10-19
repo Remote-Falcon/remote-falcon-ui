@@ -17,7 +17,13 @@
       "Bash(docker build -t remote-falcon-wizard -f wizard/Dockerfile.local .)",
       "Bash(docker build:*)",
       "Bash(chmod:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Read(//c/Users/white/.ssh/**)",
+      "Bash(bash:*)",
+      "Read(//c/Users/white/Downloads/**)",
+      "Bash(ssh:*)",
+      "Bash(nslookup:*)",
+      "Bash(dig:*)"
     ],
     "deny": [],
     "ask": []

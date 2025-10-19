@@ -195,6 +195,9 @@ const SequenceDetails = ({ setShowLinearProgress, sequence, open, handleDrawerOp
                       />
                     </Grid>
                     <Grid item xs={12}>
+                      {sequence.imageUrl && <img alt={sequence?.name} src={sequence?.imageUrl} height="100" width="100" />}
+                    </Grid>
+                    <Grid item xs={12}>
                       <TextField
                         type="text"
                         fullWidth

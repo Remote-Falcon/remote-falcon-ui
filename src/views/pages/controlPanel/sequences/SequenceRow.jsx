@@ -142,6 +142,12 @@ function SequenceRow({ provided, sequence, setShowLinearProgress }) {
         >
           {sequence.category}
         </TableCell>
+        <TableCell
+          onClick={() => setSequenceDetailsDrawerOpen(!sequenceDetailsDrawerOpen)}
+          sx={{ maxWidth: 'calc(100vw - 850px)', minWidth: 140, cursor: 'pointer' }}
+        >
+          {sequence.imageUrl && <img alt={sequence?.name} src={sequence?.imageUrl} height="50" width="50" />}
+        </TableCell>
         <TableCell sx={{ minWidth: 60, width: 60 }}>
           <Stack direction="row" spacing={0.25} alignItems="center">
             <Tooltip placement="top" title="Play">
