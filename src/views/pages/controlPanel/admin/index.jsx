@@ -13,6 +13,7 @@ import MainCard from '../../../../ui-component/cards/MainCard';
 import { RFTabPanel, RFTab } from '../../../../ui-component/RFTabPanel';
 import AccountDetails from './AccountDetails';
 import WattsonFeedback from './WattsonFeedback';
+import FPPTest from './FPPTest';
 
 const Admin = () => {
   const theme = useTheme();
@@ -30,6 +31,11 @@ const Admin = () => {
       label: 'Wattson Feedback',
       icon: <PersonOutlineTwoToneIcon />,
       caption: 'Ask Wattson Feedback'
+    },
+    {
+      label: 'FPP Test',
+      icon: <PersonOutlineTwoToneIcon />,
+      caption: 'FPP Test'
     }
   ];
 
@@ -61,6 +67,9 @@ const Admin = () => {
                     </RFTab>
                     <RFTab index={1} value="WattsonFeedback">
                       <WattsonFeedback />
+                    </RFTab>
+                    <RFTab index={2} value="FPPTest">
+                      <FPPTest />
                     </RFTab>
                   </>
                 </CardContent>
