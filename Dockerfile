@@ -50,9 +50,10 @@ RUN npm run build
 FROM node:22.14.0-alpine AS production
 WORKDIR /app
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/serve.json ./serve.json
 RUN npm install serve -g --silent
 
 EXPOSE 3000
 
 # start the web server
-CMD ["serve", "-s", "/app/dist"]
+CMD ["serve", "-s", "/app/dist", "-c", "/app/serve.json"]
