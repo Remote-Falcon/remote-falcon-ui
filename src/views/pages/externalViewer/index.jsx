@@ -245,6 +245,83 @@ const ExternalViewerPage = () => {
     ]
   );
 
+  const delay = useCallback(
+    (ms) =>
+      new Promise((resolve) => {
+        setTimeout(resolve, ms);
+      }),
+    []
+  );
+
+  const fetchViewerScripts = useCallback(
+    async (attempt = 1) => {
+      try {
+        const config = {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        };
+        const response = await newAxios.get(`${baseGithubPath}scripts.json`, config);
+        if (!Array.isArray(response?.data)) {
+          throw new Error('Invalid scripts.json payload');
+        }
+        return response.data;
+      } catch (error) {
+        console.warn(`[Viewer] Failed to fetch scripts.json (attempt ${attempt})`, error);
+        if (attempt < 3) {
+          await delay(attempt * 300);
+          return fetchViewerScripts(attempt + 1);
+        }
+        throw error;
+      }
+    },
+    [baseGithubPath, delay]
+  );
+
+  const loadScriptWithFallback = useCallback(
+    (scriptName) =>
+      new Promise((resolve, reject) => {
+        const sources = [`${baseCdnPath + scriptName}.js`, `${baseGithubPath + scriptName}.js`];
+        const tryLoad = (index) => {
+          const url = sources[index];
+          loadjs(url, {
+            success: () => resolve(scriptName),
+            error: () => {
+              console.warn(`[Viewer] Failed to load external script: ${url}`);
+              if (index + 1 < sources.length) {
+                tryLoad(index + 1);
+              } else {
+                reject(new Error(`Failed to load external script ${scriptName}`));
+              }
+            }
+          });
+        };
+
+        tryLoad(0);
+      }),
+    [baseCdnPath, baseGithubPath]
+  );
+
+  const loadViewerEnhancements = useCallback(
+    async (showData) => {
+      try {
+        const scripts = await fetchViewerScripts();
+        const scriptsToLoad = _.filter(scripts, (script) => script !== 'makeItSnow' || showData?.preferences?.makeItSnow);
+        await Promise.all(
+          _.map(scriptsToLoad, (script) =>
+            loadScriptWithFallback(script).catch((error) => {
+              console.warn(`[Viewer] Giving up on external script ${script}`, error);
+              return null;
+            })
+          )
+        );
+      } catch (error) {
+        console.warn('[Viewer] Unable to load external viewer scripts', error);
+      }
+    },
+    [fetchViewerScripts, loadScriptWithFallback]
+  );
+
   const displayCurrentViewerMessages = (parsedViewerPage) => {
     _.map(viewerPageMessageElements, (message) => {
       parsedViewerPage = parsedViewerPage?.replace(message?.element, message?.current);
@@ -686,41 +763,6 @@ const ExternalViewerPage = () => {
     showData.sequences = updatedSequences;
   }, []);
 
-  const getShow = useCallback(() => {
-    getShowQuery({
-      context: {
-        headers: {
-          Route: 'Viewer'
-        }
-      },
-      variables: {
-        showSubdomain: getSubdomain()
-      },
-      fetchPolicy: 'network-only',
-      onCompleted: (data) => {
-        const showData = { ...data?.getShow };
-        const subdomain = getSubdomain();
-        if (subdomain === showData?.showSubdomain) {
-          if (showData?.playingNext === '') {
-            showData.playingNext = showData?.playingNextFromSchedule;
-          }
-          if (showData?.preferences?.viewerControlMode === ViewerControlMode.VOTING) {
-            orderSequencesForVoting(showData);
-          }
-          setShow(showData);
-          getActiveViewerPage();
-          if (showData?.preferences?.locationCheckMethod === LocationCheckMethod.GEO) {
-            setViewerLocation();
-          }
-          setLoading(false);
-        }
-      },
-      onError: () => {
-        showAlert(dispatch, { alert: 'error' });
-      }
-    }).then();
-  }, [dispatch, getShowQuery, getActiveViewerPage, orderSequencesForVoting, setViewerLocation]);
-
   const getShowForInit = useCallback(() => {
     getShowQuery({
       context: {
@@ -761,20 +803,8 @@ const ExternalViewerPage = () => {
             Show_Name: showData?.showName
           });
 
-          setTimeout(async () => {
-            const config = {
-              headers: {
-                'Content-Type': 'multipart/form-data'
-              }
-            };
-            await newAxios.get(`${baseGithubPath}scripts.json`, config).then(async (scriptsRes) => {
-              _.forEach(scriptsRes?.data, (script) => {
-                if (script === 'makeItSnow' && !showData?.preferences?.makeItSnow) {
-                  return;
-                }
-                loadjs(`${baseCdnPath + script}.js`);
-              });
-            });
+          setTimeout(() => {
+            loadViewerEnhancements(showData);
           }, 500);
 
           setLoading(false);
