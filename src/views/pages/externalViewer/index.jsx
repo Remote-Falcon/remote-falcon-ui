@@ -281,7 +281,7 @@ const ExternalViewerPage = () => {
   const loadScriptWithFallback = useCallback(
     (scriptName) =>
       new Promise((resolve, reject) => {
-        const sources = [`${baseGithubPath + scriptName}.js`];
+        const sources = [`${baseCdnPath + scriptName}.js`, `${baseGithubPath + scriptName}.js`];
         const tryLoad = (index) => {
           const url = sources[index];
           loadjs(url, {
