@@ -6,7 +6,6 @@ import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { TextField } from '@mui/material';
 import newAxios from 'axios';
 import htmlToReact from 'html-to-react';
-import sign from 'jwt-encode';
 import loadjs from 'loadjs';
 import _ from 'lodash';
 import mixpanel from 'mixpanel-browser';
@@ -29,8 +28,7 @@ const ExternalViewerPage = () => {
   const dispatch = useDispatch();
 
   const blockRedirectReferrers = ['https://player.pulsemesh.io/'];
-  const baseGithubPath = import.meta.env.VITE_GITHUB_JS_PATH || 'https://raw.githubusercontent.com/Remote-Falcon/remote-falcon-viewer-page-js/refs/heads/main/';
-  const baseCdnPath = import.meta.env.VITE_CDN_JS_PATH || 'https://cdn.jsdelivr.net/gh/Remote-Falcon/remote-falcon-viewer-page-js@main/';
+  const viewerScriptsBasePath = '/viewer-scripts/';
 
   const [loading, setLoading] = useState(false);
   const [show, setShow] = useState();
@@ -261,7 +259,7 @@ const ExternalViewerPage = () => {
             'Content-Type': 'multipart/form-data'
           }
         };
-        const response = await newAxios.get(`${baseGithubPath}scripts.json`, config);
+        const response = await newAxios.get(`${viewerScriptsBasePath}scripts.json`, config);
         if (!Array.isArray(response?.data)) {
           throw new Error('Invalid scripts.json payload');
         }
@@ -275,31 +273,23 @@ const ExternalViewerPage = () => {
         throw error;
       }
     },
-    [baseGithubPath, delay]
+    [delay, viewerScriptsBasePath]
   );
 
-  const loadScriptWithFallback = useCallback(
+  const loadViewerScript = useCallback(
     (scriptName) =>
       new Promise((resolve, reject) => {
-        const sources = [`${baseCdnPath + scriptName}.js`, `${baseGithubPath + scriptName}.js`];
-        const tryLoad = (index) => {
-          const url = sources[index];
-          loadjs(url, {
-            success: () => resolve(scriptName),
-            error: () => {
-              console.warn(`[Viewer] Failed to load external script: ${url}`);
-              if (index + 1 < sources.length) {
-                tryLoad(index + 1);
-              } else {
-                reject(new Error(`Failed to load external script ${scriptName}`));
-              }
-            }
-          });
-        };
-
-        tryLoad(0);
+        const url = `${viewerScriptsBasePath}${scriptName}.js`;
+        loadjs(url, {
+          success: () => resolve(scriptName),
+          error: () => {
+            const error = new Error(`Failed to load viewer script ${url}`);
+            console.warn('[Viewer] Failed to load viewer script', error);
+            reject(error);
+          }
+        });
       }),
-    [baseCdnPath, baseGithubPath]
+    [viewerScriptsBasePath]
   );
 
   const loadViewerEnhancements = useCallback(
@@ -309,8 +299,8 @@ const ExternalViewerPage = () => {
         const scriptsToLoad = _.filter(scripts, (script) => script !== 'makeItSnow' || showData?.preferences?.makeItSnow);
         await Promise.all(
           _.map(scriptsToLoad, (script) =>
-            loadScriptWithFallback(script).catch((error) => {
-              console.warn(`[Viewer] Giving up on external script ${script}`, error);
+            loadViewerScript(script).catch((error) => {
+              console.warn(`[Viewer] Giving up on viewer script ${script}`, error);
               return null;
             })
           )
@@ -319,7 +309,7 @@ const ExternalViewerPage = () => {
         console.warn('[Viewer] Unable to load external viewer scripts', error);
       }
     },
-    [fetchViewerScripts, loadScriptWithFallback]
+    [fetchViewerScripts, loadViewerScript]
   );
 
   const displayCurrentViewerMessages = (parsedViewerPage) => {
