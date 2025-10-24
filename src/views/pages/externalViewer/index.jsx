@@ -15,7 +15,7 @@ import { Helmet } from 'react-helmet';
 import useInterval from '../../../hooks/useInterval';
 import { useDispatch } from '../../../store';
 import { getSubdomain } from '../../../utils/route-guard/helpers/helpers';
-import { trackClarityEvent } from '../../../utils/analytics/clarity';
+import { trackPosthogEvent } from '../../../utils/analytics/posthog';
 
 import { addSequenceToQueueService, voteForSequenceService } from '../../../services/viewer/mutations.service';
 import { LocationCheckMethod, ViewerControlMode } from '../../../utils/enum';
@@ -80,31 +80,31 @@ const ExternalViewerPage = () => {
       const errorMessage = response?.error?.graphQLErrors[0]?.extensions?.message;
       if (response?.success) {
         viewerPageMessageElements.requestSuccessful.current = viewerPageMessageElements?.requestSuccessful?.block;
-        trackClarityEvent('viewer_interaction_result', { result: 'Success' });
+        trackPosthogEvent('viewer_interaction_result', { result: 'Success' });
       } else if (errorMessage === 'NAUGHTY') {
         // Do nothing, say nothing
-        trackClarityEvent('viewer_interaction_result', { result: 'Naughty' });
+        trackPosthogEvent('viewer_interaction_result', { result: 'Naughty' });
       } else if (errorMessage === 'SEQUENCE_REQUESTED') {
         viewerPageMessageElements.requestPlaying.current = viewerPageMessageElements?.requestPlaying?.block;
-        trackClarityEvent('viewer_interaction_result', { result: 'Sequence Already Requested' });
+        trackPosthogEvent('viewer_interaction_result', { result: 'Sequence Already Requested' });
       } else if (errorMessage === 'INVALID_LOCATION') {
         viewerPageMessageElements.invalidLocation.current = viewerPageMessageElements?.invalidLocation?.block;
-        trackClarityEvent('viewer_interaction_result', { result: 'Invalid Location' });
+        trackPosthogEvent('viewer_interaction_result', { result: 'Invalid Location' });
       } else if (errorMessage === 'QUEUE_FULL') {
         viewerPageMessageElements.queueFull.current = viewerPageMessageElements?.queueFull?.block;
-        trackClarityEvent('viewer_interaction_result', { result: 'Queue Full' });
+        trackPosthogEvent('viewer_interaction_result', { result: 'Queue Full' });
       } else if (errorMessage === 'INVALID_CODE') {
         viewerPageMessageElements.invalidLocationCode.current = viewerPageMessageElements?.invalidLocationCode?.block;
-        trackClarityEvent('viewer_interaction_result', { result: 'Invalid Code' });
+        trackPosthogEvent('viewer_interaction_result', { result: 'Invalid Code' });
       } else if (errorMessage === 'ALREADY_VOTED') {
         viewerPageMessageElements.alreadyVoted.current = viewerPageMessageElements?.alreadyVoted?.block;
-        trackClarityEvent('viewer_interaction_result', { result: 'Already Voted' });
+        trackPosthogEvent('viewer_interaction_result', { result: 'Already Voted' });
       } else if (errorMessage === 'ALREADY_REQUESTED') {
         viewerPageMessageElements.alreadyRequested.current = viewerPageMessageElements?.alreadyRequested?.block;
-        trackClarityEvent('viewer_interaction_result', { result: 'Viewer Already Requested' });
+        trackPosthogEvent('viewer_interaction_result', { result: 'Viewer Already Requested' });
       } else {
         viewerPageMessageElements.requestFailed.current = viewerPageMessageElements?.requestFailed?.block;
-        trackClarityEvent('viewer_interaction_result', { result: 'Failed' });
+        trackPosthogEvent('viewer_interaction_result', { result: 'Failed' });
       }
       setTimeout(() => {
         _.map(viewerPageMessageElements, (message) => {
@@ -121,7 +121,7 @@ const ExternalViewerPage = () => {
       const sequenceDisplayName = e.target.attributes.getNamedItem('data-key-2')
         ? e.target.attributes.getNamedItem('data-key-2').value
         : null;
-      trackClarityEvent('viewer_interaction', {
+      trackPosthogEvent('viewer_interaction', {
         action: 'Add Sequence to Queue',
         sequence: sequenceDisplayName != null ? sequenceDisplayName : sequenceName,
         show_name: show?.showName
@@ -177,7 +177,7 @@ const ExternalViewerPage = () => {
       const sequenceDisplayName = e.target.attributes.getNamedItem('data-key-2')
         ? e.target.attributes.getNamedItem('data-key-2').value
         : null;
-      trackClarityEvent('viewer_interaction', {
+      trackPosthogEvent('viewer_interaction', {
         action: 'Vote for Sequence',
         sequence: sequenceDisplayName != null ? sequenceDisplayName : sequenceName,
         show_name: show?.showName
@@ -773,7 +773,7 @@ const ExternalViewerPage = () => {
           if (showData?.preferences?.locationCheckMethod === LocationCheckMethod.GEO) {
             setViewerLocation();
           }
-          trackClarityEvent('viewer_page_view', { show_name: showData?.showName });
+          trackPosthogEvent('viewer_page_view', { show_name: showData?.showName });
 
           setTimeout(() => {
             loadViewerEnhancements(showData);

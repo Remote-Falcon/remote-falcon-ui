@@ -17,7 +17,7 @@ import { StatusResponse } from '../utils/enum';
 import { SIGN_UP, VERIFY_EMAIL, FORGOT_PASSWORD, RESET_PASSWORD } from '../utils/graphql/controlPanel/mutations';
 import { SIGN_IN, GET_SHOW } from '../utils/graphql/controlPanel/queries';
 import { showAlert, showAlertOld } from '../views/pages/globalPageHelpers';
-import { trackClarityEvent } from '../utils/analytics/clarity';
+import { trackPosthogEvent } from '../utils/analytics/posthog';
 
 const verifyToken = (serviceToken) => {
   if (!serviceToken) {
@@ -203,7 +203,7 @@ export const JWTProvider = ({ children }) => {
         }
       },
       onCompleted: () => {
-        trackClarityEvent('sign_up', {
+        trackPosthogEvent('sign_up', {
           show_name: showName
         });
         showAlert(dispatch, { id: 'snackbar-sign-up', message: `A verification email has been sent to ${email}` });

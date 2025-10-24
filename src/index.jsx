@@ -3,8 +3,8 @@ import React from 'react';
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink, ApolloLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { MultiAPILink } from '@habx/apollo-multi-endpoint-link';
+import posthog from 'posthog-js';
 import { PostHogProvider } from 'posthog-js/react';
-import Clarity from '@microsoft/clarity';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
@@ -19,13 +19,15 @@ import { store } from './store';
 import './assets/scss/style.scss';
 import { Environments } from './utils/enum';
 
-if (import.meta.env.VITE_CLARITY_PROJECT_ID) {
-  Clarity.init(import.meta.env.VITE_CLARITY_PROJECT_ID);
-}
-
 const posthogOptions = {
   api_host: 'https://us.i.posthog.com'
 };
+
+if (import.meta.env.VITE_PUBLIC_POSTHOG_KEY) {
+  posthog.init(import.meta.env.VITE_PUBLIC_POSTHOG_KEY, posthogOptions);
+} else {
+  posthog.opt_out_capturing?.();
+}
 
 const link = ApolloLink.from([
   new MultiAPILink({
@@ -72,7 +74,7 @@ root.render(
     <ConfigProvider>
       <BrowserRouter basename={BASE_PATH}>
         <ApolloProvider client={client}>
-          <PostHogProvider apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY} options={posthogOptions}>
+          <PostHogProvider client={posthog}>
             <App />
           </PostHogProvider>
         </ApolloProvider>
