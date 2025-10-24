@@ -3,7 +3,6 @@ import React from 'react';
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink, ApolloLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { MultiAPILink } from '@habx/apollo-multi-endpoint-link';
-import mixpanel from 'mixpanel-browser';
 import { PostHogProvider } from 'posthog-js/react';
 import Clarity from '@microsoft/clarity';
 import { createRoot } from 'react-dom/client';
@@ -22,13 +21,6 @@ import { Environments } from './utils/enum';
 
 if (import.meta.env.VITE_CLARITY_PROJECT_ID) {
   Clarity.init(import.meta.env.VITE_CLARITY_PROJECT_ID);
-}
-
-if (import.meta.env.VITE_MIXPANEL_KEY) {
-  mixpanel.init(import.meta.env.VITE_MIXPANEL_KEY);
-} else {
-  mixpanel.init('*');
-  mixpanel.disable();
 }
 
 const posthogOptions = {

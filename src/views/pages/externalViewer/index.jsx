@@ -8,7 +8,6 @@ import newAxios from 'axios';
 import htmlToReact from 'html-to-react';
 import loadjs from 'loadjs';
 import _ from 'lodash';
-import mixpanel from 'mixpanel-browser';
 import moment from 'moment';
 import Loading from 'react-fullscreen-loading';
 import { Helmet } from 'react-helmet';
@@ -16,6 +15,7 @@ import { Helmet } from 'react-helmet';
 import useInterval from '../../../hooks/useInterval';
 import { useDispatch } from '../../../store';
 import { getSubdomain } from '../../../utils/route-guard/helpers/helpers';
+import { trackClarityEvent } from '../../../utils/analytics/clarity';
 
 import { addSequenceToQueueService, voteForSequenceService } from '../../../services/viewer/mutations.service';
 import { LocationCheckMethod, ViewerControlMode } from '../../../utils/enum';
@@ -80,49 +80,31 @@ const ExternalViewerPage = () => {
       const errorMessage = response?.error?.graphQLErrors[0]?.extensions?.message;
       if (response?.success) {
         viewerPageMessageElements.requestSuccessful.current = viewerPageMessageElements?.requestSuccessful?.block;
-        mixpanel.track('Viewer Interaction Result', {
-          Result: 'Success'
-        });
+        trackClarityEvent('viewer_interaction_result', { result: 'Success' });
       } else if (errorMessage === 'NAUGHTY') {
         // Do nothing, say nothing
-        mixpanel.track('Viewer Interaction Result', {
-          Result: 'Naughty'
-        });
+        trackClarityEvent('viewer_interaction_result', { result: 'Naughty' });
       } else if (errorMessage === 'SEQUENCE_REQUESTED') {
         viewerPageMessageElements.requestPlaying.current = viewerPageMessageElements?.requestPlaying?.block;
-        mixpanel.track('Viewer Interaction Result', {
-          Result: 'Sequence Already Requested'
-        });
+        trackClarityEvent('viewer_interaction_result', { result: 'Sequence Already Requested' });
       } else if (errorMessage === 'INVALID_LOCATION') {
         viewerPageMessageElements.invalidLocation.current = viewerPageMessageElements?.invalidLocation?.block;
-        mixpanel.track('Viewer Interaction Result', {
-          Result: 'Invalid Location'
-        });
+        trackClarityEvent('viewer_interaction_result', { result: 'Invalid Location' });
       } else if (errorMessage === 'QUEUE_FULL') {
         viewerPageMessageElements.queueFull.current = viewerPageMessageElements?.queueFull?.block;
-        mixpanel.track('Viewer Interaction Result', {
-          Result: 'Queue Full'
-        });
+        trackClarityEvent('viewer_interaction_result', { result: 'Queue Full' });
       } else if (errorMessage === 'INVALID_CODE') {
         viewerPageMessageElements.invalidLocationCode.current = viewerPageMessageElements?.invalidLocationCode?.block;
-        mixpanel.track('Viewer Interaction Result', {
-          Result: 'Invalid Code'
-        });
+        trackClarityEvent('viewer_interaction_result', { result: 'Invalid Code' });
       } else if (errorMessage === 'ALREADY_VOTED') {
         viewerPageMessageElements.alreadyVoted.current = viewerPageMessageElements?.alreadyVoted?.block;
-        mixpanel.track('Viewer Interaction Result', {
-          Result: 'Already Voted'
-        });
+        trackClarityEvent('viewer_interaction_result', { result: 'Already Voted' });
       } else if (errorMessage === 'ALREADY_REQUESTED') {
         viewerPageMessageElements.alreadyRequested.current = viewerPageMessageElements?.alreadyRequested?.block;
-        mixpanel.track('Viewer Interaction Result', {
-          Result: 'Viewer Already Requested'
-        });
+        trackClarityEvent('viewer_interaction_result', { result: 'Viewer Already Requested' });
       } else {
         viewerPageMessageElements.requestFailed.current = viewerPageMessageElements?.requestFailed?.block;
-        mixpanel.track('Viewer Interaction Result', {
-          Result: 'Failed'
-        });
+        trackClarityEvent('viewer_interaction_result', { result: 'Failed' });
       }
       setTimeout(() => {
         _.map(viewerPageMessageElements, (message) => {
@@ -139,9 +121,10 @@ const ExternalViewerPage = () => {
       const sequenceDisplayName = e.target.attributes.getNamedItem('data-key-2')
         ? e.target.attributes.getNamedItem('data-key-2').value
         : null;
-      mixpanel.track('Viewer Interaction', {
-        Action: 'Add Sequence to Queue',
-        Sequence: sequenceDisplayName != null ? sequenceDisplayName : sequenceName
+      trackClarityEvent('viewer_interaction', {
+        action: 'Add Sequence to Queue',
+        sequence: sequenceDisplayName != null ? sequenceDisplayName : sequenceName,
+        show_name: show?.showName
       });
       if (show?.preferences?.enableGeolocation) {
         await setViewerLocation();
@@ -194,9 +177,10 @@ const ExternalViewerPage = () => {
       const sequenceDisplayName = e.target.attributes.getNamedItem('data-key-2')
         ? e.target.attributes.getNamedItem('data-key-2').value
         : null;
-      mixpanel.track('Viewer Interaction', {
-        Action: 'Vote for Sequence',
-        Sequence: sequenceDisplayName != null ? sequenceDisplayName : sequenceName
+      trackClarityEvent('viewer_interaction', {
+        action: 'Vote for Sequence',
+        sequence: sequenceDisplayName != null ? sequenceDisplayName : sequenceName,
+        show_name: show?.showName
       });
       if (show?.preferences?.enableGeolocation) {
         await setViewerLocation();
@@ -789,9 +773,7 @@ const ExternalViewerPage = () => {
           if (showData?.preferences?.locationCheckMethod === LocationCheckMethod.GEO) {
             setViewerLocation();
           }
-          mixpanel.track('Viewer Page View', {
-            Show_Name: showData?.showName
-          });
+          trackClarityEvent('viewer_page_view', { show_name: showData?.showName });
 
           setTimeout(() => {
             loadViewerEnhancements(showData);

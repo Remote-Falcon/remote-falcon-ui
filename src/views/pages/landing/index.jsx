@@ -1,5 +1,4 @@
 import { styled } from '@mui/material/styles';
-import mixpanel from 'mixpanel-browser';
 
 import AppBar from '../../../ui-component/extended/AppBar';
 
@@ -25,9 +24,6 @@ const SecondWrapper = styled('div')(({ theme }) => ({
 }));
 
 const Landing = () => {
-  mixpanel.track('Page View', {
-    Page: 'Landing'
-  });
   return (
     <>
       <HeaderWrapper id="home">

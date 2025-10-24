@@ -15,7 +15,6 @@ import { RFTabPanel, RFTab } from '../../../../ui-component/RFTabPanel';
 import InteractionSettings from './InteractionSettings';
 import JukeboxSettings from './JukeboxSettings';
 import MainSettings from './MainSettings';
-import SettingsSponsor from './SettingsSponsor';
 import ViewerPageSettings from './ViewerPageSettings';
 import VotingSettings from './VotingSettings';
 

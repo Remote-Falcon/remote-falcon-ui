@@ -2,7 +2,6 @@ import { Buffer } from 'buffer';
 
 import { createContext, useEffect } from 'react';
 import { usePostHog } from 'posthog-js/react';
-import mixpanel from 'mixpanel-browser';
 
 import { useLazyQuery, useMutation, useApolloClient } from '@apollo/client';
 import jwtDecode from 'jwt-decode';
@@ -18,6 +17,7 @@ import { StatusResponse } from '../utils/enum';
 import { SIGN_UP, VERIFY_EMAIL, FORGOT_PASSWORD, RESET_PASSWORD } from '../utils/graphql/controlPanel/mutations';
 import { SIGN_IN, GET_SHOW } from '../utils/graphql/controlPanel/queries';
 import { showAlert, showAlertOld } from '../views/pages/globalPageHelpers';
+import { trackClarityEvent } from '../utils/analytics/clarity';
 
 const verifyToken = (serviceToken) => {
   if (!serviceToken) {
@@ -203,8 +203,8 @@ export const JWTProvider = ({ children }) => {
         }
       },
       onCompleted: () => {
-        mixpanel.track('Sign Up', {
-          showName: showName
+        trackClarityEvent('sign_up', {
+          show_name: showName
         });
         showAlert(dispatch, { id: 'snackbar-sign-up', message: `A verification email has been sent to ${email}` });
         setTimeout(() => {

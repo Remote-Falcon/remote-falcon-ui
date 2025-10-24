@@ -1,15 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {useLazyQuery, useMutation} from "@apollo/client";
-import {ASK_WATTSON} from "../../../../utils/graphql/controlPanel/queries";
-import {WATTSON_FEEDBACK} from "../../../../utils/graphql/controlPanel/mutations";
-import {showAlert} from "../../globalPageHelpers";
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { ASK_WATTSON } from '../../../../utils/graphql/controlPanel/queries';
+import { WATTSON_FEEDBACK } from '../../../../utils/graphql/controlPanel/mutations';
+import { showAlert } from '../../globalPageHelpers';
 import { useDispatch, useSelector } from '../../../../store';
-import {gridSpacing} from "../../../../store/constant";
-import {Box, Grid} from "@mui/material";
+import { gridSpacing } from '../../../../store/constant';
+import { Box, Grid } from '@mui/material';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
-import remarkBreaks from "remark-breaks";
-import mixpanel from "mixpanel-browser";
-import useIsFeatureFlagEnabled from "../../../../utils/featureFlags";
+import remarkBreaks from 'remark-breaks';
+import useIsFeatureFlagEnabled from '../../../../utils/featureFlags';
 
 // Storage key for chat history
 const STORAGE_KEY = 'wattson_chat_history';
@@ -191,11 +190,6 @@ const AskWattson = () => {
       },
       fetchPolicy: 'network-only',
       onCompleted: (data) => {
-        mixpanel.track('Ask Wattson', {
-          Prompt: inputValue.trim(),
-          Response: data?.askWattson?.text || 'No response received.'
-        });
-
         const assistantMessage = {
           id: (Date.now() + 1).toString(),
           responseId: data?.askWattson?.responseId,
@@ -213,9 +207,6 @@ const AskWattson = () => {
       },
       onError: () => {
         showAlert(dispatch, { alert: 'error', message: 'Error getting response from Wattson.' });
-        mixpanel.track('Ask Wattson Error', {
-          Prompt: inputValue.trim()
-        });
         setIsLoading(false);
       }
     });
@@ -248,11 +239,6 @@ const AskWattson = () => {
       });
 
       if (data?.wattsonFeedback) {
-        mixpanel.track('Ask Wattson Feedback', {
-          ResponseId: message.responseId,
-          Feedback: sentiment
-        });
-
         setFeedbackState((prev) => ({
           ...prev,
           [message.id]: { selection: sentiment, status: 'submitted', error: null }

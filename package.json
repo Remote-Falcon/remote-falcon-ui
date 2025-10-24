@@ -37,7 +37,6 @@
     "loadjs": "^4.3.0",
     "lodash": "^4.17.21",
     "md5": "^2.3.0",
-    "mixpanel-browser": "^2.55.1",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.46",
     "posthog-js": "^1.140.1",
