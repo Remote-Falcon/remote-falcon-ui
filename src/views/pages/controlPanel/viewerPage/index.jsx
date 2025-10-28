@@ -75,6 +75,14 @@ const ViewerPage = () => {
     setActiveViewerPageHtmlBase64(viewerPageHtmlBase64);
   };
 
+  const setSelectedViewerPage = useCallback((viewerPage) => {
+    const viewerHtml = viewerPage?.html ?? '';
+    setActiveViewerPageHtml(viewerHtml);
+    setActiveViewerPageName(viewerPage?.name);
+    const viewerPageHtmlBase64 = `data:text/html;base64,${btoa(unescape(encodeURIComponent(viewerHtml)))}`;
+    setActiveViewerPageHtmlBase64(viewerPageHtmlBase64);
+  }, []);
+
   const isValidationException = (message) => {
     let isException = false;
     _.forEach(validationExceptions, (exception) => {
@@ -91,37 +99,34 @@ const ViewerPage = () => {
   };
 
   const editViewerPage = (viewerPage) => {
-    _.forEach(show?.pages, (page) => {
-      if (page?.name === viewerPage?.name) {
-        setActiveViewerPageHtml(viewerPage?.html);
-        setActiveViewerPageName(viewerPage?.name);
-        const viewerPageHtmlBase64 = `data:text/html;base64,${btoa(unescape(encodeURIComponent(viewerPage?.html)))}`;
-        setActiveViewerPageHtmlBase64(viewerPageHtmlBase64);
-      }
-    });
+    setSelectedViewerPage(viewerPage);
   };
 
   const editNewViewerPage = (viewerPage) => {
-    setActiveViewerPageHtml(viewerPage?.html);
-    setActiveViewerPageName(viewerPage?.name);
-    const viewerPageHtmlBase64 = `data:text/html;base64,${btoa(unescape(encodeURIComponent(viewerPage?.html)))}`;
-    setActiveViewerPageHtmlBase64(viewerPageHtmlBase64);
+    setSelectedViewerPage(viewerPage);
   };
 
-  const getActiveViewerPage = useCallback(() => {
-    _.forEach(show?.pages, (page) => {
-      if (page?.active) {
-        setActiveViewerPageHtml(page?.html);
-        setActiveViewerPageName(page?.name);
-        const viewerPageHtmlBase64 = `data:text/html;base64,${btoa(unescape(encodeURIComponent(page?.html)))}`;
-        setActiveViewerPageHtmlBase64(viewerPageHtmlBase64);
-      }
-    });
-  }, [show]);
-
   useEffect(() => {
-    getActiveViewerPage();
-  }, [getActiveViewerPage]);
+    if (!show?.pages?.length) {
+      return;
+    }
+
+    if (activeViewerPageName) {
+      const selectedPage = _.find(show.pages, (page) => page?.name === activeViewerPageName);
+      if (selectedPage) {
+        setSelectedViewerPage(selectedPage);
+        return;
+      }
+    }
+
+    const activePage = _.find(show.pages, (page) => page?.active);
+    if (activePage) {
+      setSelectedViewerPage(activePage);
+      return;
+    }
+
+    setSelectedViewerPage(show?.pages?.[0]);
+  }, [show?.pages, activeViewerPageName, setSelectedViewerPage]);
 
   useEffect(() => {
     if (activeViewerPageHtml !== undefined) {
