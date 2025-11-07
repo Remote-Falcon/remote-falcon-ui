@@ -29,6 +29,8 @@ import MainCard from '../../../../ui-component/cards/MainCard';
 import { showAlert } from '../../globalPageHelpers';
 import { uploadImageService, getImagesService, deleteImageService } from './index.service';
 
+const MAX_IMAGES = 50;
+
 const ImageHosting = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -98,8 +100,11 @@ const ImageHosting = () => {
 
   function uploadFile(acceptedFiles) {
     setShowLinearProgress(true);
-    if (images.length >= 25) {
-      showAlert(dispatch, { alert: 'warning', message: 'There is a 25 file limit. Please delete an image before uploading another one.' });
+    if (images.length >= MAX_IMAGES) {
+      showAlert(dispatch, {
+        alert: 'warning',
+        message: `There is a ${MAX_IMAGES} file limit. Please delete an image before uploading another one.`
+      });
       setShowLinearProgress(false);
       return;
     }
@@ -164,7 +169,7 @@ const ImageHosting = () => {
     <Box sx={{ mt: 2 }}>
       <Grid container spacing={gridSpacing}>
         <Grid item xs={12}>
-          <MainCard title="Image Hosting" content={false}>
+          <MainCard title={`Image Hosting - ${images.length} of ${MAX_IMAGES}`} content={false}>
             <Grid item xs={12}>
               {showLinearProgress && <LinearProgress />}
             </Grid>
