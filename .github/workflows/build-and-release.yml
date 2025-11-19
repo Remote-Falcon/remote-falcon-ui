@@ -48,8 +48,8 @@ jobs:
           build-args: |
             HOST_ENV=prod
             VERSION=${{ steps.date.outputs.time }}
-            CONTROL_PANEL_API=https://remotefalcon.com/remote-falcon-control-panel
-            VIEWER_API=https://remotefalcon.com/remote-falcon-viewer
+            CONTROL_PANEL_API=http://remote-falcon-control-panel.remote-falcon.svc.cluster.local
+            VIEWER_API=http://remote-falcon-viewer.remote-falcon.svc.cluster.local
             VIEWER_JWT_KEY=${{ secrets.VIEWER_JWT_KEY }}
             GOOGLE_MAPS_KEY=${{ secrets.GOOGLE_MAPS_KEY }}
             PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }}
