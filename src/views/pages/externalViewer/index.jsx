@@ -11,6 +11,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import Loading from 'react-fullscreen-loading';
 import { Helmet } from 'react-helmet';
+import posthog from 'posthog-js';
 
 import useInterval from '../../../hooks/useInterval';
 import { useDispatch } from '../../../store';
@@ -761,6 +762,7 @@ const ExternalViewerPage = () => {
         }
 
         if (subdomain === showData?.showSubdomain) {
+          posthog.reset();
           if (showData?.playingNext === '') {
             showData.playingNext = showData?.playingNextFromSchedule;
           }
