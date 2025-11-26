@@ -20,7 +20,8 @@ import './assets/scss/style.scss';
 import { Environments } from './utils/enum';
 
 const posthogOptions = {
-  api_host: 'https://us.i.posthog.com'
+  api_host: 'https://us.i.posthog.com',
+  person_profiles: 'identified_only'
 };
 
 if (import.meta.env.VITE_PUBLIC_POSTHOG_KEY) {
