@@ -160,35 +160,26 @@ const ViewerPage = () => {
                     {activeViewerPageName}
                   </Typography>
                 </Box>
-                {openSidePreview ? (
-                  <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                      <Editor
-                        height="60vh"
-                        defaultLanguage="html"
-                        value={activeViewerPageHtml}
-                        onChange={(value) => editorChanged(value)}
-                        theme="vs-dark"
-                        line={editorLineNumber}
-                      />
-                    </Grid>
+                <Grid container spacing={2}>
+                  <Grid item xs={openSidePreview ? 6 : 12}>
+                    <Editor
+                      height="60vh"
+                      defaultLanguage="html"
+                      value={activeViewerPageHtml}
+                      onChange={(value) => editorChanged(value)}
+                      theme="vs-dark"
+                      line={editorLineNumber}
+                    />
+                  </Grid>
+                  {openSidePreview && (
                     <Grid item xs={6}>
                       <Typography variant="h3" align="center" color="error" mt={-7} pb={4}>
                         NOTE! This preview displays all page elements and is not based on current viewer control settings!
                       </Typography>
                       <iframe title="viewerPagePreview" src={activeViewerPageHtmlBase64} style={{ height: '100%', width: '100%' }} />
                     </Grid>
-                  </Grid>
-                ) : (
-                  <Editor
-                    height="60vh"
-                    defaultLanguage="html"
-                    value={activeViewerPageHtml}
-                    onChange={(value) => editorChanged(value)}
-                    theme="vs-dark"
-                    line={editorLineNumber}
-                  />
-                )}
+                  )}
+                </Grid>
               </Box>
               <Typography variant="h3" sx={{ paddingTop: 3 }}>
                 HTML Validation
