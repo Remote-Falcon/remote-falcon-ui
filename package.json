@@ -7,6 +7,7 @@
     "@emotion/cache": "^11.7.1",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
+    "@googlemaps/markerclusterer": "^2.5.3",
     "@habx/apollo-multi-endpoint-link": "^2.9.0",
     "@hello-pangea/dnd": "^18.0.1",
     "@monaco-editor/react": "^4.4.6",

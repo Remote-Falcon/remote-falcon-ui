@@ -1,10 +1,13 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import * as React from 'react';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { Box, Grid, Stack, Typography, Switch, CardActions } from '@mui/material';
-import { APIProvider, Map } from '@vis.gl/react-google-maps';
+import { APIProvider, Map, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
+import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import _ from 'lodash';
+
+/* global google */
 
 import { useDispatch, useSelector } from '../../../../store';
 import { gridSpacing } from '../../../../store/constant';
@@ -17,7 +20,67 @@ import RFLoadingButton from '../../../../ui-component/RFLoadingButton';
 import { UPDATE_PREFERENCES } from '../../../../utils/graphql/controlPanel/mutations';
 import { SHOWS_ON_MAP } from '../../../../utils/graphql/controlPanel/queries';
 import { showAlert } from '../../globalPageHelpers';
-import MarkerWithInfo from './MarkerWithInfo';
+const ShowsCluster = ({ shows }) => {
+  const map = useMap();
+  const markerLib = useMapsLibrary('marker');
+  const infoWindowRef = useRef(null);
+  const clustererRef = useRef(null);
+
+  useEffect(() => {
+    if (!markerLib || infoWindowRef.current) return;
+    infoWindowRef.current = new google.maps.InfoWindow();
+  }, [markerLib]);
+
+  useEffect(() => {
+    if (!map || !markerLib) return;
+    clustererRef.current = new MarkerClusterer({ map, markers: [] });
+    return () => {
+      clustererRef.current?.clearMarkers();
+      clustererRef.current = null;
+    };
+  }, [map, markerLib]);
+
+  useEffect(() => {
+    if (!map || !markerLib || !clustererRef.current) return;
+    const { AdvancedMarkerElement } = markerLib;
+    const infoWindow = infoWindowRef.current ?? new google.maps.InfoWindow();
+    const mapClickListener = map.addListener('click', () => infoWindow.close());
+
+    // clear existing markers before adding new ones
+    clustererRef.current.clearMarkers();
+
+    const markers = shows
+      .filter((show) => Number.isFinite(show?.location?.lat) && Number.isFinite(show?.location?.lng))
+      .map((show) => {
+        const title = show?.showName || 'Show';
+        const marker = new AdvancedMarkerElement({
+          position: show.location,
+          title
+        });
+        marker.addListener('click', () => {
+          infoWindow.close();
+          const content = document.createElement('div');
+          content.textContent = title;
+          content.style.color = '#0d47a1';
+          content.style.fontWeight = '600';
+          content.style.fontSize = '14px';
+          content.style.padding = '4px 8px';
+          infoWindow.setContent(content);
+          infoWindow.open({ anchor: marker, map });
+        });
+        return marker;
+      });
+
+    clustererRef.current.addMarkers(markers);
+
+    return () => {
+      google.maps.event.removeListener(mapClickListener);
+      markers.forEach((marker) => marker.map && (marker.map = null));
+    };
+  }, [map, markerLib, shows]);
+
+  return null;
+};
 
 const ShowsMap = () => {
   const dispatch = useDispatch();
@@ -59,13 +122,14 @@ const ShowsMap = () => {
       onCompleted: (data) => {
         const shows = [];
         _.forEach(data?.showsOnAMap, (show) => {
-          shows.push({
-            showName: show?.showName,
-            location: {
-              lat: show?.showLatitude,
-              lng: show?.showLongitude
-            }
-          });
+          const lat = Number(show?.showLatitude);
+          const lng = Number(show?.showLongitude);
+          if (Number.isFinite(lat) && Number.isFinite(lng)) {
+            shows.push({
+              showName: show?.showName,
+              location: { lat, lng }
+            });
+          }
         });
         setShowsOnMap(shows);
       },
@@ -223,9 +287,7 @@ const ShowsMap = () => {
                   <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_KEY} onLoad={() => setMapLoaded(true)}>
                     {mapLoaded && (
                       <Map mapId="972618e58193992a" defaultZoom={1} defaultCenter={center}>
-                        {_.map(showsOnMap, (show) => (
-                          <MarkerWithInfo position={show?.location} showName={show?.showName} />
-                        ))}
+                        <ShowsCluster shows={showsOnMap} />
                       </Map>
                     )}
                   </APIProvider>
