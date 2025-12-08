@@ -42,6 +42,7 @@ const DashboardCharts = () => {
   const dateMinus7 = new Date();
   dateMinus7.setDate(dateMinus7.getDate() - 7);
   dateMinus7.setHours(0, 0, 0);
+  const dateNow = new Date();
   const datePlus1 = new Date();
   datePlus1.setHours(0, 0, 0);
 
@@ -51,7 +52,7 @@ const DashboardCharts = () => {
   const [dashboardStatsQuery] = useLazyQuery(DASHBOARD_STATS);
 
   const [dateFilterStart, setDateFilterStart] = useState(dateMinus7.valueOf());
-  const [dateFilterEnd, setDateFilterEnd] = useState(datePlus1.valueOf());
+  const [dateFilterEnd, setDateFilterEnd] = useState(dateNow.valueOf());
   const [dashboardStats, setDashboardStats] = useState();
   const [isLoading, setLoading] = useState(false);
   const [isDownloadingStats, setIsDownloadingStats] = useState(false);
@@ -173,7 +174,7 @@ const DashboardCharts = () => {
       ) : (
         <Grid item xs={12} md={6} lg={6}>
           <MainCard title="Unique Viewers by Date" sx={{ overflow: 'visible' }}>
-            <ApexLineChart chartData={uniqueViewersByDate(dashboardStats)} />
+            <ApexLineChart chartData={uniqueViewersByDate(dashboardStats)} timezone={show?.timezone} />
           </MainCard>
         </Grid>
       )}
@@ -182,7 +183,7 @@ const DashboardCharts = () => {
       ) : (
         <Grid item xs={12} md={6} lg={6}>
           <MainCard title="Total Viewers by Date" sx={{ overflow: 'visible' }}>
-            <ApexLineChart chartData={totalViewersByDate(dashboardStats)} />
+            <ApexLineChart chartData={totalViewersByDate(dashboardStats)} timezone={show?.timezone} />
           </MainCard>
         </Grid>
       )}
@@ -192,7 +193,7 @@ const DashboardCharts = () => {
         show?.preferences?.viewerControlMode === ViewerControlMode.JUKEBOX && (
           <Grid item xs={12} md={6} lg={6}>
             <MainCard title="Sequence Requests by Date" sx={{ overflow: 'visible' }}>
-              <ApexLineChart chartData={sequenceRequestsByDate(dashboardStats)} />
+              <ApexLineChart chartData={sequenceRequestsByDate(dashboardStats)} timezone={show?.timezone} />
             </MainCard>
           </Grid>
         )
@@ -214,7 +215,7 @@ const DashboardCharts = () => {
         show?.preferences?.viewerControlMode === ViewerControlMode.VOTING && (
           <Grid item xs={12} md={6} lg={6}>
             <MainCard title="Sequence Votes by Date" sx={{ overflow: 'visible' }}>
-              <ApexLineChart chartData={sequenceVotesByDate(dashboardStats)} />
+              <ApexLineChart chartData={sequenceVotesByDate(dashboardStats)} timezone={show?.timezone} />
             </MainCard>
           </Grid>
         )
@@ -236,7 +237,7 @@ const DashboardCharts = () => {
         show?.preferences?.viewerControlMode === ViewerControlMode.VOTING && (
           <Grid item xs={12} md={6} lg={6}>
             <MainCard title="Total Wins by Date" sx={{ overflow: 'visible' }}>
-              <ApexLineChart chartData={sequenceVoteWinsByDate(dashboardStats)} />
+              <ApexLineChart chartData={sequenceVoteWinsByDate(dashboardStats)} timezone={show?.timezone} />
             </MainCard>
           </Grid>
         )

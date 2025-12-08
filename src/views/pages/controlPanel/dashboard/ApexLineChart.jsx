@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { useTheme } from '@mui/material/styles';
 import _ from 'lodash';
+import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
 import ReactApexChart from 'react-apexcharts';
 
@@ -29,7 +30,7 @@ const lineChartOptions = {
   }
 };
 
-const ApexLineChart = ({ ...otherProps }) => {
+const ApexLineChart = ({ timezone, ...otherProps }) => {
   const theme = useTheme();
   const { navType } = useConfig();
 
@@ -65,6 +66,10 @@ const ApexLineChart = ({ ...otherProps }) => {
         labels: {
           style: {
             colors: primary
+          },
+          formatter(value) {
+            const tz = timezone || moment.tz.guess();
+            return moment.tz(value, tz).format('MMM DD');
           }
         }
       },
@@ -81,6 +86,12 @@ const ApexLineChart = ({ ...otherProps }) => {
       tooltip: {
         followCursor: true,
         theme: navType === 'dark' ? 'dark' : 'light',
+        x: {
+          formatter(value) {
+            const tz = timezone || moment.tz.guess();
+            return moment.tz(value, tz).format('MMM DD, YYYY');
+          }
+        },
         y: {
           formatter(value) {
             return `${otherProps.chartData?.yValue}${value}`;
@@ -97,7 +108,7 @@ const ApexLineChart = ({ ...otherProps }) => {
         }
       }
     }));
-  }, [darkLight, grey200, navType, otherProps.chartData?.seriesLabels, otherProps.chartData?.yValue, primary, secondary]);
+  }, [darkLight, grey200, navType, otherProps.chartData?.seriesLabels, otherProps.chartData?.yValue, primary, secondary, timezone]);
   return (
     <div id="chart">
       <ReactApexChart options={options} series={[otherProps.chartData]} type="line" height={350} />
@@ -106,7 +117,8 @@ const ApexLineChart = ({ ...otherProps }) => {
 };
 
 ApexLineChart.propTypes = {
-  chartData: PropTypes.object
+  chartData: PropTypes.object,
+  timezone: PropTypes.string
 };
 
 ApexLineChart.defaultProps = {
