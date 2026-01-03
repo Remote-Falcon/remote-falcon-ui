@@ -12,7 +12,7 @@ import Popper from '@mui/material/Popper';
 import { useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 
-const RFSplitButton = ({ disabled, onClick, color, variant, sx, options }) => {
+const RFSplitButton = ({ disabled, onClick, color, variant, sx, options, triggerOnSelect }) => {
   const theme = useTheme();
 
   let background = theme.palette.primary.main;
@@ -29,6 +29,9 @@ const RFSplitButton = ({ disabled, onClick, color, variant, sx, options }) => {
   const handleMenuItemClick = (event, index) => {
     setSelectedIndex(index);
     setOpen(false);
+    if (triggerOnSelect && onClick) {
+      onClick(options, index);
+    }
   };
 
   const handleToggle = () => {
@@ -114,7 +117,8 @@ RFSplitButton.propTypes = {
   variant: PropTypes.string,
   sx: PropTypes.object,
   callback: PropTypes.func,
-  options: PropTypes.array
+  options: PropTypes.array,
+  triggerOnSelect: PropTypes.bool
 };
 
 export default RFSplitButton;

@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as React from 'react';
+import fileDownload from 'js-file-download';
 
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { Box, Grid, TableRow, TableCell, TableContainer, Table, TableHead, TableBody, LinearProgress, Stack } from '@mui/material';
 import _ from 'lodash';
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
@@ -15,8 +16,10 @@ import { saveSequencesService } from '../../../../services/controlPanel/mutation
 import { setShow } from '../../../../store/slices/show';
 import RFSplitButton from '../../../../ui-component/RFSplitButton';
 import { UPDATE_SEQUENCES } from '../../../../utils/graphql/controlPanel/mutations';
+import { GET_SHOW } from '../../../../utils/graphql/controlPanel/queries';
 import { showAlert } from '../../globalPageHelpers';
 import SequenceRow from './SequenceRow';
+import { downloadSequencesToExcelService, importSequencesFromExcelService } from './index.service';
 
 const Sequences = () => {
   const dispatch = useDispatch();
@@ -24,10 +27,13 @@ const Sequences = () => {
 
   const [showLinearProgress, setShowLinearProgress] = useState(false);
   const [panelTitle, setPanelTitle] = useState('Sequences');
+  const fileInputRef = useRef(null);
+  const [getShowQuery] = useLazyQuery(GET_SHOW, { fetchPolicy: 'network-only' });
 
   const [updateSequencesMutation] = useMutation(UPDATE_SEQUENCES);
 
   const deleteSequencesOptions = ['Delete Inactive Sequences', 'Delete All Sequences'];
+  const importExportOptions = ['Import Sequences', 'Export Sequences'];
 
   const sortSequencesAlphabetically = () => {
     setShowLinearProgress(true);
@@ -116,6 +122,56 @@ const Sequences = () => {
     }
   };
 
+  const handleImportExport = async (options, selectedIndex) => {
+    if (selectedIndex === 0) {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+        fileInputRef.current.click();
+      }
+    } else if (selectedIndex === 1) {
+      setShowLinearProgress(true);
+      try {
+        const response = await downloadSequencesToExcelService();
+        if (response?.status === 200) {
+          fileDownload(response.data, 'Remote Falcon Sequences.csv');
+          showAlert(dispatch, { message: 'Sequences Exported Successfully' });
+        } else {
+          showAlert(dispatch, { alert: 'error', message: 'Unable to export sequences' });
+        }
+      } catch (err) {
+        showAlert(dispatch, { alert: 'error', message: err?.response?.data || 'Unable to export sequences' });
+      } finally {
+        setShowLinearProgress(false);
+      }
+    }
+  };
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setShowLinearProgress(true);
+    try {
+      const response = await importSequencesFromExcelService(formData);
+      if (response?.status === 200) {
+        showAlert(dispatch, { message: 'Sequences imported successfully.' });
+        const { data } = await getShowQuery();
+        if (data?.getShow) {
+          dispatch(setShow(data.getShow));
+        }
+      } else {
+        showAlert(dispatch, { alert: 'error', message: response?.data || 'Unable to import sequences' });
+      }
+    } catch (err) {
+      showAlert(dispatch, { alert: 'error', message: err?.response?.data || 'Unable to import sequences' });
+    } finally {
+      setShowLinearProgress(false);
+    }
+  };
+
   useEffect(() => {
     setPanelTitle(`Sequences (${show?.sequences?.length || 0} of 200)`);
   }, [show]);
@@ -133,13 +189,26 @@ const Sequences = () => {
                 <RFLoadingButton loading={showLinearProgress} onClick={sortSequencesAlphabetically} color="primary">
                   Sort Alphabetically
                 </RFLoadingButton>
+
+                <RFSplitButton
+                  options={importExportOptions}
+                  onClick={(options, selectedIndex) => handleImportExport(options, selectedIndex)}
+                  triggerOnSelect
+                />
                 <RFSplitButton
                   options={deleteSequencesOptions}
                   color="error"
                   onClick={(options, selectedIndex) => deleteSequences(options, selectedIndex)}
                 />
               </Stack>
-              <TableContainer>
+            <TableContainer>
+              <input
+                type="file"
+                accept=".csv,text/csv"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+              />
                 <Table size="small" aria-label="collapsible table">
                   <TableHead sx={{ '& th,& td': { whiteSpace: 'nowrap' } }}>
                     <TableRow>
