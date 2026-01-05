@@ -14,11 +14,16 @@ export const downloadSequencesToExcelService = async () => {
 };
 
 export const importSequencesFromExcelService = async (formData) => {
-  return axios.post(`${import.meta.env.VITE_CONTROL_PANEL_API}/controlPanel/uploadSequencesCsv`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  });
+  try {
+    return await axios.post(`${import.meta.env.VITE_CONTROL_PANEL_API}/controlPanel/uploadSequencesCsv`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  } catch (error) {
+    const normalizedError = error?.response?.data || error;
+    return Promise.reject(normalizedError);
+  }
 };
 
 export const downloadSequencesToExcel = async (dispatch, setIsDownloadingSequences) => {

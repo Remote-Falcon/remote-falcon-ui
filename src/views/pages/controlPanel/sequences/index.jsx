@@ -166,7 +166,9 @@ const Sequences = () => {
         showAlert(dispatch, { alert: 'error', message: response?.data || 'Unable to import sequences' });
       }
     } catch (err) {
-      showAlert(dispatch, { alert: 'error', message: err?.response?.data || 'Unable to import sequences' });
+      const apiError = err?.response?.data;
+      const errorMessage = apiError?.message || err?.message || apiError || err?.data || 'Unable to import sequences';
+      showAlert(dispatch, { alert: 'error', message: errorMessage });
     } finally {
       setShowLinearProgress(false);
     }
