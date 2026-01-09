@@ -82,12 +82,12 @@ jobs:
           Namespace: remote-falcon
           Application: remote-falcon-ui
           Env: prod
-          Replicas: 2
+          Replicas: 1
           Image: ${{ env.REGISTRY }}/${{ steps.repository_string.outputs.lowercase }}:${{ github.sha }}
-          Requests.Memory: 250Mi
-          Requests.CPU: 250m
-          Limits.Memory: 500Mi
-          Limits.CPU: 500m
+          Requests.Memory: 64Mi
+          Requests.CPU: 5m
+          Limits.Memory: 128Mi
+          Limits.CPU: 100m
           Host: remotefalcon.com
           SubdomainHost: '*.remotefalcon.com'
 
@@ -97,7 +97,7 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Save DigitalOcean kubeconfig
-        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 9badee22-1583-464e-8117-a7090179f151
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ad868632-49dd-4c78-b8dc-52ad07c3b8f6
 
       - name: Kubectl apply
         run: kubectl apply -f ./k8s/manifest.yml
