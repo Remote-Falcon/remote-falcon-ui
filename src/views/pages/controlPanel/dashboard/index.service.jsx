@@ -143,7 +143,7 @@ export const downloadStatsToExcel = async (dispatch, timezone, dateFilterStart, 
   setIsDownloadingStats(true);
   const response = await downloadStatsToExcelService(timezone, dateFilterStart, dateFilterEnd);
   if (response?.status === 200) {
-    fileDownload(response.data, 'Remote Falcon Stats.xlsx');
+    fileDownload(response.data, 'Remote Falcon Stats.csv');
     showAlertOld({ dispatch, message: 'Dashboard Stats Downloaded' });
   } else {
     showAlertOld({ dispatch, alert: 'error' });
