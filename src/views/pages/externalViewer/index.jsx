@@ -1,13 +1,13 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { TextField } from '@mui/material';
 import newAxios from 'axios';
 import htmlToReact from 'html-to-react';
 import loadjs from 'loadjs';
-import _ from 'lodash';
+import _, { set } from 'lodash';
 import moment from 'moment';
 import Loading from 'react-fullscreen-loading';
 import { Helmet } from 'react-helmet';
@@ -23,6 +23,51 @@ import { ADD_SEQUENCE_TO_QUEUE, INSERT_VIEWER_PAGE_STATS, VOTE_FOR_SEQUENCE } fr
 import { GET_ACTIVE_VIEWER_PAGE, GET_SHOW_FOR_VIEWER } from '../../../utils/graphql/viewer/queries';
 import { showAlert } from '../globalPageHelpers';
 import { defaultProcessingInstructions, processingInstructions, viewerPageMessageElements } from './helpers/helpers';
+
+const EARTH_RADIUS_MILES = 3958.8;
+
+const toRadians = (degrees) => (degrees * Math.PI) / 180;
+
+const parseNumber = (value) => {
+  const parsed = typeof value === 'string' ? parseFloat(value) : value;
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const normalizeSequenceName = (value) => (value == null ? '' : String(value).trim().toLowerCase());
+
+const normalizeLocationCode = (value) => {
+  if (value == null) {
+    return null;
+  }
+  const trimmed = String(value).trim();
+  return trimmed.length ? trimmed : null;
+};
+
+const getDistanceMiles = (lat1, lon1, lat2, lon2) => {
+  if (lat1 === lat2 && lon1 === lon2) {
+    return 0;
+  }
+  const lat1Rad = toRadians(lat1);
+  const lat2Rad = toRadians(lat2);
+  const deltaLat = toRadians(lat2 - lat1);
+  const deltaLon = toRadians(lon2 - lon1);
+  const a =
+    Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+    Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return EARTH_RADIUS_MILES * c;
+};
+
+const viewerReadOnlyMessages = {
+  REQUESTS_DISABLED: 'Requests are currently disabled.',
+  VOTES_DISABLED: 'Voting is currently disabled.',
+  LOCATION_CODE_REQUIRED: 'Enter the location code to request or vote.',
+  INVALID_LOCATION_CODE: 'That location code does not match.',
+  QUEUE_FULL: 'The request queue is full. Try again soon.',
+  ALREADY_VOTED: 'You have already voted for this session.',
+  ALREADY_REQUESTED: 'You have already requested a sequence.',
+  INVALID_LOCATION: 'Requests are limited to a specific location.'
+};
 
 const ExternalViewerPage = () => {
   const dispatch = useDispatch();
@@ -41,6 +86,8 @@ const ExternalViewerPage = () => {
   const [messageDisplayTime] = useState(6000);
   const [nowPlaying, setNowPlaying] = useState(null);
   const [nowPlayingTimer, setNowPlayingTimer] = useState(0);
+  const [stickyReadOnlyReason, setStickyReadOnlyReason] = useState(null);
+  const hasInitializedRef = useRef(false);
 
   const [getShowQuery] = useLazyQuery(GET_SHOW_FOR_VIEWER);
   const [getActiveViewerPageQuery] = useLazyQuery(GET_ACTIVE_VIEWER_PAGE);
@@ -66,14 +113,35 @@ const ExternalViewerPage = () => {
     }
   });
 
-  const setViewerLocation = useCallback(async () => {
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setViewerLatitude(position.coords.latitude.toFixed(5));
-        setViewerLongitude(position.coords.longitude.toFixed(5));
-      });
-    }
-  }, []);
+  const setViewerLocation = useCallback(
+    () =>
+      new Promise((resolve) => {
+        if (!('geolocation' in navigator)) {
+          resolve(null);
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude = parseFloat(position.coords.latitude.toFixed(5));
+            const longitude = parseFloat(position.coords.longitude.toFixed(5));
+            setViewerLatitude(latitude);
+            setViewerLongitude(longitude);
+            resolve({ latitude, longitude });
+          },
+          () => resolve(null)
+        );
+      }),
+    []
+  );
+
+  const refreshViewerLocationForShow = useCallback(
+    (showData) => {
+      if (showData?.preferences?.locationCheckMethod === LocationCheckMethod.GEO) {
+        setViewerLocation();
+      }
+    },
+    [setViewerLocation]
+  );
 
   const showViewerMessage = useCallback(
     (response) => {
@@ -115,6 +183,80 @@ const ExternalViewerPage = () => {
     [messageDisplayTime]
   );
 
+  const getDynamicReadOnlyReason = useCallback(() => {
+    setStickyReadOnlyReason(null);
+    
+    if (show?.preferences?.viewerPageViewOnly) {
+      setStickyReadOnlyReason(show?.preferences?.viewerControlMode === ViewerControlMode.VOTING ? 'VOTES_DISABLED' : 'REQUESTS_DISABLED');
+    }
+
+    if (show?.preferences?.locationCheckMethod === LocationCheckMethod.CODE) {
+      const configuredCode = normalizeLocationCode(show?.preferences?.locationCode);
+      const enteredCode = normalizeLocationCode(enteredLocationCode);
+      if (configuredCode != null && enteredCode !== configuredCode) {
+        setStickyReadOnlyReason('INVALID_LOCATION_CODE');
+      }
+      if (!enteredCode) {
+        setStickyReadOnlyReason('LOCATION_CODE_REQUIRED');
+      }
+    }
+
+    if (show?.preferences?.locationCheckMethod === LocationCheckMethod.GEO) {
+      const allowedRadius = parseNumber(show?.preferences?.allowedRadius);
+      const showLatitude = parseNumber(show?.preferences?.showLatitude);
+      const showLongitude = parseNumber(show?.preferences?.showLongitude);
+      const viewerLat = parseNumber(viewerLatitude);
+      const viewerLon = parseNumber(viewerLongitude);
+      if (allowedRadius != null && showLatitude != null && showLongitude != null && viewerLat != null && viewerLon != null) {
+        const distance = getDistanceMiles(showLatitude, showLongitude, viewerLat, viewerLon);
+        if (distance > allowedRadius) {
+          setStickyReadOnlyReason('INVALID_LOCATION');
+        }
+      }
+    }
+
+    if (show?.preferences?.viewerControlMode === ViewerControlMode.JUKEBOX) {
+      const queueDepth = show?.preferences?.jukeboxDepth;
+      if (queueDepth != null && show?.requests?.length >= queueDepth) {
+        setStickyReadOnlyReason('QUEUE_FULL');
+      }
+    }
+
+    if (show?.viewerStatus === 'ALREADY_REQUESTED' || show?.viewerStatus === 'ALREADY_VOTED') {
+      setStickyReadOnlyReason(show?.viewerStatus);
+    }
+  }, [enteredLocationCode, show?.preferences, show?.requests?.length, show?.viewerStatus, viewerLatitude, viewerLongitude]);
+
+  const isSequenceAlreadyRequested = useCallback(
+    (sequenceName, sequenceDisplayName) => {
+      const normalizedName = normalizeSequenceName(sequenceName);
+      const normalizedDisplayName = normalizeSequenceName(sequenceDisplayName);
+      const playingNow = normalizeSequenceName(show?.playingNow);
+      const playingNext = normalizeSequenceName(show?.playingNext);
+
+      if (playingNow === normalizedName || (normalizedDisplayName && playingNow === normalizedDisplayName)) {
+        return true;
+      }
+
+      if (playingNext === normalizedName || (normalizedDisplayName && playingNext === normalizedDisplayName)) {
+        return true;
+      }
+
+      const requestLimit = parseNumber(show?.preferences?.jukeboxRequestLimit);
+      if (requestLimit && requestLimit !== 0) {
+        const requestNamesLastToFirst = _.chain(show?.requests || [])
+          .orderBy(['position'], ['desc'])
+          .take(requestLimit)
+          .map((request) => normalizeSequenceName(request?.sequence?.name))
+          .value();
+        return requestNamesLastToFirst.includes(normalizedName);
+      }
+
+      return false;
+    },
+    [show?.playingNow, show?.playingNext, show?.preferences?.jukeboxRequestLimit, show?.requests]
+  );
+
   const addSequenceToQueue = useCallback(
     async (e) => {
       const sequenceName = e.target.attributes.getNamedItem('data-key') ? e.target.attributes.getNamedItem('data-key').value : '';
@@ -126,49 +268,27 @@ const ExternalViewerPage = () => {
         sequence: sequenceDisplayName != null ? sequenceDisplayName : sequenceName,
         show_name: show?.showName
       });
-      if (show?.preferences?.enableGeolocation) {
-        await setViewerLocation();
-      }
-      if (show?.preferences?.locationCheckMethod === LocationCheckMethod.CODE) {
-        if (parseInt(enteredLocationCode, 10) !== parseInt(show?.preferences?.locationCode, 10)) {
-          const invalidCodeResponse = {
-            error: {
-              graphQLErrors: [
-                {
-                  extensions: {
-                    message: 'INVALID_CODE'
-                  }
-                }
-              ]
-            }
-          };
-          showViewerMessage(invalidCodeResponse);
-          setEnteredLocationCode(null);
-          return;
-        }
+
+      if (isSequenceAlreadyRequested(sequenceName, sequenceDisplayName)) {
+        viewerPageMessageElements.requestPlaying.current = viewerPageMessageElements?.requestPlaying?.block;
+        trackPosthogEvent('viewer_interaction_result', { result: 'Sequence Already Requested' });
+        setTimeout(() => {
+          _.map(viewerPageMessageElements, (message) => {
+            message.current = message?.none;
+          });
+        }, messageDisplayTime);
+        return;
       }
       addSequenceToQueueService(
         addSequenceToQueueMutation,
         getSubdomain(),
         sequenceName,
-        viewerLatitude || 0.0,
-        viewerLongitude || 0.0,
         (response) => {
           showViewerMessage(response);
         }
       );
     },
-    [
-      show?.preferences?.enableGeolocation,
-      show?.preferences?.locationCheckMethod,
-      show?.preferences?.locationCode,
-      addSequenceToQueueMutation,
-      viewerLatitude,
-      viewerLongitude,
-      setViewerLocation,
-      enteredLocationCode,
-      showViewerMessage
-    ]
+    [addSequenceToQueueMutation, isSequenceAlreadyRequested, messageDisplayTime, show?.showName, showViewerMessage]
   );
 
   const voteForSequence = useCallback(
@@ -182,49 +302,16 @@ const ExternalViewerPage = () => {
         sequence: sequenceDisplayName != null ? sequenceDisplayName : sequenceName,
         show_name: show?.showName
       });
-      if (show?.preferences?.enableGeolocation) {
-        await setViewerLocation();
-      }
-      if (show?.preferences?.locationCheckMethod === LocationCheckMethod.CODE) {
-        if (parseInt(enteredLocationCode, 10) !== parseInt(show?.preferences?.locationCode, 10)) {
-          const invalidCodeResponse = {
-            error: {
-              graphQLErrors: [
-                {
-                  extensions: {
-                    message: 'INVALID_CODE'
-                  }
-                }
-              ]
-            }
-          };
-          showViewerMessage(invalidCodeResponse);
-          setEnteredLocationCode(null);
-          return;
-        }
-      }
       voteForSequenceService(
         voteForSequenceMutation,
         getSubdomain(),
         sequenceName,
-        viewerLatitude || 0.0,
-        viewerLongitude || 0.0,
         (response) => {
           showViewerMessage(response);
         }
       );
     },
-    [
-      show?.preferences?.enableGeolocation,
-      show?.preferences?.locationCheckMethod,
-      show?.preferences?.locationCode,
-      voteForSequenceMutation,
-      viewerLatitude,
-      viewerLongitude,
-      setViewerLocation,
-      enteredLocationCode,
-      showViewerMessage
-    ]
+    [show?.showName, voteForSequenceMutation, showViewerMessage]
   );
 
   const delay = useCallback(
@@ -420,7 +507,7 @@ const ExternalViewerPage = () => {
                 <>
                   <div
                     className={votingListClassname}
-                    onClick={(e) => show?.preferences?.viewerPageViewOnly ? _.noop() : voteForSequence(e)}
+                    onClick={(e) => stickyReadOnlyReason ? _.noop() : voteForSequence(e)}
                     data-key={sequence.name}
                     data-key-2={sequence.displayName}
                   >
@@ -465,7 +552,7 @@ const ExternalViewerPage = () => {
                       <>
                         <div
                           className={categorizedVotingListClassname}
-                          onClick={(e) => show?.preferences?.viewerPageViewOnly ? _.noop() : voteForSequence(e)}
+                          onClick={(e) => stickyReadOnlyReason ? _.noop() : voteForSequence(e)}
                           data-key={categorizedSequence.name}
                         >
                           {sequenceImageElement}
@@ -561,7 +648,7 @@ const ExternalViewerPage = () => {
               <>
                 <div
                   className={jukeboxListClassname}
-                  onClick={(e) => show?.preferences?.viewerPageViewOnly ? _.noop() : addSequenceToQueue(e)}
+                  onClick={(e) => stickyReadOnlyReason ? _.noop() : addSequenceToQueue(e)}
                   data-key={sequence.name}
                   data-key-2={sequence.displayName}
                 >
@@ -598,7 +685,7 @@ const ExternalViewerPage = () => {
                     <>
                       <div
                         className={categorizedJukeboxListClassname}
-                        onClick={(e) => show?.preferences?.viewerPageViewOnly ? _.noop() : addSequenceToQueue(e)}
+                        onClick={(e) => stickyReadOnlyReason ? _.noop() : addSequenceToQueue(e)}
                         data-key={categorizedSequence.name}
                       >
                         {sequenceImageElement}
@@ -683,22 +770,7 @@ const ExternalViewerPage = () => {
 
     const reactHtml = htmlToReactParser.parseWithInstructions(parsedViewerPage, isValidNode, instructions);
     setRemoteViewerReactPage(reactHtml);
-  }, [
-    activeViewerPage,
-    addSequenceToQueue,
-    show?.requests,
-    show?.playingNext,
-    show?.playingNow,
-    show?.preferences?.locationCheckMethod,
-    show?.preferences?.jukeboxDepth,
-    show?.preferences?.makeItSnow,
-    show?.preferences?.viewerControlEnabled,
-    show?.preferences?.viewerControlMode,
-    show?.requests?.length,
-    show?.sequences,
-    voteForSequence,
-    nowPlayingTimer
-  ]);
+  }, [activeViewerPage, show?.playingNow, show?.preferences?.jukeboxDepth, show?.preferences?.viewerControlEnabled, show?.preferences?.viewerControlMode, show?.preferences?.locationCheckMethod, show?.playingNext, show?.sequences, show?.requests, show?.votes, show?.playingNowSequence, show?.playingNextSequence, nowPlayingTimer, stickyReadOnlyReason, voteForSequence, addSequenceToQueue]);
 
   const getActiveViewerPage = useCallback(() => {
     getActiveViewerPageQuery({
@@ -770,9 +842,7 @@ const ExternalViewerPage = () => {
           }
           setShow(showData);
           getActiveViewerPage();
-          if (showData?.preferences?.locationCheckMethod === LocationCheckMethod.GEO) {
-            setViewerLocation();
-          }
+          refreshViewerLocationForShow(showData);
           trackPosthogEvent('viewer_page_view', { show_name: showData?.showName });
 
           setTimeout(() => {
@@ -786,10 +856,14 @@ const ExternalViewerPage = () => {
         showAlert(dispatch, { alert: 'error' });
       }
     }).then();
-  }, [dispatch, getShowQuery, getActiveViewerPage, orderSequencesForVoting, setViewerLocation]);
+  }, [getShowQuery, blockRedirectReferrers, getActiveViewerPage, orderSequencesForVoting, refreshViewerLocationForShow, loadViewerEnhancements, dispatch]);
 
   useEffect(() => {
     const init = async () => {
+      if (hasInitializedRef.current) {
+        return;
+      }
+      hasInitializedRef.current = true;
       setLoading(true);
 
       getShowForInit();
@@ -822,14 +896,16 @@ const ExternalViewerPage = () => {
           orderSequencesForVoting(showData);
         }
         setShow(showData);
+        refreshViewerLocationForShow(showData);
         // Note: We don't fetch the active viewer page HTML during polling
         // It's only fetched on initial load and doesn't change during a viewer session
       }
     }
-  }, [pollingData, orderSequencesForVoting]);
+  }, [pollingData, orderSequencesForVoting, refreshViewerLocationForShow]);
 
   useInterval(async () => {
     await convertViewerPageToReact();
+    getDynamicReadOnlyReason();
   }, 500);
 
   useInterval(async () => {
@@ -862,6 +938,26 @@ const ExternalViewerPage = () => {
         </Helmet>
       )}
       <Loading loading={loading} background="black" loaderColor="white" />
+      {stickyReadOnlyReason && (
+        <div
+          className="viewer-read-only-banner"
+          style={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            margin: '12px auto',
+            maxWidth: '960px',
+            padding: '12px 16px',
+            background: '#a0221f',
+            color: '#fff',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '6px',
+            textAlign: 'center'
+          }}
+        >
+          {viewerReadOnlyMessages[stickyReadOnlyReason]}
+        </div>
+      )}
       {remoteViewerReactPage}
     </>
   );

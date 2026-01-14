@@ -44,6 +44,7 @@ export const GET_SHOW_FOR_VIEWER = gql`
       }
       playingNextFromSchedule
       showName
+      viewerStatus
       preferences {
         viewerControlEnabled
         viewerPageViewOnly
