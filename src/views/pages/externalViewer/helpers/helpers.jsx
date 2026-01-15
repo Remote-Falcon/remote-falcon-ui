@@ -276,3 +276,61 @@ export const viewerPageMessageElements = {
     none: 'id="invalidLocationCode" style="display: none"'
   }
 };
+
+export const viewerReadOnlyMessageElements = {
+  REQUESTS_DISABLED: {
+    element: /id="readOnlyRequestsDisabled"/g,
+    current: 'id="readOnlyRequestsDisabled" style="display: none"',
+    block: 'id="readOnlyRequestsDisabled" style="display: block"',
+    none: 'id="readOnlyRequestsDisabled" style="display: none"'
+  },
+  VOTES_DISABLED: {
+    element: /id="readOnlyVotesDisabled"/g,
+    current: 'id="readOnlyVotesDisabled" style="display: none"',
+    block: 'id="readOnlyVotesDisabled" style="display: block"',
+    none: 'id="readOnlyVotesDisabled" style="display: none"'
+  },
+  LOCATION_CODE_REQUIRED: {
+    element: /id="readOnlyLocationCodeRequired"/g,
+    current: 'id="readOnlyLocationCodeRequired" style="display: none"',
+    block: 'id="readOnlyLocationCodeRequired" style="display: block"',
+    none: 'id="readOnlyLocationCodeRequired" style="display: none"'
+  },
+  INVALID_LOCATION_CODE: {
+    element: /id="readOnlyInvalidLocationCode"/g,
+    current: 'id="readOnlyInvalidLocationCode" style="display: none"',
+    block: 'id="readOnlyInvalidLocationCode" style="display: block"',
+    none: 'id="readOnlyInvalidLocationCode" style="display: none"'
+  },
+  QUEUE_FULL: {
+    element: /id="readOnlyQueueFull"/g,
+    current: 'id="readOnlyQueueFull" style="display: none"',
+    block: 'id="readOnlyQueueFull" style="display: block"',
+    none: 'id="readOnlyQueueFull" style="display: none"'
+  },
+  ALREADY_VOTED: {
+    element: /id="readOnlyAlreadyVoted"/g,
+    current: 'id="readOnlyAlreadyVoted" style="display: none"',
+    block: 'id="readOnlyAlreadyVoted" style="display: block"',
+    none: 'id="readOnlyAlreadyVoted" style="display: none"'
+  },
+  ALREADY_REQUESTED: {
+    element: /id="readOnlyAlreadyRequested"/g,
+    current: 'id="readOnlyAlreadyRequested" style="display: none"',
+    block: 'id="readOnlyAlreadyRequested" style="display: block"',
+    none: 'id="readOnlyAlreadyRequested" style="display: none"'
+  },
+  INVALID_LOCATION: {
+    element: /id="readOnlyInvalidLocation"/g,
+    current: 'id="readOnlyInvalidLocation" style="display: none"',
+    block: 'id="readOnlyInvalidLocation" style="display: block"',
+    none: 'id="readOnlyInvalidLocation" style="display: none"'
+  }
+};
+
+export const viewerReadOnlyBannerElement = {
+  element: /id="interactionStatusBanner"/g,
+  current: 'id="interactionStatusBanner" style="display: none"',
+  block: 'id="interactionStatusBanner" style="display: block"',
+  none: 'id="interactionStatusBanner" style="display: none"'
+};

@@ -22,7 +22,7 @@ import { LocationCheckMethod, ViewerControlMode } from '../../../utils/enum';
 import { ADD_SEQUENCE_TO_QUEUE, INSERT_VIEWER_PAGE_STATS, VOTE_FOR_SEQUENCE } from '../../../utils/graphql/viewer/mutations';
 import { GET_ACTIVE_VIEWER_PAGE, GET_SHOW_FOR_VIEWER } from '../../../utils/graphql/viewer/queries';
 import { showAlert } from '../globalPageHelpers';
-import { defaultProcessingInstructions, processingInstructions, viewerPageMessageElements } from './helpers/helpers';
+import { defaultProcessingInstructions, processingInstructions, viewerPageMessageElements, viewerReadOnlyBannerElement, viewerReadOnlyMessageElements } from './helpers/helpers';
 
 const EARTH_RADIUS_MILES = 3958.8;
 
@@ -63,7 +63,7 @@ const viewerReadOnlyMessages = {
   VOTES_DISABLED: 'Voting is currently disabled.',
   LOCATION_CODE_REQUIRED: 'Enter the location code to request or vote.',
   INVALID_LOCATION_CODE: 'That location code does not match.',
-  QUEUE_FULL: 'The request queue is full. Try again soon.',
+  QUEUE_FULL: 'The request queue is full.',
   ALREADY_VOTED: 'You have already voted for this session.',
   ALREADY_REQUESTED: 'You have already requested a sequence.',
   INVALID_LOCATION: 'Requests are limited to a specific location.'
@@ -87,6 +87,7 @@ const ExternalViewerPage = () => {
   const [nowPlaying, setNowPlaying] = useState(null);
   const [nowPlayingTimer, setNowPlayingTimer] = useState(0);
   const [stickyReadOnlyReason, setStickyReadOnlyReason] = useState(null);
+  const [hasHtmlReadOnlyMessages, setHasHtmlReadOnlyMessages] = useState(false);
   const hasInitializedRef = useRef(false);
 
   const [getShowQuery] = useLazyQuery(GET_SHOW_FOR_VIEWER);
@@ -390,6 +391,28 @@ const ExternalViewerPage = () => {
     return parsedViewerPage;
   };
 
+  const displayCurrentReadOnlyMessages = useCallback(
+    (parsedViewerPage) => {
+      if (!parsedViewerPage) {
+        return parsedViewerPage;
+      }
+      _.forEach(viewerReadOnlyMessageElements, (message) => {
+        message.current = message?.none;
+      });
+      viewerReadOnlyBannerElement.current = viewerReadOnlyBannerElement.none;
+      if (stickyReadOnlyReason && viewerReadOnlyMessageElements[stickyReadOnlyReason]) {
+        viewerReadOnlyMessageElements[stickyReadOnlyReason].current = viewerReadOnlyMessageElements[stickyReadOnlyReason].block;
+        viewerReadOnlyBannerElement.current = viewerReadOnlyBannerElement.block;
+      }
+      parsedViewerPage = parsedViewerPage?.replace(viewerReadOnlyBannerElement.element, viewerReadOnlyBannerElement.current);
+      _.forEach(viewerReadOnlyMessageElements, (message) => {
+        parsedViewerPage = parsedViewerPage?.replace(message?.element, message?.current);
+      });
+      return parsedViewerPage;
+    },
+    [stickyReadOnlyReason]
+  );
+
   const convertViewerPageToReact = useCallback(async () => {
     const isValidNode = () => true;
 
@@ -416,6 +439,9 @@ const ExternalViewerPage = () => {
 
     parsedViewerPage = parsedViewerPage?.replace(/{QUEUE_DEPTH}/g, show?.preferences?.jukeboxDepth);
     parsedViewerPage = displayCurrentViewerMessages(parsedViewerPage);
+    const hasReadOnlyMarkers = /id="readOnly/.test(parsedViewerPage || '');
+    setHasHtmlReadOnlyMessages((prev) => (prev === hasReadOnlyMarkers ? prev : hasReadOnlyMarkers));
+    parsedViewerPage = displayCurrentReadOnlyMessages(parsedViewerPage);
 
     const sequencesElement = [];
     const categoriesPlaced = [];
@@ -770,7 +796,7 @@ const ExternalViewerPage = () => {
 
     const reactHtml = htmlToReactParser.parseWithInstructions(parsedViewerPage, isValidNode, instructions);
     setRemoteViewerReactPage(reactHtml);
-  }, [activeViewerPage, show?.playingNow, show?.preferences?.jukeboxDepth, show?.preferences?.viewerControlEnabled, show?.preferences?.viewerControlMode, show?.preferences?.locationCheckMethod, show?.playingNext, show?.sequences, show?.requests, show?.votes, show?.playingNowSequence, show?.playingNextSequence, nowPlayingTimer, stickyReadOnlyReason, voteForSequence, addSequenceToQueue]);
+  }, [activeViewerPage, show?.playingNow, show?.preferences?.jukeboxDepth, show?.preferences?.viewerControlEnabled, show?.preferences?.viewerControlMode, show?.preferences?.locationCheckMethod, show?.playingNext, show?.sequences, show?.requests, show?.votes, show?.playingNowSequence, show?.playingNextSequence, nowPlayingTimer, stickyReadOnlyReason, displayCurrentReadOnlyMessages, voteForSequence, addSequenceToQueue]);
 
   const getActiveViewerPage = useCallback(() => {
     getActiveViewerPageQuery({
@@ -938,21 +964,23 @@ const ExternalViewerPage = () => {
         </Helmet>
       )}
       <Loading loading={loading} background="black" loaderColor="white" />
-      {stickyReadOnlyReason && (
+      {stickyReadOnlyReason && !hasHtmlReadOnlyMessages && (
         <div
-          className="viewer-read-only-banner"
+          className="interactionStatusBanner"
           style={{
             position: 'sticky',
             top: 0,
             zIndex: 10,
             margin: '12px auto',
-            maxWidth: '960px',
+            maxWidth: '90%',
             padding: '12px 16px',
-            background: '#a0221f',
-            color: '#fff',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            borderRadius: '6px',
-            textAlign: 'center'
+            background: 'rgba(142, 59, 46, 0.9)',
+            color: '#FFF2EE',
+            border: '1px solid #A9574C',
+            borderRadius: 10,
+            textAlign: 'center',
+            fontWeight: 600,
+            fontSize: '1rem',
           }}
         >
           {viewerReadOnlyMessages[stickyReadOnlyReason]}
