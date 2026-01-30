@@ -1,6 +1,12 @@
 function countdown() {
   let now = new Date();
-  let evenDate = new Date(2025, 11, 25);
+  let year = now.getFullYear();
+  let evenDate = new Date(year, 11, 25);
+
+  // If Christmas has passed, count down to next year
+  if (now > evenDate) {
+    evenDate = new Date(year + 1, 11, 25);
+  }
 
   let actualTime = now.getTime();
   let eventTime = evenDate.getTime();

@@ -1,5 +1,8 @@
 [
   "makeItSnow",
   "christmasCountdown",
+  "halloweenCountdown",
+  "thanksgivingCountdown",
+  "customCountdown",
   "dynamicMenu"
 ]
