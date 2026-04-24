@@ -79,37 +79,6 @@ const Sidebar = ({ window }) => {
           </Box>
         </Stack>
 
-        <Typography color="secondary" variant="h3" align="center" sx={{ mt: 4, mb: 3 }}>
-          Support Remote Falcon
-        </Typography>
-
-        <Stack direction="row" justifyContent="center" sx={{ mb: 2 }}>
-          <Typography variant="h5" align="center">
-            100% of Patreon support goes directly to keeping Remote Falcon running
-            <a href="https://www.patreon.com/RemoteFalcon" target="_blank" rel="noreferrer">
-              <img
-                src="https://images.squarespace-cdn.com/content/v1/5cca6990fd6793515a091e5f/1574705049575-1BVQRVG2UTGE9EBEKI6X/become-a-patron-button.png"
-                alt="become-a-patron"
-                width="270"
-              />
-            </a>
-          </Typography>
-        </Stack>
-
-        <Stack direction="row" justifyContent="center" sx={{ mb: 2 }}>
-          <Typography variant="h5" align="center">
-            &quot;Buying a coffee&quot; is a nice way to say thanks and goes directly to the developer
-            <a href="https://www.buymeacoffee.com/remotefalcon" target="_blank" rel="noreferrer">
-              <img
-                src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
-                alt="Buy Me A Coffee"
-                width="240"
-                style={{ marginTop: '1em' }}
-              />
-            </a>
-          </Typography>
-        </Stack>
-
         <Stack direction="row" justifyContent="center" sx={{ mb: 2 }}>
           <Chip label={chipLabel} chipcolor="primary" />
         </Stack>
